@@ -1,0 +1,16 @@
+{
+  "name": "snapvibe",
+  "version": "1.0.0",
+  "description": "SnapVibe: 24h Emotion Match",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "ws": "^8.18.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
