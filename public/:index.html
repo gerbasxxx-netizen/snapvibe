@@ -1,1 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#09090b">
+<title>SnapVibe</title>
 
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  background:#09090b;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  min-height:100vh;
+}
+
+.app{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  margin:auto;
+  padding:18px 15px 30px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.logo{
+  font-size:23px;
+  font-weight:900;
+}
+
+.logo span{
+  color:#a855f7;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#a1a1aa;
+  font-size:12px;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ef4444;
+}
+
+.online .dot{
+  background:#22c55e;
+  box-shadow:0 0 10px #22c55e;
+}
+
+.screen{
+  display:none;
+}
+
+.screen.active{
+  display:block;
+}
+
+.hero{
+  text-align:center;
+  margin:20px 0;
+}
+
+.hero h1{
+  font-size:31px;
+  margin:0 0 9px;
+}
+
+.hero p{
+  color:#a1a1aa;
+  font-size:14px;
+  line-height:1.5;
+  margin:0;
+}
+
+.camera{
+  position:relative;
+  width:100%;
+  aspect-ratio:3/4;
+  border-radius:27px;
+  overflow:hidden;
+  background:#18181b;
+  border:1px solid #27272a;
+}
+
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scaleX(-1);
+}
+
+.placeholder{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:30px;
+  color:#a1a1aa;
+}
+
+.placeholder .icon{
+  font-size:50px;
+  margin-bottom:15px;
+}
+
+.placeholder strong{
+  color:#fff;
+  font-size:17px;
+  margin-bottom:7px;
+}
+
+.placeholder span{
+  font-size:13px;
+  line-height:1.5;
+}
+
+.face{
+  position:absolute;
+  left:50%;
+  top:46%;
+  transform:translate(-50%,-50%);
+  width:58%;
+  height:55%;
+  border:2px solid rgba(255,255,255,.28);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.emotion-title{
+  margin:18px 0 10px;
+  font-size:13px;
+  font-weight:bold;
+  color:#d4d4d8;
+}
+
+.emotions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.emotion{
+  min-height:63px;
+  border:1px solid #27272a;
+  border-radius:15px;
+  background:#111113;
+  color:#fff;
+  cursor:pointer;
+}
+
+.emotion.selected{
+  border-color:#a855f7;
+  background:rgba(168,85,247,.15);
+}
+
+.emoji{
+  display:block;
+  font-size:24px;
+  margin-bottom:3px;
+}
+
+.name{
+  font-size:11px;
+  color:#d4d4d8;
+}
+
+.primary{
+  width:100%;
+  min-height:57px;
+  margin-top:18px;
+  border:0;
+  border-radius:18px;
+  background:linear-gradient(135deg,#8b5cf6,#ec4899);
+  color:white;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.primary:disabled{
+  opacity:.45;
+}
+
+.secondary{
+  width:100%;
+  min-height:52px;
+  margin-top:12px;
+  border:1px solid #27272a;
+  border-radius:16px;
+  background:#111113;
+  color:#fff;
+  font-weight:bold;
+}
+
+.error{
+  display:none;
+  margin-top:12px;
+  padding:13px;
+  border-radius:14px;
+  background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.3);
+  color:#fca5a5;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.error.show{
+  display:block;
+}
+
+.note{
+  text-align:center;
+  color:#71717a;
+  font-size:11px;
+  line-height:1.5;
+  margin:13px 4px;
+}
+
+/* SEARCH */
+
+.search-card{
+  margin-top:75px;
+  padding:32px 22px;
+  text-align:center;
+  border:1px solid #27272a;
+  border-radius:28px;
+  background:#111113;
+}
+
+.radar{
+  width:115px;
+  height:115px;
+  margin:auto auto 25px;
+  border-radius:50%;
+  border:1px solid rgba(139,92,246,.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  background:radial-gradient(circle,rgba(139,92,246,.2),transparent 70%);
+}
+
+.radar:before{
+  content:"";
+  position:absolute;
+  width:72px;
+  height:72px;
+  border:1px solid rgba(139,92,246,.4);
+  border-radius:50%;
+}
+
+.radar:after{
+  content:"";
+  position:absolute;
+  width:38px;
+  height:38px;
+  border:1px solid rgba(236,72,153,.5);
+  border-radius:50%;
+}
+
+.radar-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ec4899;
+  box-shadow:0 0 20px #ec4899;
+  animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.5)}
+}
+
+.search-card h2{
+  margin:0 0 9px;
+  font-size:24px;
+}
+
+.search-card p{
+  margin:0;
+  color:#a1a1aa;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.search-time{
+  margin-top:18px;
+  color:#d4d4d8;
+  font-size:12px;
+}
+
+/* MATCH */
+
+.match-title{
+  text-align:center;
+  margin:28px 0 20px;
+}
+
+.match-title .big{
+  font-size:44px;
+}
+
+.match-title h2{
+  font-size:28px;
+  margin:7px 0;
+}
+
+.match-title p{
+  color:#a1a1aa;
+  font-size:13px;
+  margin:0;
+}
+
+.photo-card{
+  position:relative;
+  width:100%;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  border-radius:27px;
+  border:1px solid #27272a;
+  background:#111113;
+}
+
+#matchPhoto{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.timer{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(10px);
+  font-size:13px;
+  font-weight:bold;
+}
+
+.timer strong{
+  color:#f0abfc;
+  margin-left:5px;
+}
+
+.info{
+  margin-top:13px;
+  padding:16px;
+  border-radius:18px;
+  border:1px solid #27272a;
+  background:#111113;
+}
+
+.info strong{
+  display:block;
+  margin-bottom:6px;
+}
+
+.info span{
+  color:#a1a1aa;
+  font-size:12px;
+  line-height:1.5;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="top">
+    <div class="logo">
+      Snap<span>Vibe</span>
+    </div>
+
+    <div class="status" id="status">
+      <span class="dot"></span>
+      <span id="statusText">Подключение...</span>
+    </div>
+  </div>
+
+  <!-- КАМЕРА -->
+
+  <section class="screen active" id="cameraScreen">
+
+    <div class="hero">
+      <h1>Поймай свою эмоцию</h1>
+
+      <p>
+        Сделай фото и найди человека,
+        который сейчас чувствует то же самое.
+      </p>
+    </div>
+
+    <div class="camera">
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <div class="placeholder" id="placeholder">
+        <div class="icon">📸</div>
+
+        <strong>Нужен доступ к камере</strong>
+
+        <span>
+          Разреши браузеру использовать
+          фронтальную камеру.
+        </span>
+      </div>
+
+      <div class="face"></div>
+
+    </div>
+
+    <div class="emotion-title">
+      Что ты сейчас чувствуешь?
+    </div>
+
+    <div class="emotions">
+
+      <button class="emotion selected" data-emotion="happy">
+        <span class="emoji">😄</span>
+        <span class="name">Радость</span>
+      </button>
+
+      <button class="emotion" data-emotion="sad">
+        <span class="emoji">😢</span>
+        <span class="name">Грусть</span>
+      </button>
+
+      <button class="emotion" data-emotion="excited">
+        <span class="emoji">🤩</span>
+        <span class="name">Восторг</span>
+      </button>
+
+      <button class="emotion" data-emotion="calm">
+        <span class="emoji">😌</span>
+        <span class="name">Спокойствие</span>
+      </button>
+
+      <button class="emotion" data-emotion="angry">
+        <span class="emoji">😤</span>
+        <span class="name">Злость</span>
+      </button>
+
+      <button class="emotion" data-emotion="surprised">
+        <span class="emoji">😲</span>
+        <span class="name">Удивление</span>
+      </button>
+
+    </div>
+
+    <button
+      class="primary"
+      id="capture"
+      disabled
+    >
+      Поймать эмоцию
+    </button>
+
+    <div class="error" id="error"></div>
+
+    <div class="note">
+      Фото используется для поиска мэтча
+      и удаляется после окончания 24-часового периода.
+    </div>
+
+  </section>
+
+  <!-- ПОИСК -->
+
+  <section class="screen" id="searchScreen">
+
+    <div class="search-card">
+
+      <div class="radar">
+        <div class="radar-dot"></div>
+      </div>
+
+      <h2>Ищем мэтч...</h2>
+
+      <p>
+        Ищем человека с такой же эмоцией.
+        Когда найдём совпадение,
+        фото появится автоматически.
+      </p>
+
+      <div class="search-time">
+        Время поиска:
+        <strong id="searchTime">0 сек</strong>
+      </div>
+
+      <button
+        class="secondary"
+        id="cancel"
+      >
+        Отменить поиск
+      </button>
+
+    </div>
+
+    <div class="error" id="searchError"></div>
+
+  </section>
+
+  <!-- МЭТЧ -->
+
+  <section class="screen" id="matchScreen">
+
+    <div class="match-title">
+
+      <div class="big">✨</div>
+
+      <h2>Эмоция совпала!</h2>
+
+      <p>
+        Вы оба чувствовали одно и то же.
+      </p>
+
+    </div>
+
+    <div class="photo-card">
+
+      <img
+        id="matchPhoto"
+        alt="Фото мэтча"
+      >
+
+      <div class="timer">
+        Фото доступно ещё
+        <strong id="timer">
+          24:00:00
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="info">
+
+      <strong>🔥 Мэтч активен 24 часа</strong>
+
+      <span>
+        После окончания таймера сервер удалит
+        фотографии этого мэтча.
+      </span>
+
+    </div>
+
+    <button
+      class="primary"
+      id="newMatch"
+    >
+      Найти новый мэтч
+    </button>
+
+  </section>
+
+</div>
+
+<script>
+"use strict";
+
+/*
+  Если сайт открыт через HTTPS:
+  используется WSS.
+
+  Если открыт через HTTP:
+  используется обычный WS.
+*/
+
+const protocol =
+  location.protocol === "https:"
+    ? "wss:"
+    : "ws:";
+
+const WS_URL =
+  protocol + "//" + location.host;
+
+const MATCH_TIME =
+  24 * 60 * 60 * 1000;
+
+let socket = null;
+let cameraStream = null;
+
+let selectedEmotion = "happy";
+
+let searchStarted = null;
+let searchInterval = null;
+
+let matchExpiresAt = null;
+let timerInterval = null;
+
+let reconnectTimer = null;
+
+const video =
+  document.getElementById("video");
+
+const placeholder =
+  document.getElementById("placeholder");
+
+const capture =
+  document.getElementById("capture");
+
+const status =
+  document.getElementById("status");
+
+const statusText =
+  document.getElementById("statusText");
+
+const error =
+  document.getElementById("error");
+
+const searchError =
+  document.getElementById("searchError");
+
+const searchTime =
+  document.getElementById("searchTime");
+
+const matchPhoto =
+  document.getElementById("matchPhoto");
+
+const timer =
+  document.getElementById("timer");
+
+const cameraScreen =
+  document.getElementById("cameraScreen");
+
+const searchScreen =
+  document.getElementById("searchScreen");
+
+const matchScreen =
+  document.getElementById("matchScreen");
+
+
+// --------------------------------------------------
+// ЭКРАНЫ
+// --------------------------------------------------
+
+function showScreen(screen){
+
+  cameraScreen.classList.remove("active");
+  searchScreen.classList.remove("active");
+  matchScreen.classList.remove("active");
+
+  screen.classList.add("active");
+}
+
+
+// --------------------------------------------------
+// ОШИБКИ
+// --------------------------------------------------
+
+function showError(message, box=error){
+
+  box.textContent = message;
+  box.classList.add("show");
+}
+
+function hideError(box=error){
+
+  box.textContent = "";
+  box.classList.remove("show");
+}
+
+
+// --------------------------------------------------
+// WEBSOCKET
+// --------------------------------------------------
+
+function connect(){
+
+  if(
+    socket &&
+    (
+      socket.readyState === WebSocket.OPEN ||
+      socket.readyState === WebSocket.CONNECTING
+    )
+  ){
+    return;
+  }
+
+  try{
+
+    socket = new WebSocket(WS_URL);
+
+  }catch(e){
+
+    setOffline();
+    reconnect();
+    return;
+  }
+
+  socket.onopen = function(){
+
+    status.classList.add("online");
+    statusText.textContent = "Онлайн";
+
+    capture.disabled = false;
+  };
+
+  socket.onmessage = function(event){
+
+    let data;
+
+    try{
+      data = JSON.parse(event.data);
+    }catch(e){
+      return;
+    }
+
+    handleMessage(data);
+  };
+
+  socket.onclose = function(){
+
+    setOffline();
+
+    capture.disabled = true;
+
+    reconnect();
+  };
+
+  socket.onerror = function(){
+
+    setOffline();
+  };
+}
+
+function setOffline(){
+
+  status.classList.remove("online");
+  statusText.textContent = "Офлайн";
+}
+
+function reconnect(){
+
+  if(reconnectTimer){
+    return;
+  }
+
+  reconnectTimer = setTimeout(function(){
+
+    reconnectTimer = null;
+
+    connect();
+
+  },3000);
+}
+
+function send(data){
+
+  if(
+    !socket ||
+    socket.readyState !== WebSocket.OPEN
+  ){
+
+    showError("Нет соединения с сервером.");
+
+    return false;
+  }
+
+  socket.send(
+    JSON.stringify(data)
+  );
+
+  return true;
+}
+
+
+// --------------------------------------------------
+// SERVER MESSAGE
+// --------------------------------------------------
+
+function handleMessage(data){
+
+  if(data.type === "connected"){
+    return;
+  }
+
+  if(data.type === "searching"){
+
+    startSearchTimer();
+
+    return;
+  }
+
+  if(data.type === "match_found"){
+
+    showMatch(data);
+
+    return;
+  }
+
+  if(data.type === "match_expired"){
+
+    expireMatch();
+
+    return;
+  }
+
+  if(data.type === "search_cancelled"){
+
+    stopSearchTimer();
+
+    showScreen(cameraScreen);
+
+    return;
+  }
+
+  if(data.type === "error"){
+
+    stopSearchTimer();
+
+    showError(
+      data.message || "Произошла ошибка.",
+      searchScreen.classList.contains("active")
+        ? searchError
+        : error
+    );
+
+    return;
+  }
+}
+
+
+// --------------------------------------------------
+// CAMERA
+// --------------------------------------------------
+
+async function startCamera(){
+
+  if(!navigator.mediaDevices){
+
+    showError(
+      "Браузер не поддерживает камеру."
+    );
+
+    return;
+  }
+
+  try{
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:{
+          facingMode:{
+            ideal:"user"
+          },
+
+          width:{
+            ideal:1280
+          },
+
+          height:{
+            ideal:1280
+          }
+        },
+
+        audio:false
+      });
+
+    video.srcObject =
+      cameraStream;
+
+    placeholder.style.display =
+      "none";
+
+  }catch(e){
+
+    console.error(e);
+
+    if(e.name === "NotAllowedError"){
+
+      showError(
+        "Камера запрещена. Разреши доступ к камере в браузере."
+      );
+
+    }else{
+
+      showError(
+        "Не удалось открыть камеру."
+      );
+    }
+  }
+}
+
+function stopCamera(){
+
+  if(!cameraStream){
+    return;
+  }
+
+  cameraStream
+    .getTracks()
+    .forEach(function(track){
+      track.stop();
+    });
+
+  cameraStream = null;
+}
+
+
+// --------------------------------------------------
+// ВЫБОР ЭМОЦИИ
+// --------------------------------------------------
+
+document
+  .querySelectorAll(".emotion")
+  .forEach(function(button){
+
+    button.addEventListener(
+      "click",
+      function(){
+
+        document
+          .querySelectorAll(".emotion")
+          .forEach(function(item){
+            item.classList.remove("selected");
+          });
+
+        button.classList.add("selected");
+
+        selectedEmotion =
+          button.dataset.emotion;
+
+        hideError();
+      }
+    );
+  });
+
+
+// --------------------------------------------------
+// SHA-256
+// --------------------------------------------------
+
+async function hashEmotion(emotion){
+
+  const text =
+    "snapvibe:" + emotion;
+
+  const data =
+    new TextEncoder().encode(text);
+
+  const buffer =
+    await crypto.subtle.digest(
+      "SHA-256",
+      data
+    );
+
+  return Array
+    .from(new Uint8Array(buffer))
+    .map(function(byte){
+      return byte
+        .toString(16)
+        .padStart(2,"0");
+    })
+    .join("");
+}
+
+
+// --------------------------------------------------
+// ФОТО
+// --------------------------------------------------
+
+function takePhoto(){
+
+  if(
+    !cameraStream ||
+    video.videoWidth === 0 ||
+    video.videoHeight === 0
+  ){
+
+    showError(
+      "Камера ещё не готова."
+    );
+
+    return null;
+  }
+
+  const maxWidth = 720;
+
+  const scale =
+    Math.min(
+      1,
+      maxWidth / video.videoWidth
+    );
+
+  const width =
+    Math.round(
+      video.videoWidth * scale
+    );
+
+  const height =
+    Math.round(
+      video.videoHeight * scale
+    );
+
+  const canvas =
+    document.createElement("canvas");
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.translate(width,0);
+  ctx.scale(-1,1);
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    width,
+    height
+  );
+
+  return canvas.toDataURL(
+    "image/jpeg",
+    .82
+  );
+}
+
+
+// --------------------------------------------------
+// КНОПКА ПОЛУЧИТЬ ЭМОЦИЮ
+// --------------------------------------------------
+
+capture.addEventListener(
+  "click",
+  async function(){
+
+    hideError();
+
+    if(
+      !socket ||
+      socket.readyState !== WebSocket.OPEN
+    ){
+
+      showError(
+        "Сервер ещё не подключён."
+      );
+
+      connect();
+
+      return;
+    }
+
+    capture.disabled = true;
+
+    const photo =
+      takePhoto();
+
+    if(!photo){
+
+      capture.disabled = false;
+
+      return;
+    }
+
+    try{
+
+      const emotionHash =
+        await hashEmotion(
+          selectedEmotion
+        );
+
+      const success =
+        send({
+
+          type:"capture",
+
+          emotionHash,
+
+          photo
+        });
+
+      if(!success){
+
+        capture.disabled = false;
+
+        return;
+      }
+
+      showScreen(searchScreen);
+
+      startSearchTimer();
+
+    }catch(e){
+
+      console.error(e);
+
+      capture.disabled = false;
+
+      showError(
+        "Не удалось отправить фото."
+      );
+    }
+  }
+);
+
+
+// --------------------------------------------------
+// ПОИСК
+// --------------------------------------------------
+
+function startSearchTimer(){
+
+  stopSearchTimer();
+
+  searchStarted =
+    Date.now();
+
+  updateSearchTimer();
+
+  searchInterval =
+    setInterval(
+      updateSearchTimer,
+      1000
+    );
+}
+
+function updateSearchTimer(){
+
+  if(!searchStarted){
+    return;
+  }
+
+  const seconds =
+    Math.floor(
+      (Date.now() - searchStarted) /
+      1000
+    );
+
+  searchTime.textContent =
+    seconds + " сек";
+}
+
+function stopSearchTimer(){
+
+  if(searchInterval){
+
+    clearInterval(
+      searchInterval
+    );
+
+    searchInterval = null;
+  }
+
+  searchStarted = null;
+}
+
+
+// --------------------------------------------------
+// ОТМЕНА ПОИСКА
+// --------------------------------------------------
+
+document
+  .getElementById("cancel")
+  .addEventListener(
+    "click",
+    function(){
+
+      send({
+        type:"cancel_search"
+      });
+
+      stopSearchTimer();
+
+      hideError(searchError);
+
+      showScreen(
+        cameraScreen
+      );
+
+      capture.disabled =
+        !(
+          socket &&
+          socket.readyState === WebSocket.OPEN
+        );
+    }
+  );
+
+
+// --------------------------------------------------
+// МЭТЧ
+// --------------------------------------------------
+
+function showMatch(data){
+
+  stopSearchTimer();
+
+  if(
+    !data.partnerPhoto ||
+    !data.expiresAt
+  ){
+
+    showError(
+      "Мэтч найден, но фото недоступно."
+    );
+
+    showScreen(cameraScreen);
+
+    return;
+  }
+
+  matchPhoto.src =
+    data.partnerPhoto;
+
+  matchExpiresAt =
+    Number(data.expiresAt);
+
+  showScreen(matchScreen);
+
+  startCountdown();
+}
+
+
+// --------------------------------------------------
+// ТАЙМЕР 24 ЧАСА
+// --------------------------------------------------
+
+function startCountdown(){
+
+  stopCountdown();
+
+  updateCountdown();
+
+  timerInterval =
+    setInterval(
+      updateCountdown,
+      1000
+    );
+}
+
+function updateCountdown(){
+
+  if(!matchExpiresAt){
+    return;
+  }
+
+  const remaining =
+    Math.max(
+      0,
+      matchExpiresAt - Date.now()
+    );
+
+  const totalSeconds =
+    Math.floor(
+      remaining / 1000
+    );
+
+  const hours =
+    Math.floor(
+      totalSeconds / 3600
+    );
+
+  const minutes =
+    Math.floor(
+      (totalSeconds % 3600) / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  timer.textContent =
+    String(hours).padStart(2,"0") +
+    ":" +
+    String(minutes).padStart(2,"0") +
+    ":" +
+    String(seconds).padStart(2,"0");
+
+  if(remaining <= 0){
+
+    stopCountdown();
+
+    expireMatch();
+  }
+}
+
+function stopCountdown(){
+
+  if(timerInterval){
+
+    clearInterval(
+      timerInterval
+    );
+
+    timerInterval = null;
+  }
+}
+
+function expireMatch(){
+
+  stopCountdown();
+
+  matchExpiresAt = null;
+
+  matchPhoto.removeAttribute(
+    "src"
+  );
+
+  showScreen(
+    cameraScreen
+  );
+
+  capture.disabled =
+    !(
+      socket &&
+      socket.readyState === WebSocket.OPEN
+    );
+}
+
+
+// --------------------------------------------------
+// НОВЫЙ МЭТЧ
+// --------------------------------------------------
+
+document
+  .getElementById("newMatch")
+  .addEventListener(
+    "click",
+    function(){
+
+      stopCountdown();
+
+      matchExpiresAt = null;
+
+      matchPhoto.removeAttribute(
+        "src"
+      );
+
+      showScreen(
+        cameraScreen
+      );
+
+      capture.disabled =
+        !(
+          socket &&
+          socket.readyState === WebSocket.OPEN
+        );
+    }
+  );
+
+
+// --------------------------------------------------
+// PING
+// --------------------------------------------------
+
+setInterval(function(){
+
+  if(
+    socket &&
+    socket.readyState === WebSocket.OPEN
+  ){
+
+    send({
+      type:"ping"
+    });
+  }
+
+},25000);
+
+
+// --------------------------------------------------
+// START
+// --------------------------------------------------
+
+connect();
+
+startCamera();
+
+
+// --------------------------------------------------
+// ВЫХОД СО СТРАНИЦЫ
+// --------------------------------------------------
+
+window.addEventListener(
+  "beforeunload",
+  function(){
+
+    stopCamera();
+    stopCountdown();
+    stopSearchTimer();
+
+    if(socket){
+      socket.close();
+    }
+  }
+);
+
+</script>
+
+</body>
+  </html>
