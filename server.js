@@ -19,7 +19,7 @@ const waitingQueue = new Map();
 const matches = new Map();
 const userMatches = new Map();
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname));
 
 app.get("/health", (req, res) => {
   res.json({
