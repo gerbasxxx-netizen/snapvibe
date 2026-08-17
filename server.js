@@ -3,7 +3,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const path = require("path");
-
+const db = require("./db");
 const PORT = process.env.PORT || 3000;
 const MATCH_TIME = 24 * 60 * 60 * 1000;
 
