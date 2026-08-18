@@ -271,7 +271,39 @@ wss.on("connection", (ws) => {
         JSON.parse(
           raw.toString()
         );
+if (message.type === "register_profile") {
+  const requestedUserId =
+    typeof message.userId === "string" &&
+    message.userId.length >= 10 &&
+    message.userId.length <= 100
+      ? message.userId
+      : ws.userId;
 
+  ws.userId = requestedUserId;
+
+  const profile = db.createUser({
+    id: requestedUserId,
+    name:
+      typeof message.name === "string"
+        ? message.name.trim().slice(0, 30)
+        : "SnapVibe User",
+    avatar:
+      typeof message.avatar === "string"
+        ? message.avatar
+        : null,
+    language:
+      typeof message.language === "string"
+        ? message.language.slice(0, 5)
+        : "en"
+  });
+
+  send(ws, {
+    type: "profile_saved",
+    profile
+  });
+
+  return;
+}
       if (message.type === "capture") {
         handleCapture(
           ws,
