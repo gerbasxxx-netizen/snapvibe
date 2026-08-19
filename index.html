@@ -739,11 +739,25 @@ function connect(){
     userId = "user_" + crypto.randomUUID();
     localStorage.setItem("snapvibe_user_id", userId);
   }
+let userName = localStorage.getItem("snapvibe_user_name");
 
+if(!userName){
+  let enteredName = prompt("Как тебя зовут?");
+
+  userName = enteredName
+    ? enteredName.trim().slice(0, 30)
+    : "";
+
+  if(!userName){
+    userName = "SnapVibe User";
+  }
+
+  localStorage.setItem("snapvibe_user_name", userName);
+  }
   socket.send(JSON.stringify({
     type: "register_profile",
     userId: userId,
-    name: "SnapVibe User",
+    name: userName,
     language: navigator.language || "en"
   }));
 };
