@@ -728,11 +728,25 @@ function connect(){
 
   socket.onopen = function(){
 
-    status.classList.add("online");
-    statusText.textContent = "Онлайн";
+  status.classList.add("online");
+  statusText.textContent = "Онлайн";
 
-    capture.disabled = false;
-  };
+  capture.disabled = false;
+
+  let userId = localStorage.getItem("snapvibe_user_id");
+
+  if(!userId){
+    userId = "user_" + crypto.randomUUID();
+    localStorage.setItem("snapvibe_user_id", userId);
+  }
+
+  socket.send(JSON.stringify({
+    type: "register_profile",
+    userId: userId,
+    name: "SnapVibe User",
+    language: navigator.language || "en"
+  }));
+};
 
   socket.onmessage = function(event){
 
