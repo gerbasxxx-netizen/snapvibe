@@ -90,10 +90,12 @@ function createMatch(userA, userB) {
     expiresAt,
     userA: {
       userId: userA.userId,
+      name: userA.name,
       photo: userA.photo
     },
     userB: {
       userId: userB.userId,
+      name: userB.name,
       photo: userB.photo
     },
     timer: null
@@ -119,6 +121,7 @@ function createMatch(userA, userB) {
     matchId,
     expiresAt,
     partnerUserId: userB.userId,
+    partnerName: userB.name,
     partnerPhoto: userB.photo
   });
 
@@ -127,6 +130,7 @@ function createMatch(userA, userB) {
     matchId,
     expiresAt,
     partnerUserId: userA.userId,
+    partnerName: userA.name,
     partnerPhoto: userA.photo
   });
 
