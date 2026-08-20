@@ -118,6 +118,7 @@ function createMatch(userA, userB) {
     type: "match_found",
     matchId,
     expiresAt,
+    partnerUserId: userB.userId,
     partnerPhoto: userB.photo
   });
 
@@ -125,6 +126,7 @@ function createMatch(userA, userB) {
     type: "match_found",
     matchId,
     expiresAt,
+    partnerUserId: userA.userId,
     partnerPhoto: userA.photo
   });
 
