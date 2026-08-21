@@ -550,8 +550,9 @@ video{
       <h2>Эмоция совпала!</h2>
 
       <p>
-        Вы оба чувствовали одно и то же.
-      </p>
+    <strong id="partnerName"></strong><br>
+    Вы оба чувствовали одно и то же.
+</p>
 
     </div>
 
@@ -1271,6 +1272,7 @@ function showMatch(data){
 
   matchPhoto.src =
     data.partnerPhoto;
+  partnerName.textContent = data.partnerName || "SnapVibe User";
 
   matchExpiresAt =
     Number(data.expiresAt);
