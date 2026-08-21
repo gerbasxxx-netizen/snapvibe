@@ -218,9 +218,10 @@ function handleCapture(ws, data) {
   }
 
   waitingQueue.delete(ws.userId);
-
+const profile = db.getUser(ws.userId);
   const user = {
     userId: ws.userId,
+    name: profile ? profile.name : "SnapVibe User",
     ws,
     emotionHash: data.emotionHash,
     photo: data.photo,
