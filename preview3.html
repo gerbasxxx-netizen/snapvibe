@@ -7,1281 +7,227 @@
 <title>SnapVibe</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#06070b;color:#fff;font-family:Arial,sans-serif}
+body{background:radial-gradient(circle at 50% -10%,rgba(139,92,246,.17),transparent 34%),#06070b}
+.app{max-width:520px;min-height:100vh;margin:auto;padding:14px 14px 86px}
+
+.top{display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px}
+.brand{font-size:29px;font-weight:950}
+.brand span{color:#ff3f9f}
+.status{font-size:12px;color:#9af1bc;border:1px solid #252a38;border-radius:999px;padding:9px 11px}
+.status.off{color:#ff8996}
+
+.view{display:none}
+.view.active{display:block}
+
+.primary,.secondary,.action{
+width:100%;min-height:50px;border-radius:14px;color:#fff;font-weight:900
 }
+.primary{border:0;background:linear-gradient(90deg,#d92d7f,#ff4f9f)}
+.secondary,.action{border:1px solid #252a38;background:#10131d}
 
-:root{
-  --bg:#06070b;
-  --card:#10131d;
-  --card2:#151925;
-  --line:#252a38;
-  --text:#ffffff;
-  --muted:#9299aa;
-  --pink:#ff3f9f;
-  --pink2:#d82d7d;
-  --violet:#8b5cf6;
-  --blue:#2477ff;
-  --blue2:#1563d9;
-  --green:#30d17d;
-  --danger:#ff6678;
+.field{margin-top:11px}
+.field label{display:block;font-size:13px;color:#a7adbf;margin-bottom:6px}
+.field input,.field select{
+width:100%;height:49px;border-radius:12px;border:1px solid #252a38;
+background:#0c0f17;color:#fff;padding:0 11px
 }
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 
-html,body{
-  margin:0;
-  min-height:100%;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,sans-serif
+.register{text-align:center;padding:16px 0}
+.register h1{font-size:38px;margin:0}
+.register h1 span{color:#ff3f9f}
+.register p{color:#9299aa}
+
+.avatar,.profileAvatar,.friendAvatar,.chatAvatar,.miniAvatar,.callAvatar{
+border-radius:50%;overflow:hidden;
+background:linear-gradient(135deg,#8b5cf6,#ff3f9f);
+display:grid;place-items:center;font-weight:900
 }
-
-body{
-  background:
-    radial-gradient(
-      circle at 50% -10%,
-      rgba(139,92,246,.16),
-      transparent 32%
-    ),
-    #06070b
+.avatar{width:116px;height:116px;margin:18px auto;font-size:42px}
+.profileAvatar{width:116px;height:116px;margin:18px auto;font-size:42px}
+.friendAvatar,.chatAvatar{width:44px;height:44px;flex:0 0 auto}
+.miniAvatar{width:30px;height:30px;font-size:11px;flex:0 0 auto}
+.avatar img,.profileAvatar img,.friendAvatar img,.chatAvatar img,.miniAvatar img,.callAvatar img{
+width:100%;height:100%;object-fit:cover
 }
-
-button,input,select{
-  font:inherit
-}
-
-button{
-  cursor:pointer
-}
-
-.app{
-  max-width:520px;
-  min-height:100vh;
-  margin:auto;
-  padding:14px 14px 88px
-}
-
-.view{
-  display:none
-}
-
-.view.active{
-  display:block
-}
-
-.top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:8px 0 12px
-}
-
-.brand{
-  font-size:29px;
-  font-weight:950
-}
-
-.brand span{
-  color:var(--pink)
-}
-
-.status{
-  font-size:12px;
-  color:#9af1bc;
-  border:1px solid var(--line);
-  border-radius:999px;
-  padding:9px 11px
-}
-
-.status:before{
-  content:"";
-  display:inline-block;
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--green);
-  margin-right:6px
-}
-
-.primary,
-.secondary,
-.action{
-  width:100%;
-  min-height:50px;
-  border-radius:14px;
-  color:#fff;
-  font-weight:900
-}
-
-.primary{
-  border:0;
-  background:linear-gradient(
-    90deg,
-    #d92d7f,
-    #ff4f9f
-  )
-}
-
-.secondary,
-.action{
-  border:1px solid var(--line);
-  background:var(--card)
-}
-
-.field{
-  margin-top:11px
-}
-
-.field label{
-  display:block;
-  font-size:13px;
-  color:#a7adbf;
-  margin-bottom:6px
-}
-
-.field input,
-.field select{
-  width:100%;
-  height:49px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#0c0f17;
-  color:#fff;
-  padding:0 11px
-}
-
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px
-}
-
-/* REGISTER */
-
-.register{
-  text-align:center;
-  padding:14px 0
-}
-
-.register h1{
-  font-size:38px;
-  margin:0
-}
-
-.register h1 span{
-  color:var(--pink)
-}
-
-.register p{
-  color:var(--muted);
-  font-size:14px
-}
-
-.avatarRing,
-.profileAvatar{
-  width:116px;
-  height:116px;
-  border-radius:50%;
-  margin:18px auto;
-  background:linear-gradient(
-    135deg,
-    var(--violet),
-    var(--pink)
-  );
-  display:grid;
-  place-items:center;
-  font-size:42px;
-  font-weight:900;
-  overflow:hidden
-}
-
-.avatarRing img,
-.profileAvatar img,
-.chatAvatar img,
-.friendAvatar img,
-.miniAvatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-
-/* CAMERA */
 
 .camera{
-  position:relative;
-  height:calc(100vh - 176px);
-  min-height:500px;
-  max-height:720px;
-  border-radius:0 0 26px 26px;
-  overflow:hidden;
-  background:#0e1118
+position:relative;height:calc(100vh - 176px);min-height:500px;max-height:720px;
+border-radius:0 0 26px 26px;overflow:hidden;background:#0e1118
 }
-
-.camera video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transform:scaleX(-1)
-}
-
-.fallback{
-  position:absolute;
-  inset:0;
-  display:grid;
-  place-items:center;
-  font-size:48px;
-  color:var(--muted)
-}
-
+.camera video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:48px;color:#9299aa}
 .panel{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:60px 10px 14px;
-  background:linear-gradient(
-    transparent,
-    rgba(3,3,7,.92) 45%
-  )
+position:absolute;left:0;right:0;bottom:0;padding:55px 10px 14px;
+background:linear-gradient(transparent,rgba(3,3,7,.94) 45%)
 }
-
-.panel h3{
-  text-align:center;
-  font-size:14px;
-  margin:0 0 10px
-}
-
-.emotions{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:6px
-}
-
-.emotion{
-  border:0;
-  background:transparent;
-  color:#fff
-}
-
+.panel h3{text-align:center;font-size:14px;margin:0 0 10px}
+.emotions{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.emotion{border:0;background:transparent;color:#fff}
 .circle{
-  width:50px;
-  height:50px;
-  margin:auto;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#191d27;
-  font-size:23px;
-  border:2px solid transparent
+width:50px;height:50px;margin:auto;border-radius:50%;display:grid;place-items:center;
+background:#191d27;font-size:23px;border:2px solid transparent
 }
-
-.emotion.selected .circle{
-  border-color:var(--pink);
-  box-shadow:0 0 20px rgba(255,63,159,.3)
-}
-
-.emotion small{
-  display:block;
-  font-size:10px;
-  margin-top:4px;
-  color:#c3c7d2
-}
-
+.emotion.selected .circle{border-color:#ff3f9f;box-shadow:0 0 18px rgba(255,63,159,.32)}
+.emotion small{display:block;font-size:10px;margin-top:4px;color:#c3c7d2}
 .shutter{
-  display:block;
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  margin:12px auto 0;
-  border:4px solid #fff;
-  background:linear-gradient(
-    135deg,
-    #ff63b4,
-    #d62d7d
-  )
+display:block;width:72px;height:72px;border-radius:50%;margin:12px auto 0;
+border:4px solid #fff;background:linear-gradient(135deg,#ff63b4,#d62d7d)
 }
 
-/* PHOTO PREVIEW */
-
-.previewTitle{
-  text-align:center;
-  font-size:27px;
-  margin:8px 0
+.previewPhoto,.matchPhoto img{
+width:100%;max-height:64vh;object-fit:cover;border-radius:22px;display:block;background:#10131d
 }
+.previewActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
 
-.previewSub{
-  text-align:center;
-  color:var(--muted);
-  margin:0 0 14px
-}
-
-.previewPhoto{
-  width:100%;
-  max-height:64vh;
-  object-fit:cover;
-  border-radius:22px;
-  display:block;
-  background:#10131d
-}
-
-.previewActions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-  margin-top:14px
-}
-
-/* SEARCH */
-
-.search{
-  text-align:center;
-  padding-top:55px
-}
-
-.search h2{
-  font-size:26px
-}
-
+.center{text-align:center;padding-top:48px}
 .radar{
-  width:230px;
-  height:230px;
-  border-radius:50%;
-  margin:25px auto;
-  position:relative;
-  background:radial-gradient(
-    circle,
-    rgba(139,92,246,.1),
-    transparent 68%
-  );
-  border:1px solid rgba(255,63,159,.25)
+width:220px;height:220px;border-radius:50%;margin:25px auto;position:relative;
+border:1px solid rgba(255,63,159,.3);
+background:radial-gradient(circle,rgba(139,92,246,.12),transparent 68%)
 }
-
-.radar:before,
 .radar:after{
-  content:"";
-  position:absolute;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:50%
+content:"💗";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:40px
 }
-
-.radar:before{
-  inset:35px
-}
-
-.radar:after{
-  inset:70px
-}
-
-.heart{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  font-size:40px
-}
-
 .sweep{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  background:conic-gradient(
-    rgba(255,63,159,.18),
-    transparent 26%
-  );
-  animation:spin 2.3s linear infinite
+position:absolute;inset:0;border-radius:50%;
+background:conic-gradient(rgba(255,63,159,.18),transparent 26%);
+animation:spin 2.2s linear infinite
 }
+@keyframes spin{to{transform:rotate(360deg)}}
 
-@keyframes spin{
-  to{transform:rotate(360deg)}
-}
-
-/* MATCH */
-
-.matchHead{
-  text-align:center
-}
-
-.matchHead h2{
-  font-size:29px;
-  margin:5px
-}
-
-.matchPhoto{
-  position:relative;
-  aspect-ratio:4/5;
-  border-radius:20px;
-  overflow:hidden;
-  background:#10131d
-}
-
-.matchPhoto img{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-
+.pageTitle{text-align:center;font-size:29px;margin:8px 0 18px}
+.matchPhoto{position:relative}
 .matchInfo{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:55px 14px 14px;
-  background:linear-gradient(
-    transparent,
-    rgba(0,0,0,.9)
-  )
+position:absolute;left:0;right:0;bottom:0;padding:50px 14px 14px;
+background:linear-gradient(transparent,rgba(0,0,0,.92));
+border-radius:0 0 22px 22px
 }
+.matchInfo b{font-size:23px}
+.timer{text-align:center;margin:12px 0;color:#9299aa}
+.timer strong{display:block;color:#ff5eac;font-size:22px}
+.actions{display:grid;gap:8px}
 
-.matchInfo b{
-  font-size:23px
+.friend,.chatListCard{
+display:flex;align-items:center;gap:11px;padding:11px 4px;border-bottom:1px solid #171b25
 }
-
-.matchInfo span{
-  display:block;
-  font-size:12px
+.friendMain,.chatListCard .main{flex:1;min-width:0}
+.friendMain b,.chatListCard b{display:block}
+.friendMain small,.chatListCard small{color:#7bdba0;font-size:11px}
+.friend button,.chatListCard button{
+width:40px;height:40px;border:0;border-radius:50%;background:#151925;color:#fff
 }
+.empty{text-align:center;color:#777;padding:55px 18px}
 
-.timer{
-  text-align:center;
-  margin:12px 0;
-  font-size:13px;
-  color:var(--muted)
-}
-
-.timer strong{
-  display:block;
-  color:#ff5eac;
-  font-size:22px
-}
-
-.actions{
-  display:grid;
-  gap:8px
-}
-
-/* CHAT LIST */
-
-.pageTitle{
-  text-align:center;
-  font-size:29px;
-  margin:8px 0 18px
-}
-
-.chatEmpty{
-  text-align:center;
-  color:var(--muted);
-  padding:70px 20px
-}
-
-.chatListCard{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:17px;
-  background:linear-gradient(
-    180deg,
-    #141824,
-    #0e1119
-  );
-  margin-bottom:10px
-}
-
-.chatListCard .main{
-  flex:1
-}
-
-.chatListCard b{
-  display:block;
-  font-size:15px
-}
-
-.chatListCard small{
-  color:var(--muted);
-  font-size:11px
-}
-
-/* CHAT */
-
-.chat{
-  height:calc(100vh - 160px);
-  display:flex;
-  flex-direction:column
-}
-
-.chatTop{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  border-bottom:1px solid var(--line);
-  padding-bottom:10px
-}
-
-.back{
-  width:36px;
-  height:36px;
-  border:0;
-  background:transparent;
-  color:#fff;
-  font-size:22px
-}
-
-.chatAvatar,
-.friendAvatar{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:linear-gradient(
-    135deg,
-    var(--violet),
-    var(--pink)
-  );
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  font-weight:900;
-  flex:0 0 auto
-}
-
-.chatPerson{
-  flex:1;
-  min-width:0
-}
-
-.chatPerson b{
-  display:block;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis
-}
-
-.chatPerson small{
-  color:#6cdf97
-}
-
+.chat{height:calc(100vh - 160px);display:flex;flex-direction:column}
+.chatTop{display:flex;align-items:center;gap:8px;border-bottom:1px solid #252a38;padding-bottom:10px}
+.back{width:36px;height:36px;border:0;background:transparent;color:#fff;font-size:25px}
+.chatPerson{flex:1;min-width:0}
+.chatPerson b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatPerson small{color:#6cdf97}
 .callBtn{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  border:1px solid var(--line);
-  background:#111520;
-  color:#fff;
-  display:grid;
-  place-items:center
+width:38px;height:38px;border-radius:50%;border:1px solid #252a38;background:#111520;color:#fff
 }
 
 .messages{
-  flex:1;
-  overflow:auto;
-  padding:14px 0;
-  display:flex;
-  flex-direction:column;
-  gap:10px
+flex:1;overflow:auto;padding:14px 0;display:flex;flex-direction:column;
+gap:10px;overscroll-behavior:contain
 }
-
-.msgRow{
-  display:flex;
-  align-items:flex-end;
-  gap:7px
-}
-
-.msgRow.me{
-  justify-content:flex-end
-}
-
-.miniAvatar{
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  overflow:hidden;
-  background:linear-gradient(
-    135deg,
-    var(--violet),
-    var(--pink)
-  );
-  display:grid;
-  place-items:center;
-  font-size:11px;
-  font-weight:900;
-  flex:0 0 auto
-}
-
-.bubbleWrap{
-  max-width:78%
-}
-
+.msgRow{display:flex;align-items:flex-end;gap:7px}
+.msgRow.me{justify-content:flex-end}
+.bubbleWrap{max-width:78%}
 .bubble{
-  padding:10px 12px;
-  border-radius:16px;
-  color:#fff;
-  font-size:14px;
-  line-height:1.4;
-  background:#6f49aa
+padding:10px 12px;border-radius:16px;color:#fff;font-size:14px;line-height:1.4;
+background:#6f49aa;word-break:break-word
 }
+.bubble.male{background:linear-gradient(135deg,#2f83ff,#1563d9)}
+.bubble.female{background:linear-gradient(135deg,#ff3f9f,#d82d7d)}
+.bubble.other{background:linear-gradient(135deg,#8b5cf6,#6846c7)}
+.msgMeta{text-align:right;font-size:10px;color:#9ea5b7;margin-top:3px;padding:0 4px}
+.msgTicks.read{color:#49a6ff}
 
-.bubble.male{
-  background:linear-gradient(
-    135deg,
-    #2f83ff,
-    #1563d9
-  )
+.composer{display:flex;align-items:center;gap:6px}
+.composer input{
+flex:1;min-width:0;height:48px;border-radius:13px;border:1px solid #252a38;
+background:#0d1018;color:#fff;padding:0 11px
 }
-
-.bubble.female{
-  background:linear-gradient(
-    135deg,
-    #ff3f9f,
-    #d82d7d
-  )
+.iconComposer,.send{
+width:43px;height:43px;border:0;border-radius:50%;color:#fff;flex:0 0 auto
 }
-
-.bubble.other{
-  background:linear-gradient(
-    135deg,
-    #8b5cf6,
-    #6846c7
-  )
-}
-
-.msgMeta{
-  display:flex;
-  justify-content:flex-end;
-  gap:5px;
-  align-items:center;
-  font-size:10px;
-  color:#9ea5b7;
-  margin-top:3px;
-  padding:0 4px
-}
-
-.msgTicks{
-  font-weight:900
-}
-
-.msgTicks.read{
-  color:#49a6ff
-}
-
-.voiceBubble{
-  min-width:190px
-}
-
-.voiceLine{
-  display:flex;
-  align-items:center;
-  gap:9px
-}
-
-.voicePlay{
-  width:34px;
-  height:34px;
-  border:0;
-  border-radius:50%;
-  background:rgba(255,255,255,.18);
-  color:#fff
-}
-
-.voiceProgress{
-  flex:1;
-  height:4px;
-  border-radius:999px;
-  background:rgba(255,255,255,.25)
-}
-
-.voiceDuration{
-  font-size:11px;
-  opacity:.9
-}
-
-/* EMOJI PANEL */
+.iconComposer{background:#151925}
+.send{background:#ff3f9f}
 
 .emojiPanel{
-  display:none;
-  grid-template-columns:repeat(7,1fr);
-  gap:5px;
-  padding:9px;
-  margin-bottom:8px;
-  border:1px solid var(--line);
-  border-radius:15px;
-  background:#10131d
+display:none;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px;margin-bottom:8px;
+border:1px solid #252a38;border-radius:15px;background:#10131d;
+max-height:190px;overflow:auto
 }
-
-.emojiPanel.show{
-  display:grid
-}
-
-.emojiPanel button{
-  border:0;
-  background:transparent;
-  font-size:24px;
-  min-height:38px
-}
-
-/* COMPOSER */
-
-.composer{
-  display:flex;
-  align-items:center;
-  gap:6px
-}
-
-.composer input{
-  flex:1;
-  min-width:0;
-  height:48px;
-  border-radius:13px;
-  border:1px solid var(--line);
-  background:#0d1018;
-  color:#fff;
-  padding:0 11px
-}
-
-.iconComposer{
-  width:43px;
-  height:43px;
-  border:0;
-  border-radius:50%;
-  background:#151925;
-  color:#fff;
-  flex:0 0 auto
-}
-
-.send{
-  width:45px;
-  height:45px;
-  border:0;
-  border-radius:50%;
-  background:var(--pink);
-  color:#fff;
-  flex:0 0 auto
-}
-
-/* RECORDING BAR */
+.emojiPanel.show{display:grid}
+.emojiPanel button{border:0;background:transparent;font-size:23px;min-height:36px}
 
 .recordBar{
-  display:none;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border:1px solid #67314e;
-  border-radius:14px;
-  background:#1a1018;
-  margin-bottom:8px
+display:none;align-items:center;gap:8px;padding:9px;border:1px solid #67314e;
+border-radius:13px;background:#1a1018;margin-bottom:8px
+}
+.recordBar.show{display:flex}
+.recordTime{flex:1;font-weight:900}
+.recordBar button{
+min-height:36px;border-radius:10px;border:1px solid #252a38;background:#171b26;color:#fff
 }
 
-.recordBar.show{
-  display:flex
-}
-
-.recordDot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#ff4c6b;
-  animation:recordPulse 1s infinite
-}
-
-@keyframes recordPulse{
-  50%{opacity:.35}
-}
-
-.recordTime{
-  flex:1;
-  font-weight:900
-}
-
-.recordCancel,
-.recordSend{
-  min-height:38px;
-  border-radius:10px;
-  padding:0 10px;
-  color:#fff
-}
-
-.recordCancel{
-  border:1px solid var(--line);
-  background:#171b26
-}
-
-.recordSend{
-  border:0;
-  background:var(--pink)
-}
-
-/* FRIENDS */
-
-.friend{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid #171b25
-}
-
-.friendMain{
-  flex:1
-}
-
-.friendMain b{
-  display:block;
-  font-size:15px
-}
-
-.friendMain small{
-  color:#63dc92
-}
-
-.friend button{
-  width:40px;
-  height:40px;
-  border:0;
-  border-radius:50%;
-  background:#151925;
-  color:#fff
-}
-
-/* PROFILE */
-
-.profile{
-  text-align:center
-}
-
-.photoBtns{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin:12px 0
-}
-
+.profile{text-align:center}
+.photoBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
 .photoBtns button{
-  min-height:46px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:#fff;
-  font-size:12px
+min-height:46px;border-radius:12px;border:1px solid #252a38;
+background:#10131d;color:#fff;font-size:12px
 }
-
-#saveProfile{
-  margin-top:20px
-}
-
-.menu{
-  margin-top:28px;
-  border-top:1px solid #191d28
-}
-
-.row{
-  min-height:54px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid #191d28;
-  font-size:15px
-}
-
-.row small{
-  color:#8f95a8
-}
-
-/* SETTINGS */
-
-.settingsHead{
-  position:relative
-}
-
-.settingsHead .backSquare{
-  position:absolute;
-  left:0;
-  top:-2px;
-  width:44px;
-  height:44px;
-  border-radius:13px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:#fff;
-  font-size:23px
-}
-
-.settingsSectionTitle{
-  font-size:13px;
-  color:#8e95a9;
-  font-weight:900;
-  margin:18px 0 4px
-}
-
-.toggle{
-  width:48px;
-  height:27px;
-  border-radius:999px;
-  background:#262b38;
-  position:relative;
-  transition:.2s
-}
-
-.toggle:after{
-  content:"";
-  position:absolute;
-  width:21px;
-  height:21px;
-  border-radius:50%;
-  background:#fff;
-  left:3px;
-  top:3px;
-  transition:.2s
-}
-
-.toggle.on{
-  background:linear-gradient(
-    90deg,
-    #d92d7f,
-    #ff4f9f
-  )
-}
-
-.toggle.on:after{
-  left:24px
-}
-
-.danger{
-  color:var(--danger)
-}
-
-/* BOTTOM NAV */
 
 .nav{
-  position:fixed;
-  left:50%;
-  bottom:0;
-  transform:translateX(-50%);
-  width:min(520px,100%);
-  height:72px;
-  background:rgba(5,6,10,.96);
-  border-top:1px solid #171b24;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  z-index:30
+position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+width:min(520px,100%);height:72px;background:rgba(5,6,10,.97);
+border-top:1px solid #171b24;display:grid;grid-template-columns:repeat(5,1fr);z-index:30
 }
-
-.nav button{
-  border:0;
-  background:transparent;
-  color:#777e91;
-  font-size:10px;
-  position:relative
-}
-
-.nav button b{
-  display:block;
-  font-size:20px
-}
-
-.nav button.active{
-  color:var(--pink)
-}
-
-.matchNav{
-  color:#4f5360 !important
-}
-
-.matchNav.available{
-  color:#ff5eac !important
-}
-
+.nav button{border:0;background:transparent;color:#777e91;font-size:10px;position:relative}
+.nav button b{display:block;font-size:20px}
+.nav button.active{color:#ff3f9f}
 .matchDot{
-  display:none;
-  position:absolute;
-  right:22%;
-  top:9px;
-  width:8px;
-  height:8px;
-  background:var(--pink);
-  border-radius:50%;
-  box-shadow:0 0 10px var(--pink)
+display:none;position:absolute;right:22%;top:9px;width:8px;height:8px;
+background:#ff3f9f;border-radius:50%
 }
-
-.matchNav.available .matchDot{
-  display:block
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:rgba(0,0,0,.72);
-  display:none;
-  align-items:flex-end;
-  padding:12px
-}
-
-.modal.show{
-  display:flex
-}
-
-.sheet{
-  width:100%;
-  max-width:520px;
-  margin:auto;
-  background:#11141d;
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:18px
-}
-
-.sheet h3{
-  font-size:22px;
-  margin:0 0 12px
-}
-
-.sheet p{
-  color:#c8ccd7;
-  line-height:1.55
-}
-
-.modalBtns{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:14px
-}
-
-.modalBtns button{
-  min-height:46px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#171b26;
-  color:#fff
-}
-
-.modalBtns .dangerBtn{
-  border:0;
-  background:#8e2738
-}
-
-/* HEART */
-
-.heartOverlay{
-  position:fixed;
-  inset:0;
-  z-index:150;
-  background:rgba(4,4,9,.84);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:24px;
-  backdrop-filter:blur(8px)
-}
-
-.heartOverlay.show{
-  display:flex
-}
-
-.heartBox{
-  max-width:360px
-}
-
-.bigHeart{
-  font-size:95px;
-  animation:heartPop .8s cubic-bezier(.2,.8,.2,1)
-}
-
-@keyframes heartPop{
-  0%{
-    transform:scale(.2);
-    opacity:0
-  }
-
-  55%{
-    transform:scale(1.25);
-    opacity:1
-  }
-
-  100%{
-    transform:scale(1)
-  }
-}
-
-.heartBox h2{
-  font-size:26px;
-  margin:8px 0
-}
-
-.heartBox p{
-  color:#d1d4df;
-  line-height:1.5
-}
-
-.heartChoices{
-  display:grid;
-  gap:8px;
-  margin-top:16px
-}
-
-.heartParticles{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:149;
-  overflow:hidden
-}
-
-.particle{
-  position:absolute;
-  font-size:28px;
-  animation:fly 1.6s ease-out forwards
-}
-
-@keyframes fly{
-  from{
-    transform:translateY(0) scale(.5);
-    opacity:1
-  }
-
-  to{
-    transform:translateY(-55vh) scale(1.5);
-    opacity:0
-  }
-}
-
-/* CALL SCREEN */
-
-.callOverlay{
-  position:fixed;
-  inset:0;
-  z-index:200;
-  background:#05070b;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:20px
-}
-
-.callOverlay.show{
-  display:flex
-}
-
-.callName{
-  font-size:28px;
-  font-weight:950;
-  margin-top:14px
-}
-
-.callStatus{
-  color:var(--muted);
-  margin-top:5px
-}
-
-.callAvatar{
-  width:130px;
-  height:130px;
-  border-radius:50%;
-  overflow:hidden;
-  background:linear-gradient(
-    135deg,
-    var(--violet),
-    var(--pink)
-  );
-  display:grid;
-  place-items:center;
-  font-size:44px;
-  font-weight:900
-}
-
-.callAvatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-
-.callActions{
-  display:flex;
-  gap:18px;
-  margin-top:34px
-}
-
-.callCircle{
-  width:62px;
-  height:62px;
-  border:0;
-  border-radius:50%;
-  color:#fff;
-  font-size:24px
-}
-
-.callAccept{
-  background:#20b768
-}
-
-.callReject{
-  background:#df4258
-}
-
-.callMute{
-  background:#252a38
-}
-
-.videoStage{
-  position:absolute;
-  inset:0;
-  background:#05070b;
-  display:none
-}
-
-.videoStage.show{
-  display:block
-}
-
-.remoteVideo{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-
-.localVideo{
-  position:absolute;
-  right:14px;
-  top:14px;
-  width:105px;
-  height:145px;
-  object-fit:cover;
-  border-radius:16px;
-  border:2px solid rgba(255,255,255,.35);
-  background:#111
-}
-
-.videoControls{
-  position:absolute;
-  bottom:28px;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:center;
-  gap:18px
-}
-
-/* TOAST */
+.matchNav.available{color:#ff5eac}
+.matchNav.available .matchDot{display:block}
 
 .toast{
-  position:fixed;
-  left:50%;
-  bottom:82px;
-  transform:translateX(-50%);
-  background:#1a1e28;
-  border:1px solid #303647;
-  padding:10px 13px;
-  border-radius:12px;
-  opacity:0;
-  transition:.2s;
-  z-index:250
+position:fixed;left:50%;bottom:82px;transform:translateX(-50%);
+background:#1a1e28;border:1px solid #303647;padding:10px 13px;border-radius:12px;
+opacity:0;transition:.2s;z-index:300;max-width:90%;text-align:center
 }
+.toast.show{opacity:1}
 
-.toast.show{
-  opacity:1
+.callOverlay,.videoStage{
+position:fixed;inset:0;z-index:200;background:#05070b;display:none
+}
+.callOverlay.show{
+display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px
+}
+.callAvatar{width:130px;height:130px;font-size:44px}
+.callName{font-size:28px;font-weight:950;margin-top:14px}
+.callStatus{color:#9299aa;margin-top:5px}
+.callActions{display:flex;gap:18px;margin-top:34px}
+.callCircle{width:62px;height:62px;border:0;border-radius:50%;color:#fff;font-size:24px}
+.accept{background:#20b768}
+.reject{background:#df4258}
+.mute{background:#252a38}
+.videoStage.show{display:block}
+.remoteVideo{width:100%;height:100%;object-fit:cover}
+.localVideo{
+position:absolute;right:14px;top:14px;width:105px;height:145px;
+object-fit:cover;border-radius:16px;border:2px solid rgba(255,255,255,.35);background:#111
+}
+.videoControls{
+position:absolute;bottom:28px;left:0;right:0;display:flex;justify-content:center;gap:18px
 }
 </style>
 </head>
@@ -1291,1213 +237,385 @@ button{
 <div class="app">
 
 <header class="top" id="top">
-
-  <div class="brand">
-    Snap<span>Vibe</span> ♡
-  </div>
-
-  <div
-    class="status"
-    id="statusText"
-    data-i18n="online"
-  >
-    Онлайн
-  </div>
-
+<div class="brand">Snap<span>Vibe</span> ♡</div>
+<div class="status off" id="statusText">Офлайн</div>
 </header>
 
+<section class="view" id="registerView">
+<div class="register">
+<h1>Snap<span>Vibe</span></h1>
+<p>Создай профиль, чтобы находить людей на твоей волне.</p>
+<div class="avatar">🙂</div>
+</div>
 
-<section
-  class="view"
-  id="registerView"
->
+<div class="field">
+<label>Имя</label>
+<input id="regName" maxlength="30">
+</div>
 
-  <div class="register">
+<div class="grid2">
+<div class="field">
+<label>Возраст</label>
+<input id="regAge" type="number" min="18" max="99">
+</div>
 
-    <h1>
-      Snap<span>Vibe</span>
-    </h1>
+<div class="field">
+<label>Пол</label>
+<select id="regGender">
+<option value="male">Мужской</option>
+<option value="female">Женский</option>
+<option value="other">Другой</option>
+</select>
+</div>
+</div>
 
-    <p data-i18n="registerSubtitle">
-      Создай профиль, чтобы находить людей на твоей волне.
-    </p>
+<div class="field">
+<label>Страна</label>
+<input id="regCountry" maxlength="10" value="EE">
+</div>
 
-    <div class="avatarRing">
-      🙂
-    </div>
-
-  </div>
-
-  <div class="field">
-    <label data-i18n="name">
-      Имя
-    </label>
-
-    <input
-      id="regName"
-      maxlength="30"
-    >
-  </div>
-
-  <div class="grid2">
-
-    <div class="field">
-
-      <label data-i18n="age">
-        Возраст
-      </label>
-
-      <input
-        id="regAge"
-        type="number"
-        min="18"
-        max="99"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label data-i18n="gender">
-        Пол
-      </label>
-
-      <select id="regGender">
-
-        <option
-          value="male"
-          data-i18n="male"
-        >
-          Мужской
-        </option>
-
-        <option
-          value="female"
-          data-i18n="female"
-        >
-          Женский
-        </option>
-
-        <option
-          value="other"
-          data-i18n="other"
-        >
-          Другой
-        </option>
-
-      </select>
-
-    </div>
-
-  </div>
-
-  <div class="field">
-
-    <label data-i18n="country">
-      Страна
-    </label>
-
-    <select id="regCountry"></select>
-
-  </div>
-
-  <button
-    class="primary"
-    id="finishRegister"
-    style="margin-top:18px"
-    data-i18n="continue"
-  >
-    Продолжить
-  </button>
-
+<button class="primary" id="finishRegister" style="margin-top:18px">
+Продолжить
+</button>
 </section>
 
+<section class="view" id="cameraView">
+<div class="camera">
+<video id="video" autoplay playsinline muted></video>
+<div class="fallback" id="fallback">📸</div>
 
-<section
-  class="view"
-  id="cameraView"
->
+<div class="panel">
+<h3>Покажи свою эмоцию</h3>
 
-  <div class="camera">
+<div class="emotions">
+<button class="emotion selected" data-emotion="happy">
+<span class="circle">😊</span><small>Радость</small>
+</button>
 
-    <video
-      id="video"
-      autoplay
-      playsinline
-      muted
-    ></video>
+<button class="emotion" data-emotion="angry">
+<span class="circle">😠</span><small>Злость</small>
+</button>
 
-    <div
-      class="fallback"
-      id="fallback"
-    >
-      📸
-    </div>
+<button class="emotion" data-emotion="sad">
+<span class="circle">😢</span><small>Грусть</small>
+</button>
 
-    <div class="panel">
+<button class="emotion" data-emotion="fun">
+<span class="circle">🤩</span><small>Веселье</small>
+</button>
 
-      <h3 data-i18n="showEmotion">
-        Покажи свою эмоцию
-      </h3>
+<button class="emotion" data-emotion="calm">
+<span class="circle">😌</span><small>Спокойствие</small>
+</button>
+</div>
 
-      <div class="emotions">
-
-        <button
-          class="emotion selected"
-          data-emotion="happy"
-        >
-          <span class="circle">😊</span>
-          <small data-i18n="happy">Радость</small>
-        </button>
-
-        <button
-          class="emotion"
-          data-emotion="angry"
-        >
-          <span class="circle">😠</span>
-          <small data-i18n="angry">Злость</small>
-        </button>
-
-        <button
-          class="emotion"
-          data-emotion="sad"
-        >
-          <span class="circle">😢</span>
-          <small data-i18n="sad">Грусть</small>
-        </button>
-
-        <button
-          class="emotion"
-          data-emotion="fun"
-        >
-          <span class="circle">🤩</span>
-          <small data-i18n="fun">Веселье</small>
-        </button>
-
-        <button
-          class="emotion"
-          data-emotion="calm"
-        >
-          <span class="circle">😌</span>
-          <small data-i18n="calm">Спокойствие</small>
-        </button>
-
-      </div>
-
-      <button
-        class="shutter"
-        id="capture"
-      ></button>
-
-    </div>
-
-  </div>
-
+<button class="shutter" id="capture"></button>
+</div>
+</div>
 </section>
 
+<section class="view" id="photoPreviewView">
+<h1 class="pageTitle">Нравится фото?</h1>
+<p style="text-align:center;color:#9299aa">
+Можно переснять перед поиском.
+</p>
 
-<section
-  class="view"
-  id="photoPreviewView"
->
+<img class="previewPhoto" id="previewPhoto">
 
-  <h1
-    class="previewTitle"
-    data-i18n="likePhoto"
-  >
-    Нравится фото?
-  </h1>
-
-  <p
-    class="previewSub"
-    data-i18n="retakeHint"
-  >
-    Ты можешь переснять его перед поиском.
-  </p>
-
-  <img
-    class="previewPhoto"
-    id="previewPhoto"
-    alt=""
-  >
-
-  <div class="previewActions">
-
-    <button
-      class="secondary"
-      id="retakePhoto"
-      data-i18n="retake"
-    >
-      ↻ Переснять
-    </button>
-
-    <button
-      class="primary"
-      id="usePhoto"
-      data-i18n="usePhoto"
-    >
-      Использовать фото
-    </button>
-
-  </div>
-
+<div class="previewActions">
+<button class="secondary" id="retakePhoto">↻ Переснять</button>
+<button class="primary" id="usePhoto">Использовать фото</button>
+</div>
 </section>
 
+<section class="view" id="searchView">
+<div class="center">
+<h2>Ищем того, кто чувствует то же самое...</h2>
 
-<section
-  class="view"
-  id="searchView"
->
+<div class="radar">
+<div class="sweep"></div>
+</div>
 
-  <div class="search">
+<div>
+Время поиска:
+<strong id="searchSeconds">0 сек</strong>
+</div>
 
-    <h2 data-i18n="searchingMatch">
-      Ищем того, кто чувствует то же самое...
-    </h2>
-
-    <div class="radar">
-      <div class="sweep"></div>
-      <div class="heart">💗</div>
-    </div>
-
-    <div>
-
-      <span data-i18n="searchTime">
-        Время поиска:
-      </span>
-
-      <strong id="searchSeconds">
-        0 сек
-      </strong>
-
-    </div>
-
-    <button
-      class="secondary"
-      id="cancelSearch"
-      style="margin-top:18px"
-      data-i18n="cancel"
-    >
-      Отмена
-    </button>
-
-  </div>
-
+<button class="secondary" id="cancelSearch" style="margin-top:18px">
+Отмена
+</button>
+</div>
 </section>
 
+<section class="view" id="matchView">
+<h1 class="pageTitle">Это мэтч! 💕</h1>
 
-<section
-  class="view"
-  id="matchView"
->
+<div class="matchPhoto">
+<img id="matchPhoto">
 
-  <div class="matchHead">
+<div class="matchInfo">
+<b id="matchName"></b>
+<div id="matchMeta"></div>
+</div>
+</div>
 
-    <h2 data-i18n="matchTitle">
-      Это мэтч! 💕
-    </h2>
+<div class="timer">
+Время общения:
+<strong id="countdown">24:00:00</strong>
+</div>
 
-    <p data-i18n="sameEmotion">
-      Вы поймали одинаковую эмоцию
-    </p>
-
-  </div>
-
-  <div class="matchPhoto">
-
-    <img id="matchPhoto">
-
-    <div class="matchInfo">
-
-      <b id="matchName"></b>
-
-      <span id="matchMeta"></span>
-
-    </div>
-
-  </div>
-
-  <div class="timer">
-
-    <span data-i18n="chatTime">
-      Время общения:
-    </span>
-
-    <strong id="countdown">
-      24:00:00
-    </strong>
-
-  </div>
-
-  <div class="actions">
-
-    <button
-      class="primary"
-      id="openMatchChat"
-      data-i18n="openChat"
-    >
-      Открыть чат
-    </button>
-
-    <button
-      class="action"
-      id="keepVibe"
-      data-i18n="keepConnection"
-    >
-      Сохранить связь 💗
-    </button>
-
-    <button
-      class="secondary"
-      id="newMatch"
-      data-i18n="nextMatch"
-    >
-      Следующий мэтч ↻
-    </button>
-
-  </div>
-
+<div class="actions">
+<button class="primary" id="openMatchChat">Открыть чат</button>
+<button class="action" id="keepVibe">Сохранить связь 💗</button>
+<button class="secondary" id="newMatch">Следующий мэтч ↻</button>
+</div>
 </section>
 
-
-<section
-  class="view"
-  id="chatsView"
->
-
-  <h1
-    class="pageTitle"
-    data-i18n="chats"
-  >
-    Чаты
-  </h1>
-
-  <div id="chatFriendList"></div>
-
+<section class="view" id="chatsView">
+<h1 class="pageTitle">Чаты</h1>
+<div id="chatFriendList"></div>
 </section>
 
+<section class="view" id="chatView">
+<div class="chat">
 
-<section
-  class="view"
-  id="chatView"
+<div class="chatTop">
+<button class="back" id="chatBack">‹</button>
+
+<div class="chatAvatar" id="chatAvatar">S</div>
+
+<div class="chatPerson">
+<b id="chatName">SnapVibe</b>
+<small>Онлайн</small>
+</div>
+
+<button class="callBtn" id="audioCallBtn">📞</button>
+<button class="callBtn" id="videoCallBtn">📹</button>
+</div>
+
+<div class="messages" id="messages"></div>
+
+<div class="recordBar" id="recordBar">
+<span>🔴</span>
+<span class="recordTime" id="recordTime">0:00</span>
+<button id="recordCancel">Отмена</button>
+<button id="recordSend">Отправить</button>
+</div>
+
+<div class="emojiPanel" id="emojiPanel"></div>
+
+<div class="composer">
+<button class="iconComposer" id="emojiBtn">😊</button>
+
+<input
+id="messageInput"
+maxlength="1000"
+placeholder="Напиши сообщение..."
 >
 
-  <div class="chat">
+<button class="iconComposer" id="voiceBtn">🎤</button>
+<button class="send" id="sendMessage">➤</button>
+</div>
 
-    <div class="chatTop">
-
-      <button
-        class="back"
-        id="chatBack"
-      >
-        ‹
-      </button>
-
-      <div
-        class="chatAvatar"
-        id="chatAvatar"
-      >
-        S
-      </div>
-
-      <div class="chatPerson">
-
-        <b id="chatName">
-          SnapVibe
-        </b>
-
-        <small data-i18n="online">
-          Онлайн
-        </small>
-
-      </div>
-
-      <button
-        class="callBtn"
-        id="audioCallBtn"
-        title="Audio"
-      >
-        📞
-      </button>
-
-      <button
-        class="callBtn"
-        id="videoCallBtn"
-        title="Video"
-      >
-        📹
-      </button>
-
-    </div>
-
-
-    <div
-      class="messages"
-      id="messages"
-    ></div>
-
-
-    <div
-      class="recordBar"
-      id="recordBar"
-    >
-
-      <span class="recordDot"></span>
-
-      <span
-        class="recordTime"
-        id="recordTime"
-      >
-        0:00
-      </span>
-
-      <button
-        class="recordCancel"
-        id="recordCancel"
-        data-i18n="cancel"
-      >
-        Отмена
-      </button>
-
-      <button
-        class="recordSend"
-        id="recordSend"
-        data-i18n="send"
-      >
-        Отправить
-      </button>
-
-    </div>
-
-
-    <div
-      class="emojiPanel"
-      id="emojiPanel"
-    ></div>
-
-
-    <div class="composer">
-
-      <button
-        class="iconComposer"
-        id="emojiBtn"
-      >
-        😊
-      </button>
-
-      <input
-        id="messageInput"
-        maxlength="1000"
-        data-i18n-placeholder="messagePlaceholder"
-        placeholder="Напиши сообщение..."
-      >
-
-      <button
-        class="iconComposer"
-        id="voiceBtn"
-      >
-        🎤
-      </button>
-
-      <button
-        class="send"
-        id="sendMessage"
-      >
-        ➤
-      </button>
-
-    </div>
-
-    <button
-      class="action"
-      id="keepVibeChat"
-      style="margin-top:8px"
-      data-i18n="keepConnection"
-    >
-      Сохранить связь 💗
-    </button>
-
-  </div>
-
-  </section>
-  <section
-  class="view"
-  id="friendsView"
+<button
+class="action"
+id="keepVibeChat"
+style="margin-top:8px;display:none"
 >
+Сохранить связь 💗
+</button>
 
-  <h1
-    class="pageTitle"
-    data-i18n="friends"
-  >
-    Друзья
-  </h1>
-
-  <div id="friendList"></div>
-
+</div>
 </section>
 
-
-<section
-  class="view"
-  id="profileView"
->
-
-  <div class="profile">
-
-    <div
-      class="profileAvatar"
-      id="profileAvatar"
-    >
-      S
-    </div>
-
-    <h2 id="profileNameTitle"></h2>
-
-    <p id="profileMeta"></p>
-
-  </div>
-
-
-  <div class="photoBtns">
-
-    <button
-      id="takeAvatar"
-      data-i18n="addPhoto"
-    >
-      📷 Добавить фото
-    </button>
-
-    <button
-      id="chooseAvatar"
-      data-i18n="gallery"
-    >
-      🖼 Галерея
-    </button>
-
-    <button
-      id="removeAvatar"
-      data-i18n="remove"
-    >
-      ✕ Удалить
-    </button>
-
-  </div>
-
-
-  <input
-    type="file"
-    id="cameraAvatarInput"
-    accept="image/*"
-    capture="user"
-    hidden
-  >
-
-  <input
-    type="file"
-    id="galleryAvatarInput"
-    accept="image/*"
-    hidden
-  >
-
-
-  <div class="field">
-
-    <label data-i18n="name">
-      Имя
-    </label>
-
-    <input
-      id="editName"
-      maxlength="30"
-    >
-
-  </div>
-
-
-  <div class="grid2">
-
-    <div class="field">
-
-      <label data-i18n="age">
-        Возраст
-      </label>
-
-      <input
-        id="editAge"
-        type="number"
-        min="18"
-        max="99"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label data-i18n="gender">
-        Пол
-      </label>
-
-      <select id="editGender">
-
-        <option
-          value="male"
-          data-i18n="male"
-        >
-          Мужской
-        </option>
-
-        <option
-          value="female"
-          data-i18n="female"
-        >
-          Женский
-        </option>
-
-        <option
-          value="other"
-          data-i18n="other"
-        >
-          Другой
-        </option>
-
-      </select>
-
-    </div>
-
-  </div>
-
-
-  <div class="field">
-
-    <label data-i18n="country">
-      Страна
-    </label>
-
-    <select id="editCountry"></select>
-
-  </div>
-
-
-  <button
-    class="primary"
-    id="saveProfile"
-    data-i18n="saveProfile"
-  >
-    Сохранить профиль
-  </button>
-
-
-  <div class="menu">
-
-    <div
-      class="row"
-      id="searchSettings"
-    >
-
-      <span data-i18n="searchSettings">
-        ⚙ Настройки поиска
-      </span>
-
-      <span>›</span>
-
-    </div>
-
-
-    <div
-      class="row"
-      id="languageSettings"
-    >
-
-      <span data-i18n="language">
-        🌐 Язык
-      </span>
-
-      <small id="languageLabel">
-        Русский ›
-      </small>
-
-    </div>
-
-
-    <div
-      class="row"
-      id="profileSafety"
-    >
-
-      <span data-i18n="security">
-        ◇ Безопасность
-      </span>
-
-      <span>›</span>
-
-    </div>
-
-  </div>
-
+<section class="view" id="friendsView">
+<h1 class="pageTitle">Друзья</h1>
+<div id="friendList"></div>
 </section>
 
+<section class="view" id="profileView">
 
-<section
-  class="view"
-  id="settingsView"
+<div class="profile">
+<div class="profileAvatar" id="profileAvatar">S</div>
+<h2 id="profileNameTitle"></h2>
+<p id="profileMeta" style="color:#9299aa"></p>
+</div>
+
+<div class="photoBtns">
+<button id="takeAvatar">📷 Фото</button>
+<button id="chooseAvatar">🖼 Галерея</button>
+<button id="removeAvatar">✕ Удалить</button>
+</div>
+
+<input
+type="file"
+id="cameraAvatarInput"
+accept="image/*"
+capture="user"
+hidden
 >
 
-  <div class="settingsHead">
+<input
+type="file"
+id="galleryAvatarInput"
+accept="image/*"
+hidden
+>
 
-    <button
-      class="backSquare"
-      id="settingsBack"
-    >
-      ‹
-    </button>
+<div class="field">
+<label>Имя</label>
+<input id="editName" maxlength="30">
+</div>
 
-    <h1
-      class="pageTitle"
-      data-i18n="settings"
-    >
-      Настройки
-    </h1>
+<div class="grid2">
 
-  </div>
+<div class="field">
+<label>Возраст</label>
+<input id="editAge" type="number" min="18" max="99">
+</div>
 
+<div class="field">
+<label>Пол</label>
 
-  <div
-    class="settingsSectionTitle"
-    data-i18n="whoToShow"
-  >
-    Кого показывать
-  </div>
+<select id="editGender">
+<option value="male">Мужской</option>
+<option value="female">Женский</option>
+<option value="other">Другой</option>
+</select>
+</div>
 
+</div>
 
-  <div
-    class="row"
-    id="setGender"
-  >
+<div class="field">
+<label>Страна</label>
+<input id="editCountry" maxlength="10">
+</div>
 
-    <span data-i18n="gender">
-      Пол
-    </span>
+<button
+class="primary"
+id="saveProfile"
+style="margin-top:18px"
+>
+Сохранить профиль
+</button>
 
-    <small id="genderLabel">
-      Девушек ›
-    </small>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="setAge"
-  >
-
-    <span data-i18n="age">
-      Возраст
-    </span>
-
-    <small id="ageLabel">
-      18 — 35 ›
-    </small>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="setCountry"
-  >
-
-    <span data-i18n="country">
-      Страна
-    </span>
-
-    <small id="countryLabel">
-      Все страны ›
-    </small>
-
-  </div>
-
-
-  <div
-    class="settingsSectionTitle"
-    data-i18n="appSettings"
-  >
-    Приложение
-  </div>
-
-
-  <div
-    class="row"
-    id="notificationsRow"
-  >
-
-    <span data-i18n="notifications">
-      Уведомления
-    </span>
-
-    <div
-      class="toggle"
-      id="notificationsToggle"
-    ></div>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="privacyRow"
-  >
-
-    <span data-i18n="privacy">
-      Конфиденциальность
-    </span>
-
-    <small>›</small>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="blockedRow"
-  >
-
-    <span data-i18n="blocked">
-      Заблокированные
-    </span>
-
-    <small>›</small>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="securityRow"
-  >
-
-    <span data-i18n="security">
-      Безопасность
-    </span>
-
-    <small>›</small>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="rulesRow"
-  >
-
-    <span data-i18n="rules">
-      Правила сообщества
-    </span>
-
-    <small>›</small>
-
-  </div>
-
-
-  <div
-    class="row"
-    id="policyRow"
-  >
-
-    <span data-i18n="policy">
-      Политика конфиденциальности
-    </span>
-
-    <small>›</small>
-
-  </div>
-
-
-  <div
-    class="row danger"
-    id="deleteRow"
-  >
-
-    <span data-i18n="deleteAccount">
-      Удалить аккаунт
-    </span>
-
-    <small>›</small>
-
-  </div>
+<button
+class="secondary"
+id="enableNotifications"
+style="margin-top:10px"
+>
+🔔 Включить уведомления
+</button>
 
 </section>
 
 </div>
 
+<nav class="nav" id="nav">
 
-<nav
-  class="nav"
-  id="nav"
->
+<button class="navBtn active" data-view="cameraView">
+<b>📷</b>Vibe
+</button>
 
-  <button
-    class="navBtn active"
-    data-view="cameraView"
-  >
-    <b>📷</b>
-    <span data-i18n="vibe">
-      Vibe
-    </span>
-  </button>
+<button class="matchNav" id="matchNav">
+<span class="matchDot"></span>
+<b>💞</b>Мэтч
+</button>
 
+<button class="navBtn" data-view="chatsView">
+<b>💬</b>Чаты
+</button>
 
-  <button
-    class="matchNav"
-    id="matchNav"
-  >
+<button class="navBtn" data-view="friendsView">
+<b>👥</b>Друзья
+</button>
 
-    <span class="matchDot"></span>
-
-    <b>💞</b>
-
-    <span data-i18n="match">
-      Мэтч
-    </span>
-
-  </button>
-
-
-  <button
-    class="navBtn"
-    data-view="chatsView"
-  >
-    <b>💬</b>
-
-    <span data-i18n="chats">
-      Чаты
-    </span>
-  </button>
-
-
-  <button
-    class="navBtn"
-    data-view="friendsView"
-  >
-    <b>👥</b>
-
-    <span data-i18n="friends">
-      Друзья
-    </span>
-  </button>
-
-
-  <button
-    class="navBtn"
-    data-view="profileView"
-  >
-    <b>👤</b>
-
-    <span data-i18n="profile">
-      Профиль
-    </span>
-  </button>
+<button class="navBtn" data-view="profileView">
+<b>👤</b>Профиль
+</button>
 
 </nav>
 
+<div class="toast" id="toast"></div>
 
-<div
-  class="modal"
-  id="modal"
->
+<div class="callOverlay" id="callOverlay">
 
-  <div class="sheet">
+<div class="callAvatar" id="callAvatar">S</div>
 
-    <h3 id="modalTitle"></h3>
+<div class="callName" id="callName">
+SnapVibe
+</div>
 
-    <div id="modalBody"></div>
+<div class="callStatus" id="callStatus">
+Звонок...
+</div>
 
-    <div class="modalBtns">
+<div class="callActions" id="incomingCallActions">
 
-      <button
-        id="modalCancel"
-        data-i18n="close"
-      >
-        Закрыть
-      </button>
+<button class="callCircle accept" id="acceptCall">
+✓
+</button>
 
-      <button
-        id="modalSave"
-        data-i18n="save"
-      >
-        Сохранить
-      </button>
-
-    </div>
-
-  </div>
+<button class="callCircle reject" id="rejectCall">
+✕
+</button>
 
 </div>
 
-
 <div
-  class="heartParticles"
-  id="heartParticles"
-></div>
-
-
-<div
-  class="heartOverlay"
-  id="heartOverlay"
+class="callActions"
+id="activeCallActions"
+style="display:none"
 >
 
-  <div class="heartBox">
+<button class="callCircle mute" id="muteCall">
+🎙
+</button>
 
-    <div class="bigHeart">
-      💗
-    </div>
-
-    <h2 id="heartTitle"></h2>
-
-    <p id="heartText"></p>
-
-    <div
-      class="heartChoices"
-      id="heartChoices"
-    ></div>
-
-  </div>
+<button class="callCircle reject" id="endCall">
+☎
+</button>
 
 </div>
 
+</div>
 
-<div
-  class="callOverlay"
-  id="callOverlay"
->
+<div class="videoStage" id="videoStage">
 
-  <div
-    class="callAvatar"
-    id="callAvatar"
-  >
-    S
-  </div>
+<video
+id="remoteVideo"
+class="remoteVideo"
+autoplay
+playsinline
+></video>
 
-  <div
-    class="callName"
-    id="callName"
-  >
-    SnapVibe
-  </div>
+<video
+id="localVideo"
+class="localVideo"
+autoplay
+muted
+playsinline
+></video>
 
-  <div
-    class="callStatus"
-    id="callStatus"
-  >
-    Звонок...
-  </div>
+<div class="videoControls">
 
+<button class="callCircle mute" id="videoMute">
+🎙
+</button>
 
-  <div
-    class="callActions"
-    id="incomingCallActions"
-  >
+<button class="callCircle mute" id="switchCamera">
+🔄
+</button>
 
-    <button
-      class="callCircle callAccept"
-      id="acceptCall"
-    >
-      ✓
-    </button>
-
-    <button
-      class="callCircle callReject"
-      id="rejectCall"
-    >
-      ✕
-    </button>
-
-  </div>
-
-
-  <div
-    class="callActions"
-    id="activeCallActions"
-    style="display:none"
-  >
-
-    <button
-      class="callCircle callMute"
-      id="muteCall"
-    >
-      🎙
-    </button>
-
-    <button
-      class="callCircle callReject"
-      id="endCall"
-    >
-      ☎
-    </button>
-
-  </div>
+<button class="callCircle reject" id="videoEnd">
+☎
+</button>
 
 </div>
 
-
-<div
-  class="videoStage"
-  id="videoStage"
->
-
-  <video
-    id="remoteVideo"
-    class="remoteVideo"
-    autoplay
-    playsinline
-  ></video>
-
-  <video
-    id="localVideo"
-    class="localVideo"
-    autoplay
-    muted
-    playsinline
-  ></video>
-
-  <div class="videoControls">
-
-    <button
-      class="callCircle callMute"
-      id="videoMute"
-    >
-      🎙
-    </button>
-
-    <button
-      class="callCircle callMute"
-      id="switchCamera"
-    >
-      🔄
-    </button>
-
-    <button
-      class="callCircle callReject"
-      id="videoEnd"
-    >
-      ☎
-    </button>
-
-  </div>
-
 </div>
 
-
-<div
-  class="toast"
-  id="toast"
-></div>
-
-
-<audio
-  id="remoteAudio"
-  autoplay
-></audio>
-
+<audio id="remoteAudio" autoplay></audio>
 
 <script>
 "use strict";
@@ -2506,605 +624,66 @@ const $ =
   id =>
     document.getElementById(id);
 
-
-/* LANGUAGES */
-
-const I18N = {
-
-  ru:{
-    online:"Онлайн",
-    registerSubtitle:"Создай профиль, чтобы находить людей на твоей волне.",
-    name:"Имя",
-    age:"Возраст",
-    gender:"Пол",
-    male:"Мужской",
-    female:"Женский",
-    other:"Другой",
-    country:"Страна",
-    continue:"Продолжить",
-    showEmotion:"Покажи свою эмоцию",
-    happy:"Радость",
-    angry:"Злость",
-    sad:"Грусть",
-    fun:"Веселье",
-    calm:"Спокойствие",
-    likePhoto:"Нравится фото?",
-    retakeHint:"Ты можешь переснять его перед поиском.",
-    retake:"↻ Переснять",
-    usePhoto:"Использовать фото",
-    searchingMatch:"Ищем того, кто чувствует то же самое...",
-    searchTime:"Время поиска:",
-    cancel:"Отмена",
-    matchTitle:"Это мэтч! 💕",
-    sameEmotion:"Вы поймали одинаковую эмоцию",
-    chatTime:"Время общения:",
-    openChat:"Открыть чат",
-    keepConnection:"Сохранить связь 💗",
-    nextMatch:"Следующий мэтч ↻",
-    chats:"Чаты",
-    friends:"Друзья",
-    profile:"Профиль",
-    messagePlaceholder:"Напиши сообщение...",
-    send:"Отправить",
-    addPhoto:"📷 Добавить фото",
-    gallery:"🖼 Галерея",
-    remove:"✕ Удалить",
-    saveProfile:"Сохранить профиль",
-    searchSettings:"⚙ Настройки поиска",
-    language:"🌐 Язык",
-    security:"◇ Безопасность",
-    settings:"Настройки",
-    whoToShow:"Кого показывать",
-    appSettings:"Приложение",
-    notifications:"Уведомления",
-    privacy:"Конфиденциальность",
-    blocked:"Заблокированные",
-    rules:"Правила сообщества",
-    policy:"Политика конфиденциальности",
-    deleteAccount:"Удалить аккаунт",
-    vibe:"Vibe",
-    match:"Мэтч",
-    close:"Закрыть",
-    save:"Сохранить"
-  },
-
-  en:{
-    online:"Online",
-    registerSubtitle:"Create a profile to find people on your wavelength.",
-    name:"Name",
-    age:"Age",
-    gender:"Gender",
-    male:"Male",
-    female:"Female",
-    other:"Other",
-    country:"Country",
-    continue:"Continue",
-    showEmotion:"Show your emotion",
-    happy:"Happy",
-    angry:"Angry",
-    sad:"Sad",
-    fun:"Fun",
-    calm:"Calm",
-    likePhoto:"Like the photo?",
-    retakeHint:"You can retake it before searching.",
-    retake:"↻ Retake",
-    usePhoto:"Use photo",
-    searchingMatch:"Looking for someone who feels the same...",
-    searchTime:"Search time:",
-    cancel:"Cancel",
-    matchTitle:"It's a Match! 💕",
-    sameEmotion:"You caught the same emotion",
-    chatTime:"Chat time:",
-    openChat:"Open chat",
-    keepConnection:"Keep the Vibe 💗",
-    nextMatch:"Next match ↻",
-    chats:"Chats",
-    friends:"Friends",
-    profile:"Profile",
-    messagePlaceholder:"Write a message...",
-    send:"Send",
-    addPhoto:"📷 Add photo",
-    gallery:"🖼 Gallery",
-    remove:"✕ Remove",
-    saveProfile:"Save profile",
-    searchSettings:"⚙ Search settings",
-    language:"🌐 Language",
-    security:"◇ Safety",
-    settings:"Settings",
-    whoToShow:"Who to show",
-    appSettings:"Application",
-    notifications:"Notifications",
-    privacy:"Privacy",
-    blocked:"Blocked",
-    rules:"Community rules",
-    policy:"Privacy policy",
-    deleteAccount:"Delete account",
-    vibe:"Vibe",
-    match:"Match",
-    close:"Close",
-    save:"Save"
-  },
-
-  et:{
-    online:"Võrgus",
-    registerSubtitle:"Loo profiil, et leida inimesi samal lainel.",
-    name:"Nimi",
-    age:"Vanus",
-    gender:"Sugu",
-    male:"Mees",
-    female:"Naine",
-    other:"Muu",
-    country:"Riik",
-    continue:"Jätka",
-    showEmotion:"Näita oma emotsiooni",
-    happy:"Rõõm",
-    angry:"Viha",
-    sad:"Kurbus",
-    fun:"Lõbu",
-    calm:"Rahu",
-    likePhoto:"Kas foto meeldib?",
-    retakeHint:"Enne otsimist saad foto uuesti teha.",
-    retake:"↻ Tee uuesti",
-    usePhoto:"Kasuta fotot",
-    searchingMatch:"Otsime kedagi, kes tunneb sama...",
-    searchTime:"Otsingu aeg:",
-    cancel:"Tühista",
-    matchTitle:"See on vaste! 💕",
-    sameEmotion:"Te tabasite sama emotsiooni",
-    chatTime:"Vestluse aeg:",
-    openChat:"Ava vestlus",
-    keepConnection:"Hoia ühendust 💗",
-    nextMatch:"Järgmine vaste ↻",
-    chats:"Vestlused",
-    friends:"Sõbrad",
-    profile:"Profiil",
-    messagePlaceholder:"Kirjuta sõnum...",
-    send:"Saada",
-    addPhoto:"📷 Lisa foto",
-    gallery:"🖼 Galerii",
-    remove:"✕ Eemalda",
-    saveProfile:"Salvesta profiil",
-    searchSettings:"⚙ Otsingu seaded",
-    language:"🌐 Keel",
-    security:"◇ Turvalisus",
-    settings:"Seaded",
-    whoToShow:"Keda näidata",
-    appSettings:"Rakendus",
-    notifications:"Teavitused",
-    privacy:"Privaatsus",
-    blocked:"Blokeeritud",
-    rules:"Kogukonna reeglid",
-    policy:"Privaatsuspoliitika",
-    deleteAccount:"Kustuta konto",
-    vibe:"Vibe",
-    match:"Vaste",
-    close:"Sulge",
-    save:"Salvesta"
-  },
-
-  uk:{
-    online:"Онлайн",
-    registerSubtitle:"Створи профіль, щоб знаходити людей на своїй хвилі.",
-    name:"Ім’я",
-    age:"Вік",
-    gender:"Стать",
-    male:"Чоловіча",
-    female:"Жіноча",
-    other:"Інша",
-    country:"Країна",
-    continue:"Продовжити",
-    showEmotion:"Покажи свою емоцію",
-    happy:"Радість",
-    angry:"Злість",
-    sad:"Сум",
-    fun:"Веселощі",
-    calm:"Спокій",
-    likePhoto:"Подобається фото?",
-    retakeHint:"Можеш перезняти його перед пошуком.",
-    retake:"↻ Перезняти",
-    usePhoto:"Використати фото",
-    searchingMatch:"Шукаємо того, хто відчуває те саме...",
-    searchTime:"Час пошуку:",
-    cancel:"Скасувати",
-    matchTitle:"Це метч! 💕",
-    sameEmotion:"Ви зловили однакову емоцію",
-    chatTime:"Час спілкування:",
-    openChat:"Відкрити чат",
-    keepConnection:"Зберегти зв’язок 💗",
-    nextMatch:"Наступний метч ↻",
-    chats:"Чати",
-    friends:"Друзі",
-    profile:"Профіль",
-    messagePlaceholder:"Напиши повідомлення...",
-    send:"Надіслати",
-    addPhoto:"📷 Додати фото",
-    gallery:"🖼 Галерея",
-    remove:"✕ Видалити",
-    saveProfile:"Зберегти профіль",
-    searchSettings:"⚙ Налаштування пошуку",
-    language:"🌐 Мова",
-    security:"◇ Безпека",
-    settings:"Налаштування",
-    whoToShow:"Кого показувати",
-    appSettings:"Застосунок",
-    notifications:"Сповіщення",
-    privacy:"Конфіденційність",
-    blocked:"Заблоковані",
-    rules:"Правила спільноти",
-    policy:"Політика конфіденційності",
-    deleteAccount:"Видалити акаунт",
-    vibe:"Vibe",
-    match:"Метч",
-    close:"Закрити",
-    save:"Зберегти"
-  },
-
-  de:{
-    online:"Online",
-    registerSubtitle:"Erstelle ein Profil, um Menschen auf deiner Wellenlänge zu finden.",
-    name:"Name",
-    age:"Alter",
-    gender:"Geschlecht",
-    male:"Männlich",
-    female:"Weiblich",
-    other:"Andere",
-    country:"Land",
-    continue:"Weiter",
-    showEmotion:"Zeige deine Emotion",
-    happy:"Freude",
-    angry:"Wut",
-    sad:"Traurig",
-    fun:"Spaß",
-    calm:"Ruhe",
-    likePhoto:"Gefällt dir das Foto?",
-    retakeHint:"Du kannst es vor der Suche neu aufnehmen.",
-    retake:"↻ Neu aufnehmen",
-    usePhoto:"Foto verwenden",
-    searchingMatch:"Wir suchen jemanden, der dasselbe fühlt...",
-    searchTime:"Suchzeit:",
-    cancel:"Abbrechen",
-    matchTitle:"Es ist ein Match! 💕",
-    sameEmotion:"Ihr habt dieselbe Emotion",
-    chatTime:"Chat-Zeit:",
-    openChat:"Chat öffnen",
-    keepConnection:"Verbindung behalten 💗",
-    nextMatch:"Nächstes Match ↻",
-    chats:"Chats",
-    friends:"Freunde",
-    profile:"Profil",
-    messagePlaceholder:"Nachricht schreiben...",
-    send:"Senden",
-    addPhoto:"📷 Foto hinzufügen",
-    gallery:"🖼 Galerie",
-    remove:"✕ Entfernen",
-    saveProfile:"Profil speichern",
-    searchSettings:"⚙ Sucheinstellungen",
-    language:"🌐 Sprache",
-    security:"◇ Sicherheit",
-    settings:"Einstellungen",
-    whoToShow:"Wen anzeigen",
-    appSettings:"Anwendung",
-    notifications:"Benachrichtigungen",
-    privacy:"Datenschutz",
-    blocked:"Blockiert",
-    rules:"Community-Regeln",
-    policy:"Datenschutzrichtlinie",
-    deleteAccount:"Konto löschen",
-    vibe:"Vibe",
-    match:"Match",
-    close:"Schließen",
-    save:"Speichern"
-  },
-
-  es:{
-    online:"En línea",
-    registerSubtitle:"Crea un perfil para encontrar personas en tu misma onda.",
-    name:"Nombre",
-    age:"Edad",
-    gender:"Género",
-    male:"Hombre",
-    female:"Mujer",
-    other:"Otro",
-    country:"País",
-    continue:"Continuar",
-    showEmotion:"Muestra tu emoción",
-    happy:"Alegría",
-    angry:"Enojo",
-    sad:"Tristeza",
-    fun:"Diversión",
-    calm:"Calma",
-    likePhoto:"¿Te gusta la foto?",
-    retakeHint:"Puedes repetirla antes de buscar.",
-    retake:"↻ Repetir",
-    usePhoto:"Usar foto",
-    searchingMatch:"Buscando a alguien que sienta lo mismo...",
-    searchTime:"Tiempo de búsqueda:",
-    cancel:"Cancelar",
-    matchTitle:"¡Es un Match! 💕",
-    sameEmotion:"Habéis captado la misma emoción",
-    chatTime:"Tiempo de chat:",
-    openChat:"Abrir chat",
-    keepConnection:"Mantener conexión 💗",
-    nextMatch:"Siguiente match ↻",
-    chats:"Chats",
-    friends:"Amigos",
-    profile:"Perfil",
-    messagePlaceholder:"Escribe un mensaje...",
-    send:"Enviar",
-    addPhoto:"📷 Añadir foto",
-    gallery:"🖼 Galería",
-    remove:"✕ Eliminar",
-    saveProfile:"Guardar perfil",
-    searchSettings:"⚙ Ajustes de búsqueda",
-    language:"🌐 Idioma",
-    security:"◇ Seguridad",
-    settings:"Ajustes",
-    whoToShow:"A quién mostrar",
-    appSettings:"Aplicación",
-    notifications:"Notificaciones",
-    privacy:"Privacidad",
-    blocked:"Bloqueados",
-    rules:"Normas de la comunidad",
-    policy:"Política de privacidad",
-    deleteAccount:"Eliminar cuenta",
-    vibe:"Vibe",
-    match:"Match",
-    close:"Cerrar",
-    save:"Guardar"
-  }
-
-};
-
-
-const COUNTRY_NAMES = {
-  EE:"Эстония",
-  LV:"Латвия",
-  LT:"Литва",
-  FI:"Финляндия",
-  SE:"Швеция",
-  NO:"Норвегия",
-  DK:"Дания",
-  IS:"Исландия",
-  DE:"Германия",
-  FR:"Франция",
-  ES:"Испания",
-  PT:"Португалия",
-  IT:"Италия",
-  NL:"Нидерланды",
-  BE:"Бельгия",
-  LU:"Люксембург",
-  IE:"Ирландия",
-  GB:"Великобритания",
-  PL:"Польша",
-  CZ:"Чехия",
-  SK:"Словакия",
-  AT:"Австрия",
-  CH:"Швейцария",
-  HU:"Венгрия",
-  RO:"Румыния",
-  BG:"Болгария",
-  GR:"Греция",
-  HR:"Хорватия",
-  SI:"Словения",
-  RS:"Сербия",
-  BA:"Босния и Герцеговина",
-  ME:"Черногория",
-  MK:"Северная Македония",
-  AL:"Албания",
-  MD:"Молдова",
-  UA:"Украина",
-  TR:"Турция",
-  US:"США",
-  CA:"Канада",
-  AU:"Австралия",
-  NZ:"Новая Зеландия",
-  JP:"Япония",
-  KR:"Южная Корея"
-};
-
-
-const COUNTRIES =
-  Object.entries(
-    COUNTRY_NAMES
-  );
-
-
-const LANG_NAMES = {
-  ru:"Русский",
-  en:"English",
-  et:"Eesti",
-  uk:"Українська",
-  de:"Deutsch",
-  es:"Español"
-};
-
-
-let lang =
-  localStorage.getItem(
-    "snapvibe_language"
-  ) || "ru";
-
-
-if (
-  !I18N[lang]
-){
-  lang = "ru";
-}
-
-
-function t(key){
-
-  return (
-    I18N[lang]?.[key] ||
-    I18N.ru[key] ||
-    key
-  );
-
-}
-
-
-function applyLanguage(){
-
-  document
-    .querySelectorAll(
-      "[data-i18n]"
-    )
-    .forEach(
-      element => {
-
-        const key =
-          element.dataset.i18n;
-
-        element.textContent =
-          t(key);
-
-      }
-    );
-
-
-  document
-    .querySelectorAll(
-      "[data-i18n-placeholder]"
-    )
-    .forEach(
-      element => {
-
-        const key =
-          element.dataset
-            .i18nPlaceholder;
-
-        element.placeholder =
-          t(key);
-
-      }
-    );
-
-
-  $("languageLabel").textContent =
-    (
-      LANG_NAMES[lang] ||
-      "Русский"
-    ) +
-    " ›";
-
-}
-
-
-/* ID */
+const LS =
+  localStorage;
 
 let userId =
-  localStorage.getItem(
+  LS.getItem(
     "snapvibe_user_id"
   );
 
-
-if (
-  !userId
-){
+if (!userId) {
 
   userId =
     "user_" +
     crypto.randomUUID();
 
-
-  localStorage.setItem(
+  LS.setItem(
     "snapvibe_user_id",
     userId
   );
-
 }
-
-
-let avatar =
-  localStorage.getItem(
-    "snapvibe_avatar"
-  ) || "";
-
 
 let profile = {
 
-  userId,
+  id:userId,
 
   name:
-    localStorage.getItem(
+    LS.getItem(
       "snapvibe_user_name"
     ) || "",
 
   age:
     Number(
-      localStorage.getItem(
+      LS.getItem(
         "snapvibe_age"
       )
     ) || null,
 
   gender:
-    localStorage.getItem(
+    LS.getItem(
       "snapvibe_gender"
     ) || "male",
 
   country:
-    localStorage.getItem(
+    LS.getItem(
       "snapvibe_country"
     ) || "EE",
 
-  language:
-    lang,
+  language:"ru",
 
-  avatar
-
-};
-
-
-let settings = {
-
-  gender:
-    localStorage.getItem(
-      "snapvibe_search_gender"
-    ) || "female",
-
-  ageMin:
-    Number(
-      localStorage.getItem(
-        "snapvibe_age_min"
-      )
-    ) || 18,
-
-  ageMax:
-    Number(
-      localStorage.getItem(
-        "snapvibe_age_max"
-      )
-    ) || 35,
-
-  country:
-    localStorage.getItem(
-      "snapvibe_search_country"
+  avatar:
+    LS.getItem(
+      "snapvibe_avatar"
     ) || ""
 
 };
 
-
-let notificationsEnabled =
-  localStorage.getItem(
-    "snapvibe_notifications"
-  ) !== "off";
-
-
 let socket = null;
-
+let reconnectTimer = null;
 let stream = null;
-
-let emotion =
-  "happy";
-
-let pendingPhoto =
-  null;
-
-let pendingEmotionHash =
-  null;
-
-let friends = [];
-
+let emotion = "happy";
+let pendingPhoto = null;
 let match = null;
 
 let activeChat = {
@@ -3113,308 +692,148 @@ let activeChat = {
   person:null
 };
 
-let searchTimer = null;
+let friends = [];
 
 let searchAt = 0;
-
+let searchTimer = null;
 let countTimer = null;
 
+let messagesByChat =
+  new Map();
 
-/* VOICE */
+let renderedChatId =
+  null;
 
-let mediaRecorder = null;
-
-let recordedChunks = [];
-
-let recordingStartedAt = 0;
-
-let recordingTimer = null;
-
-let recordedBlob = null;
-
-let recordedDuration = 0;
+let renderedIds =
+  new Set();
 
 
-/* CALL */
+try {
 
-let peerConnection = null;
+  const cached =
+    JSON.parse(
+      LS.getItem(
+        "snapvibe_friends_cache"
+      ) || "[]"
+    );
 
-let callStream = null;
-
-let currentCall = null;
-
-let muted = false;
-
-let usingFrontCamera = true;
-  /* COUNTRY HELPERS */
-
-function localizedCountryName(code){
-
-  if (!code) {
-    return t("allCountries") || "Все страны";
+  if (
+    Array.isArray(
+      cached
+    )
+  ) {
+    friends =
+      cached;
   }
+
+} catch (_) {}
+
+
+function toast(
+  text
+){
+
+  const el =
+    $("toast");
+
+  el.textContent =
+    text;
+
+  el.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    el.t
+  );
+
+  el.t =
+    setTimeout(
+      () =>
+        el.classList.remove(
+          "show"
+        ),
+      1800
+    );
+}
+
+
+function setAvatar(
+  element,
+  source,
+  name
+){
+
+  if (source) {
+
+    element.innerHTML =
+      "<img>";
+
+    element
+      .querySelector("img")
+      .src =
+      source;
+
+  } else {
+
+    element.textContent =
+      (
+        name ||
+        "S"
+      )[0]
+      .toUpperCase();
+
+  }
+}
+
+
+function saveProfileLocal(){
+
+  LS.setItem(
+    "snapvibe_user_name",
+    profile.name || ""
+  );
+
+  LS.setItem(
+    "snapvibe_age",
+    profile.age || ""
+  );
+
+  LS.setItem(
+    "snapvibe_gender",
+    profile.gender || "male"
+  );
+
+  LS.setItem(
+    "snapvibe_country",
+    profile.country || ""
+  );
+
+  LS.setItem(
+    "snapvibe_avatar",
+    profile.avatar || ""
+  );
+}
+
+
+function cacheFriends(){
 
   try {
 
-    const names =
-      new Intl.DisplayNames(
-        [lang],
-        {
-          type:"region"
-        }
-      );
-
-    return (
-      names.of(code) ||
-      COUNTRY_NAMES[code] ||
-      code
+    LS.setItem(
+      "snapvibe_friends_cache",
+      JSON.stringify(
+        friends
+      )
     );
 
-  } catch (error) {
-
-    return (
-      COUNTRY_NAMES[code] ||
-      code
-    );
-
-  }
-
+  } catch (_) {}
 }
 
 
-function fillCountrySelect(
-  element,
-  allowAll = false
+function send(
+  data
 ){
-
-  element.innerHTML = "";
-
-
-  if (allowAll) {
-
-    const allOption =
-      document.createElement(
-        "option"
-      );
-
-    allOption.value = "";
-
-    allOption.textContent =
-      lang === "ru"
-        ? "Все страны"
-        : lang === "et"
-          ? "Kõik riigid"
-          : lang === "uk"
-            ? "Усі країни"
-            : lang === "de"
-              ? "Alle Länder"
-              : lang === "es"
-                ? "Todos los países"
-                : "All countries";
-
-    element.appendChild(
-      allOption
-    );
-
-  }
-
-
-  COUNTRIES
-    .map(
-      ([code]) => [
-        code,
-        localizedCountryName(
-          code
-        )
-      ]
-    )
-    .sort(
-      (a,b) =>
-        a[1].localeCompare(
-          b[1],
-          lang
-        )
-    )
-    .forEach(
-      ([code,name]) => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value =
-          code;
-
-        option.textContent =
-          name;
-
-        element.appendChild(
-          option
-        );
-
-      }
-    );
-
-}
-
-
-/* TOAST */
-
-function toast(text){
-
-  $("toast").textContent =
-    text;
-
-  $("toast")
-    .classList
-    .add("show");
-
-  clearTimeout(
-    $("toast").timer
-  );
-
-  $("toast").timer =
-    setTimeout(
-      () => {
-
-        $("toast")
-          .classList
-          .remove("show");
-
-      },
-      1900
-    );
-
-}
-
-
-/* VIEWS */
-
-function show(id){
-
-  [
-    "registerView",
-    "cameraView",
-    "photoPreviewView",
-    "searchView",
-    "matchView",
-    "chatsView",
-    "chatView",
-    "friendsView",
-    "profileView",
-    "settingsView"
-  ]
-  .forEach(
-    viewId => {
-
-      $(viewId)
-        .classList
-        .toggle(
-          "active",
-          viewId === id
-        );
-
-    }
-  );
-
-
-  $("top").style.display =
-    id === "registerView"
-      ? "none"
-      : "flex";
-
-
-  $("nav").style.display =
-    id === "registerView"
-      ? "none"
-      : "grid";
-
-
-  document
-    .querySelectorAll(
-      ".navBtn"
-    )
-    .forEach(
-      button => {
-
-        button.classList.toggle(
-          "active",
-          button.dataset.view === id
-        );
-
-      }
-    );
-
-
-  if (
-    id === "friendsView" ||
-    id === "chatsView"
-  ) {
-
-    send({
-      type:"friends_list"
-    });
-
-  }
-
-
-  if (
-    id === "friendsView"
-  ) {
-
-    renderFriends();
-
-  }
-
-
-  if (
-    id === "chatsView"
-  ) {
-
-    renderChats();
-
-  }
-
-
-  if (
-    id === "profileView"
-  ) {
-
-    fillProfile();
-
-  }
-
-
-  if (
-    id === "chatView" &&
-    activeChat.id
-  ) {
-
-    markCurrentChatRead();
-
-  }
-
-}
-
-
-/* MATCH NAV */
-
-function updateMatchNav(){
-
-  $("matchNav")
-    .classList
-    .toggle(
-      "available",
-      !!match
-    );
-
-}
-
-
-/* SOCKET */
-
-function send(data){
 
   if (
     socket?.readyState ===
@@ -3428,53 +847,58 @@ function send(data){
     );
 
     return true;
-
   }
 
   return false;
-
 }
 
 
 function registerProfile(){
 
-  send({
+  if (
+    profile.name
+  ) {
 
-    type:
-      "register_profile",
+    send({
+      type:
+        "register_profile",
+      ...profile
+    });
 
-    userId,
+  }
+}
 
-    name:
-      profile.name,
 
-    age:
-      profile.age,
+function status(
+  online
+){
 
-    gender:
-      profile.gender,
+  $("statusText")
+    .textContent =
+    online
+      ? "Онлайн"
+      : "Офлайн";
 
-    country:
-      profile.country,
-
-    language:
-      lang,
-
-    avatar
-
-  });
-
+  $("statusText")
+    .classList
+    .toggle(
+      "off",
+      !online
+    );
 }
 
 
 function connect(){
+
+  clearTimeout(
+    reconnectTimer
+  );
 
   const protocol =
     location.protocol ===
     "https:"
       ? "wss:"
       : "ws:";
-
 
   socket =
     new WebSocket(
@@ -3483,35 +907,31 @@ function connect(){
       location.host
     );
 
-
   socket.onopen =
     () => {
 
-      if (
-        profile.name
-      ) {
+      status(true);
 
-        registerProfile();
-
-      }
-
-      setTimeout(
-        subscribePush,
-        1000
-      );
-
+      registerProfile();
     };
 
 
   socket.onclose =
     () => {
 
-      setTimeout(
-        connect,
-        2500
-      );
+      status(false);
 
+      reconnectTimer =
+        setTimeout(
+          connect,
+          1800
+        );
     };
+
+
+  socket.onerror =
+    () =>
+      status(false);
 
 
   socket.onmessage =
@@ -3519,7 +939,7 @@ function connect(){
 
       try {
 
-        handleServerEvent(
+        handle(
           JSON.parse(
             event.data
           )
@@ -3530,840 +950,177 @@ function connect(){
         console.error(
           error
         );
-
       }
-
     };
-
 }
 
 
-/* SERVER EVENTS */
-
-function handleServerEvent(data){
-
-  if (
-    data.type ===
-    "bootstrap"
-  ) {
-
-    if (
-      data.profile
-    ) {
-
-      profile = {
-        ...profile,
-        ...data.profile
-      };
-
-
-      avatar =
-        data.profile.avatar ||
-        avatar;
-
-    }
-
-
-    friends =
-      data.friends || [];
-
-
-    if (
-      data.activeMatch
-    ) {
-
-      loadMatch(
-        data.activeMatch
-      );
-
-    } else {
-
-      match =
-        null;
-
-      updateMatchNav();
-
-    }
-
-
-    renderFriends();
-
-    renderChats();
-
-  }
-
-
-  else if (
-    data.type ===
-    "searching"
-  ) {
-
-    startSearch();
-
-  }
-
-
-  else if (
-    data.type ===
-    "search_cancelled"
-  ) {
-
-    clearInterval(
-      searchTimer
-    );
-
-    show(
-      "cameraView"
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "match_found"
-  ) {
-
-    clearInterval(
-      searchTimer
-    );
-
-    loadMatch(
-      data
-    );
-
-    show(
-      "matchView"
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "match_ended" ||
-    data.type ===
-    "match_ended_by_partner"
-  ) {
-
-    match =
-      null;
-
-    clearInterval(
-      countTimer
-    );
-
-    updateMatchNav();
-
-
-    if (
-      data.type ===
-      "match_ended_by_partner"
-    ) {
-
-      toast(
-        lang === "ru"
-          ? "Собеседник перешёл к следующему мэтчу"
-          : "Match ended"
-      );
-
-    }
-
-
-    show(
-      "cameraView"
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "match_expired"
-  ) {
-
-    match =
-      null;
-
-    clearInterval(
-      countTimer
-    );
-
-    updateMatchNav();
-
-    show(
-      "cameraView"
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "keep_vibe_pending"
-  ) {
-
-    toast(
-      lang === "ru"
-        ? "💗 Ждём ответ второго человека"
-        : "💗 Waiting for the other person"
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "keep_vibe_received"
-  ) {
-
-    showIncomingHeart(
-      data
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "keep_vibe_mutual"
-  ) {
-
-    mutualHeart(
-      data
-    );
-
-
-    if (
-      data.friend
-    ) {
-
-      friends = [
-        data.friend,
-        ...friends.filter(
-          item =>
-            item.id !==
-            data.friend.id
-        )
-      ];
-
-    }
-
-
-    renderFriends();
-
-    renderChats();
-
-  }
-
-
-  else if (
-    data.type ===
-    "friendship_created"
-  ) {
-
-    if (
-      data.friend
-    ) {
-
-      friends = [
-        data.friend,
-        ...friends.filter(
-          item =>
-            item.id !==
-            data.friend.id
-        )
-      ];
-
-    }
-
-
-    renderFriends();
-
-    renderChats();
-
-  }
-
-
-  else if (
-    data.type ===
-    "friends_list"
-  ) {
-
-    friends =
-      data.friends || [];
-
-    renderFriends();
-
-    renderChats();
-
-  }
-
-
-  else if (
-    data.type ===
-    "friend_chat_ready"
-  ) {
-
-    openChat(
-
-      data.chatId,
-
-      data.friend?.name ||
-      "SnapVibe",
-
-      "friend",
-
-      data.friend,
-
-      data.messages || []
-
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "chat_history"
-  ) {
-
-    if (
-      activeChat.id ===
-      data.chatId
-    ) {
-
-      renderMessages(
-        data.messages || []
-      );
-
-      markCurrentChatRead();
-
-    }
-
-  }
-
-
-  else if (
-    data.type ===
-    "chat_message"
-  ) {
-
-    if (
-      activeChat.id ===
-      data.chatId
-    ) {
-
-      appendMessage(
-        data.message
-      );
-
-
-      if (
-        data.message.senderId !==
-        userId
-      ) {
-
-        send({
-
-          type:
-            "message_delivered",
-
-          chatId:
-            data.chatId,
-
-          messageId:
-            data.message.id
-
-        });
-
-
-        if (
-          document.visibilityState ===
-          "visible"
-        ) {
-
-          markCurrentChatRead();
-
-        }
-
-      }
-
-    } else {
-
-      showLocalNotification(
-        data.message
-      );
-
-    }
-
-  }
-
-
-  else if (
-    data.type ===
-    "message_delivered"
-  ) {
-
-    updateMessageStatus(
-      data.messageId,
-      "delivered"
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "messages_read"
-  ) {
-
-    (
-      data.messageIds ||
-      []
-    )
-    .forEach(
-      messageId => {
-
-        updateMessageStatus(
-          messageId,
-          "read"
-        );
-
-      }
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "incoming_call"
-  ) {
-
-    showIncomingCall(
-      data
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "call_ringing"
-  ) {
-
-    currentCall = {
-      ...currentCall,
-      callId:
-        data.callId
-    };
-
-
-    $("callStatus").textContent =
-      lang === "ru"
-        ? "Вызов..."
-        : "Calling...";
-
-  }
-
-
-  else if (
-    data.type ===
-    "call_accepted"
-  ) {
-
-    handleCallAccepted(
-      data
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "call_rejected"
-  ) {
-
-    toast(
-      lang === "ru"
-        ? "Звонок отклонён"
-        : "Call rejected"
-    );
-
-    cleanupCall();
-
-  }
-
-
-  else if (
-    data.type ===
-    "call_ended"
-  ) {
-
-    cleanupCall();
-
-  }
-
-
-  else if (
-    data.type ===
-    "webrtc_offer"
-  ) {
-
-    handleWebRTCOffer(
-      data
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "webrtc_answer"
-  ) {
-
-    handleWebRTCAnswer(
-      data
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "webrtc_ice"
-  ) {
-
-    handleWebRTCIce(
-      data
-    );
-
-  }
-
-
-  else if (
-    data.type ===
-    "call_error"
-  ) {
-
-    toast(
-      data.message ||
-      "Call error"
-    );
-
-    cleanupCall();
-
-  }
-
-
-  else if (
-    data.type ===
-    "error"
-  ) {
-
-    toast(
-      data.message ||
-      "Ошибка"
-    );
-
-  }
-
-}
-
-
-/* HEART */
-
-function playChime(
-  mutual = false
+function show(
+  id
 ){
 
-  try {
-
-    const AudioClass =
-      window.AudioContext ||
-      window.webkitAudioContext;
-
-
-    const context =
-      new AudioClass();
-
-
-    const now =
-      context.currentTime;
-
-
-    const notes =
-      mutual
-        ? [523,659,784]
-        : [440,554,659];
-
-
-    notes.forEach(
-      (frequency,index) => {
-
-        const oscillator =
-          context.createOscillator();
-
-
-        const gain =
-          context.createGain();
-
-
-        oscillator.frequency.value =
-          frequency;
-
-
-        gain.gain
-          .setValueAtTime(
-            .0001,
-            now +
-            index * .11
-          );
-
-
-        gain.gain
-          .exponentialRampToValueAtTime(
-            .15,
-            now +
-            index * .11 +
-            .02
-          );
-
-
-        gain.gain
-          .exponentialRampToValueAtTime(
-            .0001,
-            now +
-            index * .11 +
-            .18
-          );
-
-
-        oscillator.connect(
-          gain
-        );
-
-
-        gain.connect(
-          context.destination
-        );
-
-
-        oscillator.start(
-          now +
-          index * .11
-        );
-
-
-        oscillator.stop(
-          now +
-          index * .11 +
-          .2
-        );
-
-      }
-    );
-
-  } catch (error) {}
-
-}
-
-
-function showIncomingHeart(
-  data
-){
-
-  playChime(false);
-
-
-  $("heartTitle").textContent =
-    lang === "ru"
-      ? "💗 Новый сигнал"
-      : "💗 New signal";
-
-
-  $("heartText").textContent =
-    (
-      data.fromName ||
-      "SnapVibe"
-    ) +
-    (
-      lang === "ru"
-        ? " хочет сохранить связь с тобой"
-        : " wants to keep the connection"
-    );
-
-
-  $("heartChoices").innerHTML =
-    `
-    <button
-      class="primary"
-      id="acceptHeart"
-    >
-      💗 ${t("keepConnection")}
-    </button>
-
-    <button
-      class="secondary"
-      id="laterHeart"
-    >
-      ${t("cancel")}
-    </button>
-    `;
-
-
-  $("heartOverlay")
-    .classList
-    .add("show");
-
-
-  $("acceptHeart").onclick =
-    () => {
-
-      if (
-        match
-      ) {
-
-        send({
-
-          type:
-            "keep_vibe",
-
-          matchId:
-            match.id
-
-        });
-
-      }
-
-
-      $("heartOverlay")
+  [
+    "registerView",
+    "cameraView",
+    "photoPreviewView",
+    "searchView",
+    "matchView",
+    "chatsView",
+    "chatView",
+    "friendsView",
+    "profileView"
+  ]
+  .forEach(
+    view =>
+      $(view)
         .classList
-        .remove("show");
-
-    };
-
-
-  $("laterHeart").onclick =
-    () => {
-
-      $("heartOverlay")
-        .classList
-        .remove("show");
-
-    };
-
-}
-
-
-function mutualHeart(data){
-
-  playChime(true);
-
-
-  $("heartTitle").textContent =
-    lang === "ru"
-      ? "Связь сохранена! 💕"
-      : "Connection saved! 💕";
-
-
-  $("heartText").textContent =
-    lang === "ru"
-      ? "Теперь вы друзья, и постоянный чат останется доступен."
-      : "You are now friends and your permanent chat stays available.";
-
-
-  $("heartChoices").innerHTML =
-    `
-    <button
-      class="primary"
-      id="closeMutual"
-    >
-      ${t("continue")}
-    </button>
-    `;
-
-
-  $("heartOverlay")
-    .classList
-    .add("show");
-
-
-  for (
-    let i = 0;
-    i < 18;
-    i++
-  ) {
-
-    setTimeout(
-      spawnHeart,
-      i * 55
-    );
-
-  }
-
-
-  $("closeMutual").onclick =
-    () => {
-
-      $("heartOverlay")
-        .classList
-        .remove("show");
-
-    };
-
-}
-
-
-function spawnHeart(){
-
-  const particle =
-    document.createElement(
-      "div"
-    );
-
-
-  particle.className =
-    "particle";
-
-
-  particle.textContent =
-    Math.random() > .5
-      ? "💗"
-      : "💕";
-
-
-  particle.style.left =
-    (
-      10 +
-      Math.random() * 80
-    ) +
-    "%";
-
-
-  particle.style.bottom =
-    "-20px";
-
-
-  $("heartParticles")
-    .appendChild(
-      particle
-    );
-
-
-  setTimeout(
-    () =>
-      particle.remove(),
-    1800
+        .toggle(
+          "active",
+          view === id
+        )
   );
 
+
+  $("top")
+    .style.display =
+    id ===
+    "registerView"
+      ? "none"
+      : "flex";
+
+
+  $("nav")
+    .style.display =
+    id ===
+    "registerView"
+      ? "none"
+      : "grid";
+
+
+  document
+    .querySelectorAll(
+      ".navBtn"
+    )
+    .forEach(
+      button => {
+
+        button
+          .classList
+          .toggle(
+            "active",
+            button.dataset.view ===
+            id
+          );
+
+      }
+    );
+
+
+  if (
+    id ===
+    "cameraView"
+  ) {
+
+    startCamera();
+
+  } else {
+
+    stopCamera();
+  }
+
+
+  if (
+    id ===
+    "friendsView" ||
+    id ===
+    "chatsView"
+  ) {
+
+    send({
+      type:
+        "friends_list"
+    });
+  }
+
+
+  if (
+    id ===
+    "friendsView"
+  ) {
+    renderFriends();
+  }
+
+
+  if (
+    id ===
+    "chatsView"
+  ) {
+    renderChats();
+  }
+
+
+  if (
+    id ===
+    "profileView"
+  ) {
+    fillProfile();
+  }
+
+
+  if (
+    id ===
+    "chatView" &&
+    activeChat.id
+  ) {
+    markRead();
+  }
 }
 
 
-/* CAMERA */
+function stopCamera(){
+
+  if (stream) {
+
+    stream
+      .getTracks()
+      .forEach(
+        track =>
+          track.stop()
+      );
+
+    stream =
+      null;
+  }
+
+
+  $("video")
+    .srcObject =
+    null;
+
+
+  $("fallback")
+    .style.display =
+    "grid";
+}
+
 
 async function startCamera(){
+
+  if (
+    stream?.active
+  ) {
+    return;
+  }
+
+
+  if (
+    !navigator
+      .mediaDevices
+      ?.getUserMedia
+  ) {
+    return;
+  }
+
 
   try {
 
@@ -4373,33 +1130,44 @@ async function startCamera(){
         .getUserMedia({
 
           video:{
+
             facingMode:{
               ideal:"user"
+            },
+
+            width:{
+              ideal:640
+            },
+
+            height:{
+              ideal:480
+            },
+
+            frameRate:{
+              ideal:24,
+              max:30
             }
           },
 
           audio:false
-
         });
 
 
-    $("video").srcObject =
+    $("video")
+      .srcObject =
       stream;
 
 
-    $("fallback").style.display =
+    $("fallback")
+      .style.display =
       "none";
 
   } catch (error) {
 
     toast(
-      lang === "ru"
-        ? "Не удалось открыть камеру"
-        : "Camera unavailable"
+      "Не удалось открыть камеру"
     );
-
   }
-
 }
 
 
@@ -4413,15 +1181,13 @@ function takePhoto(){
     !stream ||
     !video.videoWidth
   ) {
-
     return null;
-
   }
 
 
   const width =
     Math.min(
-      720,
+      480,
       video.videoWidth
     );
 
@@ -4458,7 +1224,6 @@ function takePhoto(){
     0
   );
 
-
   ctx.scale(
     -1,
     1
@@ -4474,40 +1239,41 @@ function takePhoto(){
   );
 
 
-  return canvas.toDataURL(
-    "image/jpeg",
-    .82
-  );
-
+  return canvas
+    .toDataURL(
+      "image/jpeg",
+      .72
+    );
 }
 
 
-async function emotionHash(
+async function hashEmotion(
   value
 ){
 
-  const result =
-    await crypto.subtle.digest(
+  const buffer =
+    await crypto
+      .subtle
+      .digest(
 
-      "SHA-256",
+        "SHA-256",
 
-      new TextEncoder()
-        .encode(
-          "snapvibe:" +
-          value
-        )
-
-    );
+        new TextEncoder()
+          .encode(
+            "snapvibe:" +
+            value
+          )
+      );
 
 
   return [
     ...new Uint8Array(
-      result
+      buffer
     )
   ]
   .map(
-    value =>
-      value
+    number =>
+      number
         .toString(16)
         .padStart(
           2,
@@ -4515,7 +1281,6 @@ async function emotionHash(
         )
   )
   .join("");
-
 }
 
 
@@ -4534,24 +1299,24 @@ document
               ".emotion"
             )
             .forEach(
-              item => {
-
-                item.classList.remove(
-                  "selected"
-                );
-
-              }
+              item =>
+                item.classList
+                  .remove(
+                    "selected"
+                  )
             );
 
 
-          button.classList.add(
-            "selected"
-          );
+          button
+            .classList
+            .add(
+              "selected"
+            );
 
 
           emotion =
-            button.dataset.emotion;
-
+            button.dataset
+              .emotion;
         };
 
     }
@@ -4559,7 +1324,7 @@ document
 
 
 $("capture").onclick =
-  async () => {
+  () => {
 
     const photo =
       takePhoto();
@@ -4568,11 +1333,8 @@ $("capture").onclick =
     if (!photo) {
 
       return toast(
-        lang === "ru"
-          ? "Камера ещё не готова"
-          : "Camera is not ready"
+        "Камера ещё не готова"
       );
-
     }
 
 
@@ -4580,20 +1342,14 @@ $("capture").onclick =
       photo;
 
 
-    pendingEmotionHash =
-      await emotionHash(
-        emotion
-      );
-
-
-    $("previewPhoto").src =
-      pendingPhoto;
+    $("previewPhoto")
+      .src =
+      photo;
 
 
     show(
       "photoPreviewView"
     );
-
   };
 
 
@@ -4603,62 +1359,56 @@ $("retakePhoto").onclick =
     pendingPhoto =
       null;
 
-    pendingEmotionHash =
-      null;
-
-
     show(
       "cameraView"
     );
-
   };
 
 
 $("usePhoto").onclick =
-  () => {
+  async () => {
 
     if (
-      !pendingPhoto ||
-      !pendingEmotionHash
+      !pendingPhoto
     ) {
-
       return;
-
     }
 
 
-    send({
-
-      type:
-        "capture",
-
-      emotionHash:
-        pendingEmotionHash,
-
-      photo:
-        pendingPhoto,
-
-      searchGender:
-        settings.gender,
-
-      ageMin:
-        settings.ageMin,
-
-      ageMax:
-        settings.ageMax,
-
-      searchCountry:
-        settings.country
-
-    });
+    const hash =
+      await hashEmotion(
+        emotion
+      );
 
 
-    pendingPhoto =
-      null;
+    const sent =
+      send({
+
+        type:
+          "capture",
+
+        emotionHash:
+          hash,
+
+        photo:
+          pendingPhoto,
+
+        searchGender:
+          "all",
+
+        ageMin:18,
+        ageMax:99,
+
+        searchCountry:""
+      });
 
 
-    pendingEmotionHash =
-      null;
+    if (!sent) {
+
+      return toast(
+        "Нет соединения"
+      );
+    }
 
 
     show(
@@ -4667,11 +1417,8 @@ $("usePhoto").onclick =
 
 
     startSearch();
-
   };
 
-
-/* SEARCH */
 
 function startSearch(){
 
@@ -4688,28 +1435,20 @@ function startSearch(){
     setInterval(
       () => {
 
-        const seconds =
+        $("searchSeconds")
+          .textContent =
           Math.floor(
             (
               Date.now() -
               searchAt
             ) /
             1000
-          );
-
-
-        $("searchSeconds").textContent =
-          seconds +
-          (
-            lang === "ru"
-              ? " сек"
-              : " s"
-          );
+          ) +
+          " сек";
 
       },
       1000
     );
-
 }
 
 
@@ -4730,13 +1469,21 @@ $("cancelSearch").onclick =
     show(
       "cameraView"
     );
-
   };
 
 
-/* MATCH */
+function showMatch(
+  data
+){
 
-function loadMatch(data){
+  clearInterval(
+    searchTimer
+  );
+
+  clearInterval(
+    countTimer
+  );
+
 
   match = {
 
@@ -4760,145 +1507,172 @@ function loadMatch(data){
 
     partnerProfile:
       data.partnerProfile ||
-      {},
+      {
+        id:
+          data.partnerUserId,
+
+        name:
+          data.partnerName
+      },
 
     partnerPhoto:
-      data.partnerPhoto ||
-      ""
-
+      data.partnerPhoto
   };
 
 
-  $("matchPhoto").src =
-    match.partnerPhoto;
+  $("matchPhoto")
+    .src =
+    data.partnerPhoto ||
+    "";
 
 
-  $("matchName").textContent =
-    match.partnerName +
-    (
-      match.partnerProfile.age
-        ? ", " +
-          match.partnerProfile.age
-        : ""
+  $("matchName")
+    .textContent =
+    match.partnerName;
+
+
+  $("matchMeta")
+    .textContent =
+    [
+      match
+        .partnerProfile
+        ?.age,
+
+      match
+        .partnerProfile
+        ?.country
+    ]
+    .filter(Boolean)
+    .join(" · ");
+
+
+  $("matchNav")
+    .classList
+    .add(
+      "available"
     );
 
 
-  $("matchMeta").textContent =
-    localizedCountryName(
-      match.partnerProfile.country
-    );
-
-
-  clearInterval(
-    countTimer
+  show(
+    "matchView"
   );
+
+
+  tickCountdown();
 
 
   countTimer =
     setInterval(
-      updateMatchCountdown,
+      tickCountdown,
       1000
     );
-
-
-  updateMatchCountdown();
-
-  updateMatchNav();
-
 }
 
 
-function updateMatchCountdown(){
+function tickCountdown(){
 
-  if (
-    !match
-  ) {
-
+  if (!match) {
     return;
-
   }
+
+
+  const remaining =
+    Math.max(
+      0,
+      match.expiresAt -
+      Date.now()
+    );
+
+
+  const hours =
+    Math.floor(
+      remaining /
+      3600000
+    );
+
+
+  const minutes =
+    Math.floor(
+      remaining %
+      3600000 /
+      60000
+    );
 
 
   const seconds =
     Math.floor(
-      Math.max(
-        0,
-        match.expiresAt -
-        Date.now()
-      ) /
+      remaining %
+      60000 /
       1000
     );
 
 
-  $("countdown").textContent =
-    String(
-      Math.floor(
-        seconds /
-        3600
-      )
+  $("countdown")
+    .textContent =
+    [
+      hours,
+      minutes,
+      seconds
+    ]
+    .map(
+      value =>
+        String(value)
+          .padStart(
+            2,
+            "0"
+          )
     )
-    .padStart(
-      2,
-      "0"
-    )
-    +
-    ":"
-    +
-    String(
-      Math.floor(
-        (
-          seconds %
-          3600
-        ) /
-        60
-      )
-    )
-    .padStart(
-      2,
-      "0"
-    )
-    +
-    ":"
-    +
-    String(
-      seconds %
-      60
-    )
-    .padStart(
-      2,
-      "0"
-    );
+    .join(":");
 
 
-  if (
-    seconds <= 0
-  ) {
-
-    match =
-      null;
-
-
-    updateMatchNav();
-
+  if (!remaining) {
 
     clearInterval(
       countTimer
     );
 
-  }
 
+    match =
+      null;
+
+
+    $("matchNav")
+      .classList
+      .remove(
+        "available"
+      );
+
+
+    show(
+      "cameraView"
+    );
+  }
 }
+
+
+$("matchNav").onclick =
+  () => {
+
+    if (match) {
+
+      show(
+        "matchView"
+      );
+
+    } else {
+
+      toast(
+        "Активного мэтча нет"
+      );
+    }
+  };
 
 
 $("openMatchChat").onclick =
   () => {
 
-    if (
-      !match
-    ) {
-
+    if (!match) {
       return;
-
     }
 
 
@@ -4913,7 +1687,6 @@ $("openMatchChat").onclick =
       match.partnerProfile,
 
       []
-
     );
 
 
@@ -4924,9 +1697,7 @@ $("openMatchChat").onclick =
 
       chatId:
         match.chatId
-
     });
-
   };
 
 
@@ -4934,9 +1705,7 @@ $("keepVibe").onclick =
 $("keepVibeChat").onclick =
   () => {
 
-    if (
-      match
-    ) {
+    if (match) {
 
       send({
 
@@ -4945,147 +1714,139 @@ $("keepVibeChat").onclick =
 
         matchId:
           match.id
-
       });
-
     }
-
   };
 
-
-/* FIXED NEXT MATCH */
 
 $("newMatch").onclick =
   () => {
 
-    if (
-      !match
-    ) {
+    if (match) {
 
-      show(
-        "cameraView"
-      );
+      send({
 
-      return;
+        type:
+          "next_match",
 
+        matchId:
+          match.id
+      });
     }
-
-
-    const oldMatchId =
-      match.id;
-
-
-    send({
-
-      type:
-        "next_match",
-
-      matchId:
-        oldMatchId
-
-    });
 
 
     match =
       null;
 
 
-    clearInterval(
-      countTimer
-    );
-
-
-    updateMatchNav();
-
-
-    activeChat = {
-      id:null,
-      type:null,
-      person:null
-    };
+    $("matchNav")
+      .classList
+      .remove(
+        "available"
+      );
 
 
     show(
       "cameraView"
     );
-
-
-    toast(
-      lang === "ru"
-        ? "Можно искать следующий мэтч"
-        : "Ready for the next match"
-    );
-
   };
 
 
-$("matchNav").onclick =
-  () => {
-
-    if (
-      match
-    ) {
-
-      show(
-        "matchView"
-      );
-
-    } else {
-
-      toast(
-        lang === "ru"
-          ? "Сейчас активного мэтча нет"
-          : "No active match"
-      );
-
-    }
-
-  };
-
-
-/* AVATARS */
-
-function setAvatar(
-  element,
-  source,
-  name
+function mergeMessages(
+  chatId,
+  list
 ){
 
   if (
-    source
+    !Array.isArray(
+      list
+    )
   ) {
-
-    element.innerHTML =
-      "<img>";
-
-
-    element
-      .querySelector("img")
-      .src =
-      source;
-
-  } else {
-
-    element.textContent =
-      (
-        name ||
-        "S"
-      )[0]
-      .toUpperCase();
-
+    return;
   }
 
+
+  let map =
+    messagesByChat
+      .get(
+        chatId
+      );
+
+
+  if (!map) {
+
+    map =
+      new Map();
+
+    messagesByChat
+      .set(
+        chatId,
+        map
+      );
+  }
+
+
+  for (
+    const message
+    of list
+  ) {
+
+    if (
+      !message?.id
+    ) {
+      continue;
+    }
+
+
+    map.set(
+      message.id,
+      {
+        ...(
+          map.get(
+            message.id
+          ) || {}
+        ),
+        ...message
+      }
+    );
+  }
 }
 
 
-/* CHAT */
+function getMessages(
+  chatId
+){
+
+  return [
+    ...(
+      messagesByChat
+        .get(
+          chatId
+        )
+        ?.values() ||
+      []
+    )
+  ]
+  .sort(
+    (a,b) =>
+      (
+        a.createdAt ||
+        0
+      ) -
+      (
+        b.createdAt ||
+        0
+      )
+  );
+}
+
 
 function openChat(
   id,
   name,
   type,
   person,
-  list
+  list = []
 ){
 
   activeChat = {
@@ -5095,8 +1856,35 @@ function openChat(
   };
 
 
-  $("chatName").textContent =
-    name;
+  if (
+    renderedChatId !==
+    id
+  ) {
+
+    renderedChatId =
+      id;
+
+
+    renderedIds
+      .clear();
+
+
+    $("messages")
+      .innerHTML =
+      "";
+  }
+
+
+  mergeMessages(
+    id,
+    list
+  );
+
+
+  $("chatName")
+    .textContent =
+    name ||
+    "SnapVibe";
 
 
   setAvatar(
@@ -5106,20 +1894,22 @@ function openChat(
     person?.avatar,
 
     name
-
-  );
-
-
-  renderMessages(
-    list
   );
 
 
   $("keepVibeChat")
     .style.display =
-    type === "match"
+    type ===
+    "match"
       ? "block"
       : "none";
+
+
+  renderMessages(
+    getMessages(
+      id
+    )
+  );
 
 
   show(
@@ -5134,33 +1924,11 @@ function openChat(
 
     chatId:
       id
-
   });
-
 }
 
 
-function renderMessages(
-  list
-){
-
-  $("messages").innerHTML =
-    "";
-
-
-  list.forEach(
-    appendMessage
-  );
-
-
-  $("messages").scrollTop =
-    $("messages")
-      .scrollHeight;
-
-}
-
-
-function getMessageGender(
+function genderOf(
   message
 ){
 
@@ -5170,17 +1938,67 @@ function getMessageGender(
       message.senderId ===
       userId
         ? profile.gender
-        : activeChat.person?.gender
+        : activeChat
+            .person
+            ?.gender
     ) ||
     "other"
   );
+}
 
+
+function renderMessages(
+  list
+){
+
+  for (
+    const message
+    of list
+  ) {
+
+    appendMessage(
+      message
+    );
+  }
+
+
+  $("messages")
+    .scrollTop =
+    $("messages")
+      .scrollHeight;
 }
 
 
 function appendMessage(
   message
 ){
+
+  if (
+    !message?.id
+  ) {
+    return;
+  }
+
+
+  if (
+    renderedIds
+      .has(
+        message.id
+      )
+  ) {
+
+    updateTicks(
+      message
+    );
+
+    return;
+  }
+
+
+  renderedIds.add(
+    message.id
+  );
+
 
   const mine =
     message.senderId ===
@@ -5202,37 +2020,41 @@ function appendMessage(
     );
 
 
-  if (
-    !mine
-  ) {
+  row.dataset.messageId =
+    message.id;
 
-    const avatarBox =
+
+  if (!mine) {
+
+    const avatar =
       document.createElement(
         "div"
       );
 
 
-    avatarBox.className =
+    avatar.className =
       "miniAvatar";
 
 
     setAvatar(
 
-      avatarBox,
+      avatar,
 
       message.senderAvatar ||
-      activeChat.person?.avatar,
+      activeChat
+        .person
+        ?.avatar,
 
       message.senderName ||
-      activeChat.person?.name
-
+      activeChat
+        .person
+        ?.name
     );
 
 
     row.appendChild(
-      avatarBox
+      avatar
     );
-
   }
 
 
@@ -5253,7 +2075,7 @@ function appendMessage(
 
 
   const gender =
-    getMessageGender(
+    genderOf(
       message
     );
 
@@ -5261,9 +2083,11 @@ function appendMessage(
   bubble.className =
     "bubble " +
     (
-      gender === "male"
+      gender ===
+      "male"
         ? "male"
-        : gender === "female"
+        : gender ===
+          "female"
           ? "female"
           : "other"
     );
@@ -5274,59 +2098,18 @@ function appendMessage(
     "voice"
   ) {
 
-    bubble.classList.add(
-      "voiceBubble"
-    );
-
-
-    const line =
-      document.createElement(
-        "div"
-      );
-
-
-    line.className =
-      "voiceLine";
-
-
     const play =
       document.createElement(
         "button"
       );
 
 
-    play.className =
-      "voicePlay";
-
-
     play.textContent =
-      "▶";
+      "▶ Голосовое";
 
 
-    const progress =
-      document.createElement(
-        "div"
-      );
-
-
-    progress.className =
-      "voiceProgress";
-
-
-    const duration =
-      document.createElement(
-        "span"
-      );
-
-
-    duration.className =
-      "voiceDuration";
-
-
-    duration.textContent =
-      formatDuration(
-        message.duration || 1
-      );
+    play.style.cssText =
+      "border:0;background:transparent;color:white;padding:0";
 
 
     let audio =
@@ -5342,16 +2125,6 @@ function appendMessage(
             new Audio(
               message.audio
             );
-
-
-          audio.onended =
-            () => {
-
-              play.textContent =
-                "▶";
-
-            };
-
         }
 
 
@@ -5362,36 +2135,35 @@ function appendMessage(
           audio.play();
 
           play.textContent =
-            "⏸";
+            "⏸ Голосовое";
 
         } else {
 
           audio.pause();
 
           play.textContent =
-            "▶";
-
+            "▶ Голосовое";
         }
 
+
+        audio.onended =
+          () => {
+
+            play.textContent =
+              "▶ Голосовое";
+          };
       };
 
 
-    line.append(
-      play,
-      progress,
-      duration
-    );
-
-
     bubble.appendChild(
-      line
+      play
     );
 
   } else {
 
     bubble.textContent =
-      message.text || "";
-
+      message.text ||
+      "";
   }
 
 
@@ -5400,9 +2172,7 @@ function appendMessage(
   );
 
 
-  if (
-    mine
-  ) {
+  if (mine) {
 
     const meta =
       document.createElement(
@@ -5428,7 +2198,7 @@ function appendMessage(
       message.id;
 
 
-    setTicksFromMessage(
+    setTicks(
       ticks,
       message
     );
@@ -5442,7 +2212,6 @@ function appendMessage(
     wrapper.appendChild(
       meta
     );
-
   }
 
 
@@ -5457,9 +2226,7 @@ function appendMessage(
     );
 
 
-  if (
-    !mine
-  ) {
+  if (!mine) {
 
     send({
 
@@ -5472,90 +2239,86 @@ function appendMessage(
 
       messageId:
         message.id
-
     });
-
   }
-
-
-  $("messages").scrollTop =
-    $("messages")
-      .scrollHeight;
-
 }
 
 
-function setTicksFromMessage(
+function setTicks(
   element,
   message
 ){
 
   const otherId =
-    activeChat.person?.id ||
+    activeChat
+      .person
+      ?.id ||
     match?.partnerId;
 
 
   const read =
     otherId &&
-    Array.isArray(
-      message.readBy
-    ) &&
-    message.readBy.includes(
-      otherId
-    );
+    message.readBy
+      ?.includes(
+        otherId
+      );
 
 
   const delivered =
     otherId &&
-    Array.isArray(
-      message.deliveredTo
-    ) &&
-    message.deliveredTo.includes(
-      otherId
-    );
+    message.deliveredTo
+      ?.includes(
+        otherId
+      );
 
 
-  if (
-    read
-  ) {
-
-    element.textContent =
-      "✓✓";
-
-    element.classList.add(
-      "read"
-    );
-
-  }
-
-  else if (
+  element.textContent =
+    read ||
     delivered
-  ) {
+      ? "✓✓"
+      : "✓";
 
-    element.textContent =
-      "✓✓";
 
-  }
-
-  else {
-
-    element.textContent =
-      "✓";
-
-  }
-
+  element
+    .classList
+    .toggle(
+      "read",
+      Boolean(read)
+    );
 }
 
 
-function updateMessageStatus(
-  messageId,
-  status
+function updateTicks(
+  message
 ){
 
   const element =
-    document.querySelector(
-      `.msgTicks[data-message-id="${messageId}"]`
+    document
+      .querySelector(
+        `.msgTicks[data-message-id="${message.id}"]`
+      );
+
+
+  if (element) {
+
+    setTicks(
+      element,
+      message
     );
+  }
+}
+
+
+function updateStatus(
+  messageId,
+  state
+){
+
+  const element =
+    document
+      .querySelector(
+        `.msgTicks[data-message-id="${messageId}"]`
+      );
 
 
   if (!element) {
@@ -5563,56 +2326,39 @@ function updateMessageStatus(
   }
 
 
-  if (
-    status ===
-    "read"
-  ) {
+  element.textContent =
+    "✓✓";
 
-    element.textContent =
-      "✓✓";
 
-    element.classList.add(
+  element
+    .classList
+    .toggle(
+      "read",
+      state ===
       "read"
     );
-
-  }
-
-  else if (
-    status ===
-    "delivered"
-  ) {
-
-    element.textContent =
-      "✓✓";
-
-  }
-
 }
 
 
-function markCurrentChatRead(){
+function markRead(){
 
   if (
-    !activeChat.id
+    activeChat.id
   ) {
-    return;
+
+    send({
+
+      type:
+        "chat_read",
+
+      chatId:
+        activeChat.id
+    });
   }
-
-
-  send({
-
-    type:
-      "chat_read",
-
-    chatId:
-      activeChat.id
-
-  });
-
 }
 
 
-function sendTextMessage(){
+function sendText(){
 
   const input =
     $("messageInput");
@@ -5627,33 +2373,31 @@ function sendTextMessage(){
     !text ||
     !activeChat.id
   ) {
-
     return;
-
   }
 
 
-  send({
+  if (
+    send({
 
-    type:
-      "chat_message",
+      type:
+        "chat_message",
 
-    chatId:
-      activeChat.id,
+      chatId:
+        activeChat.id,
 
-    text
+      text
+    })
+  ) {
 
-  });
-
-
-  input.value =
-    "";
-
+    input.value =
+      "";
+  }
 }
 
 
 $("sendMessage").onclick =
-  sendTextMessage;
+  sendText;
 
 
 $("messageInput").onkeydown =
@@ -5661,138 +2405,67 @@ $("messageInput").onkeydown =
 
     if (
       event.key ===
-      "Enter"
+      "Enter" &&
+      !event.shiftKey
     ) {
 
-      sendTextMessage();
+      event.preventDefault();
 
+      sendText();
     }
-
   };
 
 
 $("chatBack").onclick =
   () => {
 
-    if (
+    show(
       activeChat.type ===
       "match" &&
       match
-    ) {
-
-      show(
-        "matchView"
-      );
-
-    } else {
-
-      show(
-        "chatsView"
-      );
-
-    }
-
+        ? "matchView"
+        : "chatsView"
+    );
   };
 
 
-document.addEventListener(
-  "visibilitychange",
-  () => {
-
-    if (
-      document.visibilityState ===
-      "visible" &&
-      $("chatView")
-        .classList
-        .contains("active")
-    ) {
-
-      markCurrentChatRead();
-
-    }
-
-  }
-);
+const EMOJIS =
+  "😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 🙃 😉 😌 😍 🥰 😘 😋 😜 🤪 🤨 🧐 🤓 😎 🥳 😏 😒 😞 😔 😟 😕 🙁 ☹️ 😣 😖 😫 😩 🥺 😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 🤗 🤔 🤭 🤫 🤥 😶 😐 😑 😬 🙄 😯 😲 🥱 😴 🤤 😪 🤐 🤢 🤮 🤧 😷 🤒 🤕 ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 👍 👎 👌 ✌️ 🤞 🤟 🤘 🤙 👏 🙌 👐 🤝 🙏 💪 🔥 ✨ 🎉 🎊 💯"
+  .split(" ");
 
 
-/* EMOJIS */
+for (
+  const emoji
+  of EMOJIS
+) {
 
-const EMOJIS = [
-  "😀","😂","😍","🥰","😘","😊","😎",
-  "🤩","😢","😭","😡","🤔","🙈","🔥",
-  "❤️","💗","💕","👍","👏","🙏","🎉",
-  "😉","😜","🤗","😴","🥳","💯","✨"
-];
-
-
-function buildEmojiPanel(){
-
-  $("emojiPanel").innerHTML =
-    "";
+  const button =
+    document.createElement(
+      "button"
+    );
 
 
-  EMOJIS.forEach(
-    emoji => {
-
-      const button =
-        document.createElement(
-          "button"
-        );
+  button.textContent =
+    emoji;
 
 
-      button.textContent =
+  button.onclick =
+    () => {
+
+      $("messageInput")
+        .value +=
         emoji;
 
 
-      button.onclick =
-        () => {
-
-          const input =
-            $("messageInput");
+      $("messageInput")
+        .focus();
+    };
 
 
-          const start =
-            input.selectionStart ??
-            input.value.length;
-
-
-          const end =
-            input.selectionEnd ??
-            input.value.length;
-
-
-          input.value =
-            input.value.slice(
-              0,
-              start
-            ) +
-            emoji +
-            input.value.slice(
-              end
-            );
-
-
-          input.focus();
-
-
-          input.setSelectionRange(
-            start +
-            emoji.length,
-            start +
-            emoji.length
-          );
-
-        };
-
-
-      $("emojiPanel")
-        .appendChild(
-          button
-        );
-
-    }
-  );
-
+  $("emojiPanel")
+    .appendChild(
+      button
+    );
 }
 
 
@@ -5801,59 +2474,25 @@ $("emojiBtn").onclick =
 
     $("emojiPanel")
       .classList
-      .toggle("show");
-
+      .toggle(
+        "show"
+      );
   };
 
 
-/* VOICE */
-
-function formatDuration(
-  seconds
-){
-
-  const value =
-    Math.max(
-      0,
-      Math.floor(
-        Number(seconds) || 0
-      )
-    );
-
-
-  return (
-    Math.floor(
-      value / 60
-    ) +
-    ":" +
-    String(
-      value % 60
-    ).padStart(
-      2,
-      "0"
-    )
-  );
-
-}
+let recorder = null;
+let voiceChunks = [];
+let voiceStart = 0;
+let voiceTimer = null;
+let recordedBlob = null;
 
 
 $("voiceBtn").onclick =
   async () => {
 
-    if (
-      mediaRecorder &&
-      mediaRecorder.state ===
-      "recording"
-    ) {
-
-      return;
-
-    }
-
-
     try {
 
-      const micStream =
+      const audioStream =
         await navigator
           .mediaDevices
           .getUserMedia({
@@ -5861,7 +2500,7 @@ $("voiceBtn").onclick =
           });
 
 
-      recordedChunks =
+      voiceChunks =
         [];
 
 
@@ -5869,143 +2508,115 @@ $("voiceBtn").onclick =
         null;
 
 
-      mediaRecorder =
+      recorder =
         new MediaRecorder(
-          micStream
+          audioStream
         );
 
 
-      mediaRecorder.ondataavailable =
+      recorder.ondataavailable =
         event => {
 
           if (
-            event.data.size >
-            0
+            event.data.size
           ) {
-
-            recordedChunks.push(
+            voiceChunks.push(
               event.data
             );
-
           }
-
         };
 
 
-      mediaRecorder.onstop =
+      recorder.onstop =
         () => {
 
           recordedBlob =
             new Blob(
-              recordedChunks,
+              voiceChunks,
               {
                 type:
-                  mediaRecorder.mimeType ||
+                  recorder.mimeType ||
                   "audio/webm"
               }
             );
 
 
-          micStream
+          audioStream
             .getTracks()
             .forEach(
               track =>
                 track.stop()
             );
-
         };
 
 
-      recordingStartedAt =
+      recorder.start();
+
+
+      voiceStart =
         Date.now();
-
-
-      recordedDuration =
-        0;
-
-
-      mediaRecorder.start();
 
 
       $("recordBar")
         .classList
-        .add("show");
+        .add(
+          "show"
+        );
 
 
-      recordingTimer =
+      voiceTimer =
         setInterval(
           () => {
 
-            recordedDuration =
+            $("recordTime")
+              .textContent =
               Math.floor(
                 (
                   Date.now() -
-                  recordingStartedAt
+                  voiceStart
                 ) /
                 1000
-              );
-
-
-            $("recordTime").textContent =
-              formatDuration(
-                recordedDuration
-              );
+              ) +
+              " сек";
 
           },
-          250
+          500
         );
 
     } catch (error) {
 
       toast(
-        lang === "ru"
-          ? "Нужно разрешить доступ к микрофону"
-          : "Microphone permission required"
+        "Нет доступа к микрофону"
       );
-
     }
-
   };
-
-
-function stopRecorder(){
-
-  clearInterval(
-    recordingTimer
-  );
-
-
-  if (
-    mediaRecorder &&
-    mediaRecorder.state ===
-    "recording"
-  ) {
-
-    mediaRecorder.stop();
-
-  }
-
-
-  $("recordBar")
-    .classList
-    .remove("show");
-
-}
 
 
 $("recordCancel").onclick =
   () => {
 
-    stopRecorder();
+    if (
+      recorder?.state ===
+      "recording"
+    ) {
+      recorder.stop();
+    }
 
 
-    recordedChunks =
-      [];
+    clearInterval(
+      voiceTimer
+    );
 
 
     recordedBlob =
       null;
 
+
+    $("recordBar")
+      .classList
+      .remove(
+        "show"
+      );
   };
 
 
@@ -6013,263 +2624,94 @@ $("recordSend").onclick =
   async () => {
 
     if (
-      !mediaRecorder
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      mediaRecorder.state ===
+      recorder?.state ===
       "recording"
     ) {
 
-      stopRecorder();
-
-
       await new Promise(
-        resolve =>
-          setTimeout(
-            resolve,
-            150
-          )
-      );
+        resolve => {
 
+          recorder
+            .addEventListener(
+              "stop",
+              resolve,
+              {
+                once:true
+              }
+            );
+
+
+          recorder.stop();
+        }
+      );
     }
+
+
+    clearInterval(
+      voiceTimer
+    );
+
+
+    $("recordBar")
+      .classList
+      .remove(
+        "show"
+      );
 
 
     if (
       !recordedBlob ||
       !activeChat.id
     ) {
-
       return;
-
     }
 
 
-    const dataUrl =
-      await blobToDataURL(
-        recordedBlob
+    const duration =
+      Math.max(
+        1,
+        Math.round(
+          (
+            Date.now() -
+            voiceStart
+          ) /
+          1000
+        )
       );
 
 
-    send({
+    const reader =
+      new FileReader();
 
-      type:
-        "voice_message",
 
-      chatId:
-        activeChat.id,
+    reader.onload =
+      () => {
 
-      audio:
-        dataUrl,
+        send({
 
-      duration:
-        Math.max(
-          1,
-          recordedDuration
-        )
+          type:
+            "voice_message",
 
-    });
+          chatId:
+            activeChat.id,
+
+          audio:
+            reader.result,
+
+          duration
+        });
+      };
+
+
+    reader.readAsDataURL(
+      recordedBlob
+    );
 
 
     recordedBlob =
       null;
-
-
-    recordedChunks =
-      [];
-
-
-    recordedDuration =
-      0;
-
-
-    $("recordTime").textContent =
-      "0:00";
-
   };
 
-
-function blobToDataURL(blob){
-
-  return new Promise(
-    (
-      resolve,
-      reject
-    ) => {
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        () =>
-          resolve(
-            reader.result
-          );
-
-
-      reader.onerror =
-        reject;
-
-
-      reader.readAsDataURL(
-        blob
-      );
-
-    }
-  );
-
-}
-
-
-/* CHAT LIST */
-
-function renderChats(){
-
-  const list =
-    $("chatFriendList");
-
-
-  list.innerHTML =
-    "";
-
-
-  if (
-    !friends.length
-  ) {
-
-    list.innerHTML =
-      `
-      <div class="chatEmpty">
-
-        <div style="font-size:45px">
-          💬
-        </div>
-
-        <h3>
-          ${t("chats")}
-        </h3>
-
-        <p>
-          ${
-            lang === "ru"
-              ? "Постоянные чаты появятся после взаимного 💗."
-              : "Permanent chats appear after a mutual 💗."
-          }
-        </p>
-
-      </div>
-      `;
-
-
-    return;
-
-  }
-
-
-  friends.forEach(
-    friend => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "chatListCard";
-
-
-      const avatarBox =
-        document.createElement(
-          "div"
-        );
-
-
-      avatarBox.className =
-        "friendAvatar";
-
-
-      setAvatar(
-
-        avatarBox,
-
-        friend.avatar,
-
-        friend.name
-
-      );
-
-
-      const main =
-        document.createElement(
-          "div"
-        );
-
-
-      main.className =
-        "main";
-
-
-      main.innerHTML =
-        `
-        <b></b>
-
-        <small>
-          ${
-            lang === "ru"
-              ? "Открыть чат"
-              : "Open chat"
-          }
-        </small>
-        `;
-
-
-      main
-        .querySelector("b")
-        .textContent =
-        friend.name ||
-        "SnapVibe";
-
-
-      card.append(
-        avatarBox,
-        main
-      );
-
-
-      card.onclick =
-        () => {
-
-          send({
-
-            type:
-              "friend_chat_open",
-
-            friendId:
-              friend.id
-
-          });
-
-        };
-
-
-      list.appendChild(
-        card
-      );
-
-    }
-  );
-
-}
-
-
-/* FRIENDS */
 
 function renderFriends(){
 
@@ -6286,183 +2728,360 @@ function renderFriends(){
   ) {
 
     box.innerHTML =
-      `
-      <p style="
-        text-align:center;
-        color:#777;
-        padding:50px
-      ">
-        ${
-          lang === "ru"
-            ? "Пока друзей нет"
-            : "No friends yet"
-        }
-      </p>
-      `;
-
+      '<div class="empty">Пока друзей нет</div>';
 
     return;
-
   }
 
 
-  friends.forEach(
-    friend => {
+  for (
+    const friend
+    of friends
+  ) {
 
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.className =
-        "friend";
-
-
-      const avatarBox =
-        document.createElement(
-          "div"
-        );
-
-
-      avatarBox.className =
-        "friendAvatar";
-
-
-      setAvatar(
-
-        avatarBox,
-
-        friend.avatar,
-
-        friend.name
-
+    const row =
+      document.createElement(
+        "div"
       );
 
 
-      const main =
-        document.createElement(
-          "div"
-        );
+    row.className =
+      "friend";
 
 
-      main.className =
-        "friendMain";
-
-
-      main.innerHTML =
-        "<b></b><small>💗</small>";
-
-
-      main
-        .querySelector("b")
-        .textContent =
-        friend.name ||
-        "SnapVibe";
-
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-
-      button.textContent =
-        "💬";
-
-
-      button.onclick =
-        () => {
-
-          send({
-
-            type:
-              "friend_chat_open",
-
-            friendId:
-              friend.id
-
-          });
-
-        };
-
-
-      row.append(
-        avatarBox,
-        main,
-        button
+    const avatar =
+      document.createElement(
+        "div"
       );
 
 
-      box.appendChild(
-        row
+    avatar.className =
+      "friendAvatar";
+
+
+    setAvatar(
+      avatar,
+      friend.avatar,
+      friend.name
+    );
+
+
+    const main =
+      document.createElement(
+        "div"
       );
 
-    }
-  );
 
+    main.className =
+      "friendMain";
+
+
+    const name =
+      document.createElement(
+        "b"
+      );
+
+
+    name.textContent =
+      friend.name ||
+      "SnapVibe";
+
+
+    const meta =
+      document.createElement(
+        "small"
+      );
+
+
+    meta.textContent =
+      [
+        friend.age,
+        friend.country
+      ]
+      .filter(Boolean)
+      .join(" · ") ||
+      "💗";
+
+
+    main.append(
+      name,
+      meta
+    );
+
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+
+    button.textContent =
+      "💬";
+
+
+    button.onclick =
+      () => {
+
+        send({
+
+          type:
+            "friend_chat_open",
+
+          friendId:
+            friend.id
+        });
+      };
+
+
+    row.append(
+      avatar,
+      main,
+      button
+    );
+
+
+    box.appendChild(
+      row
+    );
+  }
 }
 
 
-/* PROFILE */
+function renderChats(){
+
+  const box =
+    $("chatFriendList");
+
+
+  box.innerHTML =
+    "";
+
+
+  if (
+    !friends.length
+  ) {
+
+    box.innerHTML =
+      '<div class="empty">Пока чатов нет</div>';
+
+    return;
+  }
+
+
+  for (
+    const friend
+    of friends
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "chatListCard";
+
+
+    const avatar =
+      document.createElement(
+        "div"
+      );
+
+
+    avatar.className =
+      "friendAvatar";
+
+
+    setAvatar(
+      avatar,
+      friend.avatar,
+      friend.name
+    );
+
+
+    const main =
+      document.createElement(
+        "div"
+      );
+
+
+    main.className =
+      "main";
+
+
+    const name =
+      document.createElement(
+        "b"
+      );
+
+
+    name.textContent =
+      friend.name ||
+      "SnapVibe";
+
+
+    const text =
+      document.createElement(
+        "small"
+      );
+
+
+    text.textContent =
+      "Постоянный чат";
+
+
+    main.append(
+      name,
+      text
+    );
+
+
+    row.append(
+      avatar,
+      main
+    );
+
+
+    row.onclick =
+      () => {
+
+        send({
+
+          type:
+            "friend_chat_open",
+
+          friendId:
+            friend.id
+        });
+      };
+
+
+    box.appendChild(
+      row
+    );
+  }
+}
+
 
 function fillProfile(){
 
-  $("profileNameTitle").textContent =
-    profile.name ||
-    "SnapVibe";
-
-
-  $("profileMeta").textContent =
-    [
-      profile.age
-        ? profile.age +
-          (
-            lang === "ru"
-              ? " лет"
-              : ""
-          )
-        : "",
-
-      localizedCountryName(
-        profile.country
-      )
-    ]
-    .filter(Boolean)
-    .join(", ");
-
-
-  setAvatar(
-
-    $("profileAvatar"),
-
-    avatar,
-
-    profile.name
-
-  );
-
-
-  $("editName").value =
+  $("editName")
+    .value =
     profile.name ||
     "";
 
 
-  $("editAge").value =
+  $("editAge")
+    .value =
     profile.age ||
     "";
 
 
-  $("editGender").value =
+  $("editGender")
+    .value =
     profile.gender ||
     "male";
 
 
-  $("editCountry").value =
+  $("editCountry")
+    .value =
     profile.country ||
     "EE";
 
+
+  $("profileNameTitle")
+    .textContent =
+    profile.name ||
+    "SnapVibe";
+
+
+  $("profileMeta")
+    .textContent =
+    [
+      profile.age,
+      profile.country
+    ]
+    .filter(Boolean)
+    .join(" · ");
+
+
+  setAvatar(
+    $("profileAvatar"),
+    profile.avatar,
+    profile.name
+  );
 }
+
+
+$("finishRegister").onclick =
+  () => {
+
+    const name =
+      $("regName")
+        .value
+        .trim();
+
+
+    const age =
+      Number(
+        $("regAge")
+          .value
+      );
+
+
+    if (!name) {
+
+      return toast(
+        "Введите имя"
+      );
+    }
+
+
+    if (
+      !age ||
+      age < 18 ||
+      age > 99
+    ) {
+
+      return toast(
+        "Возраст 18–99"
+      );
+    }
+
+
+    profile = {
+      ...profile,
+
+      name:
+        name.slice(
+          0,
+          30
+        ),
+
+      age,
+
+      gender:
+        $("regGender")
+          .value,
+
+      country:
+        $("regCountry")
+          .value
+          .trim()
+          .toUpperCase() ||
+        "EE"
+    };
+
+
+    saveProfileLocal();
+
+    registerProfile();
+
+    show(
+      "cameraView"
+    );
+  };
 
 
 $("saveProfile").onclick =
@@ -6484,1126 +3103,231 @@ $("saveProfile").onclick =
     if (!name) {
 
       return toast(
-        lang === "ru"
-          ? "Введите имя"
-          : "Enter name"
+        "Введите имя"
       );
-
     }
 
 
-    if (
-      age < 18 ||
-      age > 99
-    ) {
+    profile = {
+      ...profile,
 
-      return toast(
-        lang === "ru"
-          ? "Возраст 18–99"
-          : "Age 18–99"
-      );
+      name:
+        name.slice(
+          0,
+          30
+        ),
 
-    }
+      age:
+        age ||
+        null,
 
+      gender:
+        $("editGender")
+          .value,
 
-    profile.name =
-      name.slice(
-        0,
-        30
-      );
-
-
-    profile.age =
-      age;
-
-
-    profile.gender =
-      $("editGender")
-        .value;
-
-
-    profile.country =
-      $("editCountry")
-        .value;
-
-
-    localStorage.setItem(
-      "snapvibe_user_name",
-      profile.name
-    );
-
-
-    localStorage.setItem(
-      "snapvibe_age",
-      profile.age
-    );
-
-
-    localStorage.setItem(
-      "snapvibe_gender",
-      profile.gender
-    );
-
-
-    localStorage.setItem(
-      "snapvibe_country",
-      profile.country
-    );
-
-
-    registerProfile();
-
-
-    fillProfile();
-
-
-    toast(
-      lang === "ru"
-        ? "Профиль сохранён"
-        : "Profile saved"
-    );
-
-  };
-
-
-function loadAvatar(
-  file
-){
-
-  if (
-    !file
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    file.size >
-    5 * 1024 * 1024
-  ) {
-
-    return toast(
-      lang === "ru"
-        ? "Фото слишком большое"
-        : "Photo is too large"
-    );
-
-  }
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload =
-    () => {
-
-      avatar =
-        reader.result;
-
-
-      profile.avatar =
-        avatar;
-
-
-      localStorage.setItem(
-        "snapvibe_avatar",
-        avatar
-      );
-
-
-      registerProfile();
-
-
-      fillProfile();
-
-
-      toast(
-        lang === "ru"
-          ? "Фото обновлено"
-          : "Photo updated"
-      );
-
+      country:
+        $("editCountry")
+          .value
+          .trim()
+          .toUpperCase()
     };
 
 
-  reader.readAsDataURL(
-    file
-  );
+    saveProfileLocal();
 
+    registerProfile();
+
+    toast(
+      "Сохраняем..."
+    );
+  };
+
+
+async function imageFileToData(
+  file
+){
+
+  return new Promise(
+    (resolve,reject) => {
+
+      const image =
+        new Image();
+
+
+      const url =
+        URL.createObjectURL(
+          file
+        );
+
+
+      image.onload =
+        () => {
+
+          const width =
+            Math.min(
+              360,
+              image.width
+            );
+
+
+          const height =
+            Math.round(
+              image.height *
+              width /
+              image.width
+            );
+
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          canvas.width =
+            width;
+
+          canvas.height =
+            height;
+
+
+          canvas
+            .getContext(
+              "2d"
+            )
+            .drawImage(
+              image,
+              0,
+              0,
+              width,
+              height
+            );
+
+
+          URL.revokeObjectURL(
+            url
+          );
+
+
+          resolve(
+            canvas
+              .toDataURL(
+                "image/jpeg",
+                .72
+              )
+          );
+        };
+
+
+      image.onerror =
+        reject;
+
+
+      image.src =
+        url;
+    }
+  );
 }
 
 
-/* ADD PHOTO */
+async function avatarChanged(
+  event
+){
+
+  const file =
+    event.target
+      .files?.[0];
+
+
+  if (!file) {
+    return;
+  }
+
+
+  try {
+
+    profile.avatar =
+      await imageFileToData(
+        file
+      );
+
+
+    saveProfileLocal();
+
+    fillProfile();
+
+    registerProfile();
+
+  } catch (error) {
+
+    toast(
+      "Не удалось обработать фото"
+    );
+  }
+}
+
 
 $("takeAvatar").onclick =
-  () => {
-
+  () =>
     $("cameraAvatarInput")
       .click();
 
-  };
-
 
 $("chooseAvatar").onclick =
-  () => {
-
+  () =>
     $("galleryAvatarInput")
       .click();
 
-  };
+
+$("cameraAvatarInput")
+  .onchange =
+  avatarChanged;
 
 
-$("cameraAvatarInput").onchange =
-  event => {
+$("galleryAvatarInput")
+  .onchange =
+  avatarChanged;
 
-    loadAvatar(
-      event.target
-        .files?.[0]
-    );
-
-  };
-
-
-$("galleryAvatarInput").onchange =
-  event => {
-
-    loadAvatar(
-      event.target
-        .files?.[0]
-    );
-
-  };
-
-
-/* CONFIRM PHOTO DELETE */
 
 $("removeAvatar").onclick =
   () => {
 
-    openModal(
+    profile.avatar =
+      "";
 
-      lang === "ru"
-        ? "Удалить фото?"
-        : "Remove photo?",
 
-      `
-      <p>
-        ${
-          lang === "ru"
-            ? "Фотография профиля будет удалена. Продолжить?"
-            : "Your profile photo will be removed. Continue?"
-        }
-      </p>
-      `,
+    saveProfileLocal();
 
-      () => {
-
-        avatar =
-          "";
-
-
-        profile.avatar =
-          "";
-
-
-        localStorage.removeItem(
-          "snapvibe_avatar"
-        );
-
-
-        registerProfile();
-
-
-        fillProfile();
-
-
-        toast(
-          lang === "ru"
-            ? "Фото удалено"
-            : "Photo removed"
-        );
-
-      },
-
-      true,
-
-      true
-
-    );
-
-  };
-
-
-/* MODAL */
-
-function openModal(
-  title,
-  body,
-  saveCallback = null,
-  showSave = true,
-  dangerSave = false
-){
-
-  $("modalTitle").textContent =
-    title;
-
-
-  $("modalBody").innerHTML =
-    body;
-
-
-  $("modalSave").style.display =
-    showSave
-      ? "block"
-      : "none";
-
-
-  $("modalSave")
-    .classList
-    .toggle(
-      "dangerBtn",
-      dangerSave
-    );
-
-
-  $("modal")
-    .classList
-    .add("show");
-
-
-  $("modalSave").onclick =
-    () => {
-
-      if (
-        saveCallback
-      ) {
-
-        saveCallback();
-
-      }
-
-
-      $("modal")
-        .classList
-        .remove("show");
-
-    };
-
-}
-
-
-$("modalCancel").onclick =
-  () => {
-
-    $("modal")
-      .classList
-      .remove("show");
-
-  };
-
-
-/* SEARCH SETTINGS */
-
-function renderSettings(){
-
-  const genderText =
-    settings.gender ===
-    "female"
-      ? t("female")
-      : settings.gender ===
-        "male"
-        ? t("male")
-        : t("other");
-
-
-  $("genderLabel").textContent =
-    genderText +
-    " ›";
-
-
-  $("ageLabel").textContent =
-    settings.ageMin +
-    " — " +
-    settings.ageMax +
-    " ›";
-
-
-  $("countryLabel").textContent =
-    (
-      settings.country
-        ? localizedCountryName(
-            settings.country
-          )
-        : (
-            lang === "ru"
-              ? "Все страны"
-              : "All countries"
-          )
-    ) +
-    " ›";
-
-
-  $("notificationsToggle")
-    .classList
-    .toggle(
-      "on",
-      notificationsEnabled
-    );
-
-}
-
-
-$("searchSettings").onclick =
-  () => {
-
-    renderSettings();
-
-    show(
-      "settingsView"
-    );
-
-  };
-
-
-$("settingsBack").onclick =
-  () => {
-
-    show(
-      "profileView"
-    );
-
-  };
-
-
-$("setGender").onclick =
-  () => {
-
-    openModal(
-
-      t("gender"),
-
-      `
-      <div class="field">
-
-        <select id="mGender">
-
-          <option value="female">
-            ${t("female")}
-          </option>
-
-          <option value="male">
-            ${t("male")}
-          </option>
-
-          <option value="all">
-            ${
-              lang === "ru"
-                ? "Все"
-                : "All"
-            }
-          </option>
-
-        </select>
-
-      </div>
-      `,
-
-      () => {
-
-        settings.gender =
-          $("mGender").value;
-
-
-        localStorage.setItem(
-          "snapvibe_search_gender",
-          settings.gender
-        );
-
-
-        renderSettings();
-
-      }
-
-    );
-
-
-    setTimeout(
-      () => {
-
-        $("mGender").value =
-          settings.gender;
-
-      },
-      0
-    );
-
-  };
-
-
-$("setAge").onclick =
-  () => {
-
-    openModal(
-
-      t("age"),
-
-      `
-      <div class="grid2">
-
-        <div class="field">
-
-          <label>
-            ${
-              lang === "ru"
-                ? "От"
-                : "From"
-            }
-          </label>
-
-          <input
-            id="mMin"
-            type="number"
-            min="18"
-            max="99"
-            value="${settings.ageMin}"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>
-            ${
-              lang === "ru"
-                ? "До"
-                : "To"
-            }
-          </label>
-
-          <input
-            id="mMax"
-            type="number"
-            min="18"
-            max="99"
-            value="${settings.ageMax}"
-          >
-
-        </div>
-
-      </div>
-      `,
-
-      () => {
-
-        let min =
-          Number(
-            $("mMin").value
-          ) || 18;
-
-
-        let max =
-          Number(
-            $("mMax").value
-          ) || 35;
-
-
-        if (
-          min > max
-        ) {
-
-          [
-            min,
-            max
-          ] = [
-            max,
-            min
-          ];
-
-        }
-
-
-        settings.ageMin =
-          Math.max(
-            18,
-            min
-          );
-
-
-        settings.ageMax =
-          Math.min(
-            99,
-            max
-          );
-
-
-        localStorage.setItem(
-          "snapvibe_age_min",
-          settings.ageMin
-        );
-
-
-        localStorage.setItem(
-          "snapvibe_age_max",
-          settings.ageMax
-        );
-
-
-        renderSettings();
-
-      }
-
-    );
-
-  };
-
-
-$("setCountry").onclick =
-  () => {
-
-    openModal(
-
-      t("country"),
-
-      `
-      <div class="field">
-        <select id="mCountry"></select>
-      </div>
-      `,
-
-      () => {
-
-        settings.country =
-          $("mCountry").value;
-
-
-        localStorage.setItem(
-          "snapvibe_search_country",
-          settings.country
-        );
-
-
-        renderSettings();
-
-      }
-
-    );
-
-
-    setTimeout(
-      () => {
-
-        fillCountrySelect(
-          $("mCountry"),
-          true
-        );
-
-
-        $("mCountry").value =
-          settings.country;
-
-      },
-      0
-    );
-
-  };
-
-
-/* NOTIFICATIONS */
-
-$("notificationsRow").onclick =
-  async () => {
-
-    notificationsEnabled =
-      !notificationsEnabled;
-
-
-    localStorage.setItem(
-      "snapvibe_notifications",
-      notificationsEnabled
-        ? "on"
-        : "off"
-    );
-
-
-    renderSettings();
-
-
-    if (
-      notificationsEnabled
-    ) {
-
-      await subscribePush();
-
-    }
-
-  };
-
-
-/* APP SETTINGS */
-
-$("privacyRow").onclick =
-  () => {
-
-    openInfo(
-      t("privacy"),
-      lang === "ru"
-        ? "SnapVibe использует данные профиля для мэтчинга и общения. Фото эмоции не является публичной фотографией профиля."
-        : "SnapVibe uses profile data for matching and communication."
-    );
-
-  };
-
-
-$("blockedRow").onclick =
-  () => {
-
-    openInfo(
-      t("blocked"),
-      lang === "ru"
-        ? "Здесь будут отображаться заблокированные пользователи."
-        : "Blocked users will appear here."
-    );
-
-  };
-
-
-function openSafety(){
-
-  openInfo(
-    t("security"),
-    lang === "ru"
-      ? "Не отправляй деньги незнакомым людям. Для первой встречи выбирай общественное место и сообщай близким, куда идёшь."
-      : "Never send money to strangers. Meet in public places."
-  );
-
-}
-
-
-$("securityRow").onclick =
-  openSafety;
-
-
-$("profileSafety").onclick =
-  openSafety;
-
-
-$("rulesRow").onclick =
-  () => {
-
-    openInfo(
-      t("rules"),
-      lang === "ru"
-        ? "Запрещены угрозы, травля, мошенничество, спам и публикация чужих личных данных."
-        : "Threats, harassment, fraud, spam and sharing private data are prohibited."
-    );
-
-  };
-
-
-$("policyRow").onclick =
-  () => {
-
-    openInfo(
-      t("policy"),
-      lang === "ru"
-        ? "Перед публикацией приложения здесь будет размещена полная политика конфиденциальности."
-        : "A full privacy policy will be published here before release."
-    );
-
-  };
-
-
-$("deleteRow").onclick =
-  () => {
-
-    openModal(
-
-      t("deleteAccount"),
-
-      `
-      <p>
-        ${
-          lang === "ru"
-            ? "Удалить данные профиля с этого устройства?"
-            : "Delete profile data from this device?"
-        }
-      </p>
-      `,
-
-      () => {
-
-        [
-          "snapvibe_user_id",
-          "snapvibe_user_name",
-          "snapvibe_age",
-          "snapvibe_gender",
-          "snapvibe_country",
-          "snapvibe_avatar",
-          "snapvibe_search_gender",
-          "snapvibe_age_min",
-          "snapvibe_age_max",
-          "snapvibe_search_country"
-        ]
-        .forEach(
-          key => {
-
-            localStorage.removeItem(
-              key
-            );
-
-          }
-        );
-
-
-        location.reload();
-
-      },
-
-      true,
-      true
-
-    );
-
-  };
-
-
-function openInfo(
-  title,
-  text
-){
-
-  openModal(
-
-    title,
-
-    `<p>${text}</p>`,
-
-    null,
-
-    false
-
-  );
-
-}
-
-
-/* LANGUAGE */
-
-$("languageSettings").onclick =
-  () => {
-
-    openModal(
-
-      t("language"),
-
-      `
-      <div class="field">
-
-        <select id="mLang">
-
-          <option value="ru">
-            🇷🇺 Русский
-          </option>
-
-          <option value="en">
-            🇬🇧 English
-          </option>
-
-          <option value="et">
-            🇪🇪 Eesti
-          </option>
-
-          <option value="uk">
-            🇺🇦 Українська
-          </option>
-
-          <option value="de">
-            🇩🇪 Deutsch
-          </option>
-
-          <option value="es">
-            🇪🇸 Español
-          </option>
-
-        </select>
-
-      </div>
-      `,
-
-      () => {
-
-        lang =
-          $("mLang").value;
-
-
-        profile.language =
-          lang;
-
-
-        localStorage.setItem(
-          "snapvibe_language",
-          lang
-        );
-
-
-        applyLanguage();
-
-
-        fillCountrySelect(
-          $("regCountry")
-        );
-
-
-        fillCountrySelect(
-          $("editCountry")
-        );
-
-
-        $("editCountry").value =
-          profile.country ||
-          "EE";
-
-
-        renderSettings();
-
-
-        registerProfile();
-
-      }
-
-    );
-
-
-    setTimeout(
-      () => {
-
-        $("mLang").value =
-          lang;
-
-      },
-      0
-    );
-
-  };
-
-
-/* REGISTER */
-
-$("finishRegister").onclick =
-  () => {
-
-    const name =
-      $("regName").value
-        .trim();
-
-
-    const age =
-      Number(
-        $("regAge").value
-      );
-
-
-    if (
-      !name
-    ) {
-
-      return toast(
-        lang === "ru"
-          ? "Введите имя"
-          : "Enter name"
-      );
-
-    }
-
-
-    if (
-      age < 18 ||
-      age > 99
-    ) {
-
-      return toast(
-        lang === "ru"
-          ? "Возраст 18–99"
-          : "Age 18–99"
-      );
-
-    }
-
-
-    profile.name =
-      name.slice(
-        0,
-        30
-      );
-
-
-    profile.age =
-      age;
-
-
-    profile.gender =
-      $("regGender").value;
-
-
-    profile.country =
-      $("regCountry").value;
-
-
-    localStorage.setItem(
-      "snapvibe_user_name",
-      profile.name
-    );
-
-
-    localStorage.setItem(
-      "snapvibe_age",
-      profile.age
-    );
-
-
-    localStorage.setItem(
-      "snapvibe_gender",
-      profile.gender
-    );
-
-
-    localStorage.setItem(
-      "snapvibe_country",
-      profile.country
-    );
-
+    fillProfile();
 
     registerProfile();
-
-
-    show(
-      "cameraView"
-    );
-
   };
 
 
-/* PUSH NOTIFICATIONS */
-
-async function registerServiceWorker(){
-
-  if (
-    !(
-      "serviceWorker" in
-      navigator
-    )
-  ) {
-
-    return null;
-
-  }
-
+async function enablePush(){
 
   try {
-
-    return await navigator
-      .serviceWorker
-      .register(
-        "/sw.js"
-      );
-
-  } catch (error) {
-
-    console.error(
-      "SW error",
-      error
-    );
-
-    return null;
-
-  }
-
-}
-
-
-function urlBase64ToUint8Array(
-  base64String
-){
-
-  const padding =
-    "=".repeat(
-      (
-        4 -
-        base64String.length %
-        4
-      ) %
-      4
-    );
-
-
-  const base64 =
-    (
-      base64String +
-      padding
-    )
-    .replace(
-      /-/g,
-      "+"
-    )
-    .replace(
-      /_/g,
-      "/"
-    );
-
-
-  const rawData =
-    atob(
-      base64
-    );
-
-
-  return Uint8Array.from(
-    [
-      ...rawData
-    ]
-    .map(
-      char =>
-        char.charCodeAt(0)
-    )
-  );
-
-}
-
-
-async function subscribePush(){
-
-  if (
-    !notificationsEnabled ||
-    !(
-      "Notification" in
-      window
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    let permission =
-      Notification.permission;
-
 
     if (
-      permission ===
-      "default"
+      !(
+        "serviceWorker"
+        in navigator
+      ) ||
+      !(
+        "PushManager"
+        in window
+      )
     ) {
 
-      permission =
-        await Notification
-          .requestPermission();
-
+      return toast(
+        "Уведомления не поддерживаются"
+      );
     }
+
+
+    const permission =
+      await Notification
+        .requestPermission();
 
 
     if (
@@ -7611,45 +3335,74 @@ async function subscribePush(){
       "granted"
     ) {
 
-      return;
-
+      return toast(
+        "Уведомления не разрешены"
+      );
     }
 
 
     const registration =
-      await registerServiceWorker();
+      await navigator
+        .serviceWorker
+        .register(
+          "/sw.js"
+        );
 
 
-    if (
-      !registration
-    ) {
-
-      return;
-
-    }
-
-
-    const response =
+    const publicKey =
       await fetch(
         "/push-public-key"
+      )
+      .then(
+        response =>
+          response.json()
+      )
+      .then(
+        data =>
+          data.publicKey
       );
 
 
-    const result =
-      await response.json();
+    if (!publicKey) {
 
-
-    if (
-      !result.publicKey
-    ) {
-
-      console.log(
-        "VAPID key not configured"
+      return toast(
+        "Push ещё не настроен"
       );
-
-      return;
-
     }
+
+
+    const base64 =
+      (
+        publicKey +
+        "=".repeat(
+          (
+            4 -
+            publicKey.length %
+            4
+          ) %
+          4
+        )
+      )
+      .replace(
+        /-/g,
+        "+"
+      )
+      .replace(
+        /_/g,
+        "/"
+      );
+
+
+    const bytes =
+      Uint8Array.from(
+        atob(
+          base64
+        ),
+        char =>
+          char.charCodeAt(
+            0
+          )
+      );
 
 
     let subscription =
@@ -7658,9 +3411,7 @@ async function subscribePush(){
         .getSubscription();
 
 
-    if (
-      !subscription
-    ) {
+    if (!subscription) {
 
       subscription =
         await registration
@@ -7670,12 +3421,8 @@ async function subscribePush(){
             userVisibleOnly:true,
 
             applicationServerKey:
-              urlBase64ToUint8Array(
-                result.publicKey
-              )
-
+              bytes
           });
-
     }
 
 
@@ -7684,98 +3431,145 @@ async function subscribePush(){
       type:
         "push_subscribe",
 
-      subscription
-
+      subscription:
+        subscription.toJSON()
     });
+
+
+    toast(
+      "Уведомления включены"
+    );
 
   } catch (error) {
 
     console.error(
-      "Push subscribe",
       error
     );
 
-  }
 
+    toast(
+      "Не удалось включить уведомления"
+    );
+  }
 }
 
 
-function showLocalNotification(
-  message
+$("enableNotifications").onclick =
+  enablePush;
+
+
+/* CALLS */
+
+let peer = null;
+let callStream = null;
+let currentCall = null;
+let muted = false;
+let front = true;
+
+
+function activePerson(){
+
+  return (
+    activeChat.person ||
+    match?.partnerProfile ||
+    null
+  );
+}
+
+
+async function mediaFor(
+  type
 ){
 
-  if (
-    !notificationsEnabled ||
-    document.visibilityState ===
-    "visible" ||
-    Notification.permission !==
-    "granted"
-  ) {
+  if (callStream) {
 
-    return;
-
+    return callStream;
   }
 
 
-  const name =
-    message.senderName ||
-    "SnapVibe";
+  callStream =
+    await navigator
+      .mediaDevices
+      .getUserMedia(
+
+        type ===
+        "video"
+
+          ? {
+
+              audio:true,
+
+              video:{
+
+                facingMode:
+                  front
+                    ? "user"
+                    : "environment",
+
+                width:{
+                  ideal:640
+                },
+
+                height:{
+                  ideal:480
+                }
+              }
+            }
+
+          : {
+              audio:true,
+              video:false
+            }
+      );
 
 
-  new Notification(
-    name,
-    {
-      body:
-        message.type ===
-        "voice"
-          ? "🎤 Voice message"
-          : message.text,
+  if (
+    type ===
+    "video"
+  ) {
 
-      icon:
-        message.senderAvatar ||
-        undefined
-    }
-  );
+    $("localVideo")
+      .srcObject =
+      callStream;
+  }
 
+
+  return callStream;
 }
 
 
-/* WEBRTC CALLS */
+function createPeer(){
 
-function createPeerConnection(){
+  if (peer) {
 
-  if (
-    peerConnection
-  ) {
-
-    return peerConnection;
-
+    return peer;
   }
 
 
-  peerConnection =
+  peer =
     new RTCPeerConnection({
 
       iceServers:[
+
         {
           urls:
             "stun:stun.l.google.com:19302"
         },
+
         {
           urls:
             "stun:stun1.l.google.com:19302"
         }
       ]
-
     });
 
 
-  peerConnection.onicecandidate =
+  peer.onicecandidate =
     event => {
 
       if (
         event.candidate &&
-        currentCall?.targetUserId
+        currentCall
       ) {
 
         send({
@@ -7794,238 +3588,60 @@ function createPeerConnection(){
 
           candidate:
             event.candidate
-
         });
-
       }
-
     };
 
 
-  peerConnection.ontrack =
+  peer.ontrack =
     event => {
-
-      const remoteStream =
-        event.streams[0];
-
 
       if (
         currentCall?.callType ===
         "video"
       ) {
 
-        $("remoteVideo").srcObject =
-          remoteStream;
+        $("remoteVideo")
+          .srcObject =
+          event.streams[0];
 
       } else {
 
-        $("remoteAudio").srcObject =
-          remoteStream;
-
+        $("remoteAudio")
+          .srcObject =
+          event.streams[0];
       }
-
     };
 
 
-  return peerConnection;
-
+  return peer;
 }
 
 
-async function getCallMedia(
-  type
-){
-
-  if (
-    callStream
-  ) {
-
-    return callStream;
-
-  }
-
-
-  callStream =
-    await navigator
-      .mediaDevices
-      .getUserMedia({
-
-        audio:true,
-
-        video:
-          type === "video"
-            ? {
-                facingMode:
-                  usingFrontCamera
-                    ? "user"
-                    : "environment"
-              }
-            : false
-
-      });
-
-
-  if (
-    type === "video"
-  ) {
-
-    $("localVideo").srcObject =
-      callStream;
-
-  }
-
-
-  return callStream;
-
-}
-
-
-function activeCallPerson(){
-
-  return (
-    activeChat.person ||
-    match?.partnerProfile ||
-    null
-  );
-
-}
-
-
-async function startCall(
-  type
-){
-
-  const person =
-    activeCallPerson();
-
-
-  const targetUserId =
-    person?.id ||
-    match?.partnerId;
-
-
-  if (
-    !targetUserId
-  ) {
-
-    return toast(
-      lang === "ru"
-        ? "Собеседник не найден"
-        : "User not found"
-    );
-
-  }
-
-
-  try {
-
-    await getCallMedia(
-      type
-    );
-
-
-    currentCall = {
-
-      callId:null,
-
-      callType:
-        type,
-
-      targetUserId,
-
-      incoming:false,
-
-      person
-
-    };
-
-
-    showCallScreen(
-      person,
-      type,
-      false
-    );
-
-
-    send({
-
-      type:
-        "call_invite",
-
-      targetUserId,
-
-      callType:
-        type
-
-    });
-
-  } catch (error) {
-
-    toast(
-      lang === "ru"
-        ? "Нет доступа к микрофону или камере"
-        : "Camera or microphone unavailable"
-    );
-
-  }
-
-}
-
-
-$("audioCallBtn").onclick =
-  () => {
-
-    startCall(
-      "audio"
-    );
-
-  };
-
-
-$("videoCallBtn").onclick =
-  () => {
-
-    startCall(
-      "video"
-    );
-
-  };
-
-
-function showCallScreen(
+function callScreen(
   person,
   type,
   incoming
 ){
 
-  $("callName").textContent =
+  $("callName")
+    .textContent =
     person?.name ||
     "SnapVibe";
 
 
   setAvatar(
-
     $("callAvatar"),
-
     person?.avatar,
-
     person?.name
-
   );
 
 
-  $("callStatus").textContent =
+  $("callStatus")
+    .textContent =
     incoming
-      ? (
-          lang === "ru"
-            ? "Входящий звонок"
-            : "Incoming call"
-        )
-      : (
-          lang === "ru"
-            ? "Вызов..."
-            : "Calling..."
-        );
+      ? "Входящий звонок"
+      : "Вызов...";
 
 
   $("incomingCallActions")
@@ -8044,24 +3660,113 @@ function showCallScreen(
 
   $("callOverlay")
     .classList
-    .add("show");
+    .add(
+      "show"
+    );
 
 
   if (
-    type === "video" &&
+    type ===
+    "video" &&
     !incoming
   ) {
 
     $("videoStage")
       .classList
-      .add("show");
-
+      .add(
+        "show"
+      );
   }
-
 }
 
 
-function showIncomingCall(
+async function startCall(
+  type
+){
+
+  const person =
+    activePerson();
+
+
+  const targetUserId =
+    person?.id ||
+    match?.partnerId;
+
+
+  if (
+    !targetUserId
+  ) {
+
+    return toast(
+      "Собеседник не найден"
+    );
+  }
+
+
+  try {
+
+    await mediaFor(
+      type
+    );
+
+
+    currentCall = {
+
+      callId:null,
+
+      callType:
+        type,
+
+      targetUserId,
+
+      incoming:false,
+
+      person
+    };
+
+
+    callScreen(
+      person,
+      type,
+      false
+    );
+
+
+    send({
+
+      type:
+        "call_invite",
+
+      targetUserId,
+
+      callType:
+        type
+    });
+
+  } catch (error) {
+
+    toast(
+      "Нет доступа к микрофону или камере"
+    );
+  }
+}
+
+
+$("audioCallBtn").onclick =
+  () =>
+    startCall(
+      "audio"
+    );
+
+
+$("videoCallBtn").onclick =
+  () =>
+    startCall(
+      "video"
+    );
+
+
+function incoming(
   data
 ){
 
@@ -8079,6 +3784,7 @@ function showIncomingCall(
     incoming:true,
 
     person:{
+
       id:
         data.fromUserId,
 
@@ -8088,16 +3794,17 @@ function showIncomingCall(
       avatar:
         data.fromAvatar
     }
-
   };
 
 
-  showCallScreen(
+  callScreen(
+
     currentCall.person,
+
     currentCall.callType,
+
     true
   );
-
 }
 
 
@@ -8107,34 +3814,43 @@ $("acceptCall").onclick =
     if (
       !currentCall
     ) {
-
       return;
-
     }
 
 
     try {
 
-      await getCallMedia(
+      await mediaFor(
         currentCall.callType
       );
 
 
-      createPeerConnection();
+      const pc =
+        createPeer();
 
 
-      callStream
-        .getTracks()
-        .forEach(
-          track => {
+      for (
+        const track
+        of callStream
+          .getTracks()
+      ) {
 
-            peerConnection.addTrack(
-              track,
-              callStream
-            );
+        if (
+          !pc
+            .getSenders()
+            .some(
+              sender =>
+                sender.track ===
+                track
+            )
+        ) {
 
-          }
-        );
+          pc.addTrack(
+            track,
+            callStream
+          );
+        }
+      }
 
 
       send({
@@ -8150,7 +3866,6 @@ $("acceptCall").onclick =
 
         callType:
           currentCall.callType
-
       });
 
 
@@ -8164,10 +3879,9 @@ $("acceptCall").onclick =
         "flex";
 
 
-      $("callStatus").textContent =
-        lang === "ru"
-          ? "Соединение..."
-          : "Connecting...";
+      $("callStatus")
+        .textContent =
+        "Соединение...";
 
 
       if (
@@ -8177,29 +3891,26 @@ $("acceptCall").onclick =
 
         $("videoStage")
           .classList
-          .add("show");
-
+          .add(
+            "show"
+          );
       }
 
     } catch (error) {
 
-      rejectCurrentCall();
-
+      cleanupCall();
     }
-
   };
 
 
-async function handleCallAccepted(
+async function callAccepted(
   data
 ){
 
   if (
     !currentCall
   ) {
-
     return;
-
   }
 
 
@@ -8209,45 +3920,42 @@ async function handleCallAccepted(
 
 
   const pc =
-    createPeerConnection();
+    createPeer();
 
 
-  callStream
-    .getTracks()
-    .forEach(
-      track => {
+  for (
+    const track
+    of callStream
+      .getTracks()
+  ) {
 
-        const already =
-          pc.getSenders()
-            .some(
-              sender =>
-                sender.track ===
-                track
-            );
+    if (
+      !pc
+        .getSenders()
+        .some(
+          sender =>
+            sender.track ===
+            track
+        )
+    ) {
 
-
-        if (
-          !already
-        ) {
-
-          pc.addTrack(
-            track,
-            callStream
-          );
-
-        }
-
-      }
-    );
+      pc.addTrack(
+        track,
+        callStream
+      );
+    }
+  }
 
 
   const offer =
-    await pc.createOffer();
+    await pc
+      .createOffer();
 
 
-  await pc.setLocalDescription(
-    offer
-  );
+  await pc
+    .setLocalDescription(
+      offer
+    );
 
 
   send({
@@ -8266,19 +3974,16 @@ async function handleCallAccepted(
 
     sdp:
       offer
-
   });
 
 
-  $("callStatus").textContent =
-    lang === "ru"
-      ? "Соединение..."
-      : "Connecting...";
-
+  $("callStatus")
+    .textContent =
+    "Соединение...";
 }
 
 
-async function handleWebRTCOffer(
+async function rtcOffer(
   data
 ){
 
@@ -8301,6 +4006,7 @@ async function handleWebRTCOffer(
       incoming:true,
 
       person:{
+
         id:
           data.fromUserId,
 
@@ -8310,55 +4016,60 @@ async function handleWebRTCOffer(
         avatar:
           data.fromAvatar
       }
-
     };
-
   }
+
+
+  await mediaFor(
+    currentCall.callType
+  );
 
 
   const pc =
-    createPeerConnection();
+    createPeer();
 
 
-  if (
-    !callStream
+  for (
+    const track
+    of callStream
+      .getTracks()
   ) {
 
-    await getCallMedia(
-      currentCall.callType
-    );
+    if (
+      !pc
+        .getSenders()
+        .some(
+          sender =>
+            sender.track ===
+            track
+        )
+    ) {
 
-
-    callStream
-      .getTracks()
-      .forEach(
-        track => {
-
-          pc.addTrack(
-            track,
-            callStream
-          );
-
-        }
+      pc.addTrack(
+        track,
+        callStream
       );
-
+    }
   }
 
 
-  await pc.setRemoteDescription(
-    new RTCSessionDescription(
-      data.sdp
-    )
-  );
+  await pc
+    .setRemoteDescription(
+      new RTCSessionDescription(
+        data.sdp
+      )
+    );
 
 
   const answer =
-    await pc.createAnswer();
+    await pc
+      .createAnswer();
 
 
-  await pc.setLocalDescription(
-    answer
-  );
+  await pc
+    .setLocalDescription(
+      answer
+    );
 
 
   send({
@@ -8377,32 +4088,25 @@ async function handleWebRTCOffer(
 
     sdp:
       answer
-
   });
 
 
-  $("callStatus").textContent =
-    lang === "ru"
-      ? "Разговор"
-      : "Connected";
-
+  $("callStatus")
+    .textContent =
+    "Разговор";
 }
 
 
-async function handleWebRTCAnswer(
+async function rtcAnswer(
   data
 ){
 
-  if (
-    !peerConnection
-  ) {
-
+  if (!peer) {
     return;
-
   }
 
 
-  await peerConnection
+  await peer
     .setRemoteDescription(
       new RTCSessionDescription(
         data.sdp
@@ -8410,31 +4114,27 @@ async function handleWebRTCAnswer(
     );
 
 
-  $("callStatus").textContent =
-    lang === "ru"
-      ? "Разговор"
-      : "Connected";
-
+  $("callStatus")
+    .textContent =
+    "Разговор";
 }
 
 
-async function handleWebRTCIce(
+async function rtcIce(
   data
 ){
 
   if (
-    !peerConnection ||
+    !peer ||
     !data.candidate
   ) {
-
     return;
-
   }
 
 
   try {
 
-    await peerConnection
+    await peer
       .addIceCandidate(
         new RTCIceCandidate(
           data.candidate
@@ -8446,13 +4146,11 @@ async function handleWebRTCIce(
     console.error(
       error
     );
-
   }
-
 }
 
 
-function rejectCurrentCall(){
+function rejectCall(){
 
   if (
     currentCall
@@ -8471,22 +4169,15 @@ function rejectCurrentCall(){
 
       callType:
         currentCall.callType
-
     });
-
   }
 
 
   cleanupCall();
-
 }
 
 
-$("rejectCall").onclick =
-  rejectCurrentCall;
-
-
-function endCurrentCall(){
+function endCall(){
 
   if (
     currentCall
@@ -8505,42 +4196,38 @@ function endCurrentCall(){
 
       callType:
         currentCall.callType
-
     });
-
   }
 
 
   cleanupCall();
-
 }
 
 
+$("rejectCall").onclick =
+  rejectCall;
+
+
 $("endCall").onclick =
-  endCurrentCall;
+  endCall;
 
 
 $("videoEnd").onclick =
-  endCurrentCall;
+  endCall;
 
 
 function cleanupCall(){
 
-  if (
-    peerConnection
-  ) {
+  if (peer) {
 
-    peerConnection.close();
+    peer.close();
 
-    peerConnection =
+    peer =
       null;
-
   }
 
 
-  if (
-    callStream
-  ) {
+  if (callStream) {
 
     callStream
       .getTracks()
@@ -8552,30 +4239,36 @@ function cleanupCall(){
 
     callStream =
       null;
-
   }
 
 
-  $("remoteVideo").srcObject =
+  $("remoteVideo")
+    .srcObject =
     null;
 
 
-  $("localVideo").srcObject =
+  $("localVideo")
+    .srcObject =
     null;
 
 
-  $("remoteAudio").srcObject =
+  $("remoteAudio")
+    .srcObject =
     null;
 
 
   $("callOverlay")
     .classList
-    .remove("show");
+    .remove(
+      "show"
+    );
 
 
   $("videoStage")
     .classList
-    .remove("show");
+    .remove(
+      "show"
+    );
 
 
   currentCall =
@@ -8584,7 +4277,6 @@ function cleanupCall(){
 
   muted =
     false;
-
 }
 
 
@@ -8593,9 +4285,7 @@ function toggleMute(){
   if (
     !callStream
   ) {
-
     return;
-
   }
 
 
@@ -8610,22 +4300,22 @@ function toggleMute(){
 
         track.enabled =
           !muted;
-
       }
     );
 
 
-  $("muteCall").textContent =
+  $("muteCall")
+    .textContent =
     muted
       ? "🔇"
       : "🎙";
 
 
-  $("videoMute").textContent =
+  $("videoMute")
+    .textContent =
     muted
       ? "🔇"
       : "🎙";
-
 }
 
 
@@ -8645,14 +4335,12 @@ $("switchCamera").onclick =
       currentCall.callType !==
       "video"
     ) {
-
       return;
-
     }
 
 
-    usingFrontCamera =
-      !usingFrontCamera;
+    front =
+      !front;
 
 
     try {
@@ -8663,14 +4351,22 @@ $("switchCamera").onclick =
           .getUserMedia({
 
             video:{
+
               facingMode:
-                usingFrontCamera
+                front
                   ? "user"
-                  : "environment"
+                  : "environment",
+
+              width:{
+                ideal:640
+              },
+
+              height:{
+                ideal:480
+              }
             },
 
             audio:false
-
           });
 
 
@@ -8680,7 +4376,7 @@ $("switchCamera").onclick =
 
 
       const sender =
-        peerConnection
+        peer
           ?.getSenders()
           .find(
             item =>
@@ -8689,14 +4385,12 @@ $("switchCamera").onclick =
           );
 
 
-      if (
-        sender
-      ) {
+      if (sender) {
 
-        await sender.replaceTrack(
-          newTrack
-        );
-
+        await sender
+          .replaceTrack(
+            newTrack
+          );
       }
 
 
@@ -8708,31 +4402,499 @@ $("switchCamera").onclick =
         );
 
 
-      callStream
-        .getVideoTracks =
-        undefined;
+      const audioTracks =
+        callStream
+          ?.getAudioTracks() ||
+        [];
 
 
-      $("localVideo").srcObject =
+      callStream =
         new MediaStream([
           newTrack,
-          ...callStream
-            .getAudioTracks()
+          ...audioTracks
         ]);
 
+
+      $("localVideo")
+        .srcObject =
+        callStream;
 
     } catch (error) {
 
       console.error(
         error
       );
-
     }
-
   };
 
 
-/* NAVIGATION */
+function handle(
+  data
+){
+
+  if (
+    data.type ===
+    "profile_saved"
+  ) {
+
+    if (
+      data.profile
+    ) {
+
+      profile = {
+        ...profile,
+        ...data.profile
+      };
+
+
+      saveProfileLocal();
+
+      fillProfile();
+
+
+      toast(
+        "Профиль сохранён"
+      );
+    }
+  }
+
+
+  else if (
+    data.type ===
+    "bootstrap"
+  ) {
+
+    if (
+      data.profile
+    ) {
+
+      profile = {
+        ...profile,
+        ...data.profile
+      };
+
+
+      saveProfileLocal();
+    }
+
+
+    if (
+      Array.isArray(
+        data.friends
+      )
+    ) {
+
+      friends =
+        data.friends;
+
+      cacheFriends();
+    }
+
+
+    renderFriends();
+
+    renderChats();
+
+
+    if (
+      data.activeMatch
+    ) {
+
+      showMatch(
+        data.activeMatch
+      );
+    }
+  }
+
+
+  else if (
+    data.type ===
+    "searching"
+  ) {
+
+    show(
+      "searchView"
+    );
+
+
+    startSearch();
+  }
+
+
+  else if (
+    data.type ===
+    "search_cancelled"
+  ) {
+
+    clearInterval(
+      searchTimer
+    );
+
+
+    show(
+      "cameraView"
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "match_found"
+  ) {
+
+    showMatch(
+      data
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "match_expired" ||
+    data.type ===
+    "match_ended" ||
+    data.type ===
+    "match_ended_by_partner"
+  ) {
+
+    match =
+      null;
+
+
+    $("matchNav")
+      .classList
+      .remove(
+        "available"
+      );
+
+
+    clearInterval(
+      countTimer
+    );
+
+
+    show(
+      "cameraView"
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "keep_vibe_pending"
+  ) {
+
+    toast(
+      "Связь отправлена 💗"
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "keep_vibe_received"
+  ) {
+
+    toast(
+      "Собеседник хочет сохранить связь 💗"
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "keep_vibe_mutual" ||
+    data.type ===
+    "friendship_created"
+  ) {
+
+    if (
+      data.friend
+    ) {
+
+      friends = [
+
+        data.friend,
+
+        ...friends
+          .filter(
+            friend =>
+              friend.id !==
+              data.friend.id
+          )
+      ];
+
+
+      cacheFriends();
+
+      renderFriends();
+
+      renderChats();
+    }
+
+
+    toast(
+      "Вы теперь друзья 💗"
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "friends_list"
+  ) {
+
+    if (
+      Array.isArray(
+        data.friends
+      )
+    ) {
+
+      friends =
+        data.friends;
+
+
+      cacheFriends();
+    }
+
+
+    renderFriends();
+
+    renderChats();
+  }
+
+
+  else if (
+    data.type ===
+    "friend_chat_ready"
+  ) {
+
+    openChat(
+
+      data.chatId,
+
+      data.friend?.name ||
+      "SnapVibe",
+
+      "friend",
+
+      data.friend,
+
+      data.messages ||
+      []
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "chat_history"
+  ) {
+
+    if (
+      activeChat.id ===
+      data.chatId
+    ) {
+
+      mergeMessages(
+        data.chatId,
+        data.messages ||
+        []
+      );
+
+
+      renderMessages(
+        getMessages(
+          data.chatId
+        )
+      );
+
+
+      markRead();
+    }
+  }
+
+
+  else if (
+    data.type ===
+    "chat_message"
+  ) {
+
+    mergeMessages(
+      data.chatId,
+      [
+        data.message
+      ]
+    );
+
+
+    if (
+      activeChat.id ===
+      data.chatId
+    ) {
+
+      appendMessage(
+        data.message
+      );
+
+
+      $("messages")
+        .scrollTop =
+        $("messages")
+          .scrollHeight;
+
+
+      if (
+        data.message
+          .senderId !==
+        userId
+      ) {
+
+        send({
+
+          type:
+            "message_delivered",
+
+          chatId:
+            data.chatId,
+
+          messageId:
+            data.message.id
+        });
+
+
+        markRead();
+      }
+    }
+  }
+
+
+  else if (
+    data.type ===
+    "message_delivered"
+  ) {
+
+    updateStatus(
+      data.messageId,
+      "delivered"
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "messages_read"
+  ) {
+
+    (
+      data.messageIds ||
+      []
+    )
+    .forEach(
+      id =>
+        updateStatus(
+          id,
+          "read"
+        )
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "incoming_call"
+  ) {
+
+    incoming(
+      data
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "call_ringing"
+  ) {
+
+    if (
+      currentCall
+    ) {
+
+      currentCall.callId =
+        data.callId;
+    }
+  }
+
+
+  else if (
+    data.type ===
+    "call_accepted"
+  ) {
+
+    callAccepted(
+      data
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "call_rejected" ||
+    data.type ===
+    "call_ended"
+  ) {
+
+    cleanupCall();
+  }
+
+
+  else if (
+    data.type ===
+    "webrtc_offer"
+  ) {
+
+    rtcOffer(
+      data
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "webrtc_answer"
+  ) {
+
+    rtcAnswer(
+      data
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "webrtc_ice"
+  ) {
+
+    rtcIce(
+      data
+    );
+  }
+
+
+  else if (
+    data.type ===
+    "error" ||
+    data.type ===
+    "call_error"
+  ) {
+
+    toast(
+      data.message ||
+      "Ошибка"
+    );
+  }
+}
+
 
 document
   .querySelectorAll(
@@ -8745,50 +4907,12 @@ document
         () => {
 
           show(
-            button.dataset.view
+            button.dataset
+              .view
           );
-
         };
-
     }
   );
-
-
-/* INITIALIZATION */
-
-buildEmojiPanel();
-
-
-applyLanguage();
-
-
-fillCountrySelect(
-  $("regCountry")
-);
-
-
-fillCountrySelect(
-  $("editCountry")
-);
-
-
-$("regCountry").value =
-  profile.country ||
-  "EE";
-
-
-$("editCountry").value =
-  profile.country ||
-  "EE";
-
-
-renderSettings();
-
-
-updateMatchNav();
-
-
-registerServiceWorker();
 
 
 setInterval(
@@ -8805,8 +4929,11 @@ setInterval(
 
 connect();
 
+fillProfile();
 
-startCamera();
+renderFriends();
+
+renderChats();
 
 
 show(
@@ -8818,4 +4945,4 @@ show(
 </script>
 
 </body>
-</html>
+  </html>
