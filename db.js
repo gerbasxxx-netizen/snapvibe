@@ -23,30 +23,49 @@ function clean(value, max = 500) {
     .slice(0, max);
 }
 
-function createOrUpdateUser(input) {
-  if (!input || !input.id) {
-    throw new Error("User ID is required");
+function safeAvatar(value) {
+  const avatar = String(value || "");
+
+  if (
+    avatar.startsWith("data:image/") &&
+    Buffer.byteLength(avatar, "utf8") <=
+      5 * 1024 * 1024
+  ) {
+    return avatar;
   }
 
-  const oldUser =
+  return "";
+}
+
+function createOrUpdateUser(input) {
+  if (!input?.id) {
+    throw new Error(
+      "User ID required"
+    );
+  }
+
+  const old =
     users.get(input.id) || {};
 
   const user = {
-    id: input.id,
+    id:
+      input.id,
 
-    name: clean(
-      input.name ||
-        oldUser.name ||
-        "SnapVibe User",
-      30
-    ),
+    name:
+      clean(
+        input.name ||
+          old.name ||
+          "SnapVibe User",
+        30
+      ),
 
-    language: clean(
-      input.language ||
-        oldUser.language ||
-        "en",
-      8
-    ),
+    language:
+      clean(
+        input.language ||
+          old.language ||
+          "en",
+        8
+      ),
 
     age:
       input.age
@@ -54,27 +73,45 @@ function createOrUpdateUser(input) {
             18,
             Math.min(
               99,
-              Number(input.age)
+              Number(
+                input.age
+              )
             )
           )
-        : oldUser.age || null,
+        : old.age ||
+          null,
 
-    gender: clean(
-      input.gender ||
-        oldUser.gender ||
-        "",
-      20
-    ),
+    gender:
+      [
+        "male",
+        "female",
+        "other"
+      ].includes(
+        input.gender
+      )
+        ? input.gender
+        : old.gender ||
+          "other",
 
-    country: clean(
-      input.country ||
-        oldUser.country ||
-        "",
-      40
-    ),
+    country:
+      clean(
+        input.country ||
+          old.country ||
+          "",
+        60
+      ),
+
+    avatar:
+      input.avatar !==
+      undefined
+        ? safeAvatar(
+            input.avatar
+          )
+        : old.avatar ||
+          "",
 
     createdAt:
-      oldUser.createdAt ||
+      old.createdAt ||
       Date.now(),
 
     updatedAt:
@@ -109,12 +146,26 @@ function publicUser(userId) {
   }
 
   return {
-    id: user.id,
-    name: user.name,
-    language: user.language,
-    age: user.age,
-    gender: user.gender,
-    country: user.country
+    id:
+      user.id,
+
+    name:
+      user.name,
+
+    language:
+      user.language,
+
+    age:
+      user.age,
+
+    gender:
+      user.gender,
+
+    country:
+      user.country,
+
+    avatar:
+      user.avatar
   };
 }
 
@@ -161,9 +212,9 @@ function getFriends(
 ) {
   ensure(userId);
 
-  return Array.from(
-    friends.get(userId)
-  )
+  return [
+    ...friends.get(userId)
+  ]
     .map(publicUser)
     .filter(Boolean);
 }
@@ -190,18 +241,25 @@ function createFriendChat(
       userB
     );
 
-  if (!chats.has(chatId)) {
+  if (
+    !chats.has(
+      chatId
+    )
+  ) {
     chats.set(
       chatId,
       {
-        id: chatId,
+        id:
+          chatId,
 
-        users: [
-          userA,
-          userB
-        ].sort(),
+        users:
+          [
+            userA,
+            userB
+          ].sort(),
 
-        type: "friend",
+        type:
+          "friend",
 
         createdAt:
           Date.now()
@@ -231,14 +289,16 @@ function createMatchChat(
   chats.set(
     chatId,
     {
-      id: chatId,
+      id:
+        chatId,
 
       users: [
         userA,
         userB
       ],
 
-      type: "match",
+      type:
+        "match",
 
       matchId,
 
@@ -269,8 +329,13 @@ function getChat(
 function deleteChat(
   chatId
 ) {
-  chats.delete(chatId);
-  messages.delete(chatId);
+  chats.delete(
+    chatId
+  );
+
+  messages.delete(
+    chatId
+  );
 }
 
 function addMessage(
@@ -279,13 +344,12 @@ function addMessage(
   text
 ) {
   const chat =
-    chats.get(chatId);
-
-  if (!chat) {
-    return null;
-  }
+    chats.get(
+      chatId
+    );
 
   if (
+    !chat ||
     !chat.users.includes(
       senderId
     )
@@ -319,7 +383,9 @@ function addMessage(
   };
 
   if (
-    !messages.has(chatId)
+    !messages.has(
+      chatId
+    )
   ) {
     messages.set(
       chatId,
@@ -358,17 +424,14 @@ function getMessages(
     messages.get(chatId) ||
     [];
 
-  const safeLimit =
-    Math.max(
+  return list.slice(
+    -Math.max(
       1,
       Math.min(
         200,
         limit
       )
-    );
-
-  return list.slice(
-    -safeLimit
+    )
   );
 }
 
