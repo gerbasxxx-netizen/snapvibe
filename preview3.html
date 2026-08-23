@@ -5,117 +5,981 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#06070b">
 <title>SnapVibe</title>
+
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#06070b;--card:#10131d;--line:#252a38;--text:#f8f9ff;--muted:#9097aa;--pink:#ff3f9f;--violet:#8b5cf6;--green:#30d17d}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-body{background:radial-gradient(circle at 50% -10%,rgba(139,92,246,.16),transparent 32%),#06070b}
-button,input,select{font:inherit}
-.app{max-width:520px;margin:auto;min-height:100vh;padding:14px 14px 88px}
-.view{display:none}.view.active{display:block}
-.top{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
-.brand{font-size:28px;font-weight:950}.brand span{color:var(--pink)}
-.status{font-size:12px;color:#9af1bc;border:1px solid var(--line);border-radius:999px;padding:9px 11px}
-.status:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent
+}
 
-.camera{position:relative;height:calc(100vh - 176px);min-height:500px;max-height:720px;border-radius:0 0 26px 26px;overflow:hidden;background:#0e1118}
-.camera video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:48px;color:var(--muted)}
-.panel{position:absolute;left:0;right:0;bottom:0;padding:60px 10px 14px;background:linear-gradient(transparent,rgba(3,3,7,.92) 45%)}
-.panel h3{text-align:center;font-size:14px;margin:0 0 10px}
-.emotions{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.emotion{border:0;background:transparent;color:#fff}
-.circle{width:50px;height:50px;margin:auto;border-radius:50%;display:grid;place-items:center;background:#191d27;font-size:23px;border:2px solid transparent}
-.emotion.selected .circle{border-color:var(--pink);box-shadow:0 0 20px rgba(255,63,159,.3)}
-.emotion small{display:block;font-size:10px;margin-top:4px;color:#c3c7d2}
-.shutter{display:block;width:72px;height:72px;border-radius:50%;margin:12px auto 0;border:4px solid #fff;background:linear-gradient(135deg,#ff63b4,#d62d7d)}
+:root{
+  --bg:#06070b;
+  --card:#10131d;
+  --line:#252a38;
+  --text:#fff;
+  --muted:#9299aa;
+  --pink:#ff3f9f;
+  --violet:#8b5cf6;
+  --blue:#2477ff;
+  --green:#30d17d;
+}
 
-.primary,.secondary,.action{width:100%;min-height:50px;border-radius:14px;color:#fff;font-weight:900}
-.primary{border:0;background:linear-gradient(90deg,#d92d7f,#ff4f9f)}
-.secondary,.action{border:1px solid var(--line);background:var(--card)}
-.field{margin-top:11px}
-.field label{display:block;font-size:13px;color:#a7adbf;margin-bottom:6px}
-.field input,.field select{width:100%;height:49px;border-radius:12px;border:1px solid var(--line);background:#0c0f17;color:#fff;padding:0 11px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif
+}
 
-.register{text-align:center;padding:14px 0}
-.register h1{font-size:38px;margin:0}.register h1 span{color:var(--pink)}
-.register p{color:var(--muted);font-size:14px}
-.avatarRing{width:116px;height:116px;border-radius:50%;margin:18px auto;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-size:42px}
+body{
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(139,92,246,.16),
+      transparent 32%
+    ),
+    #06070b
+}
 
-.search{text-align:center;padding-top:55px}
-.search h2{font-size:26px}
-.radar{width:230px;height:230px;border-radius:50%;margin:25px auto;position:relative;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 68%);border:1px solid rgba(255,63,159,.25)}
-.radar:before,.radar:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.12);border-radius:50%}
-.radar:before{inset:35px}.radar:after{inset:70px}
-.heart{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:40px}
-.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(255,63,159,.18),transparent 26%);animation:spin 2.3s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+button,input,select{
+  font:inherit
+}
 
-.matchHead{text-align:center}
-.matchHead h2{font-size:29px;margin:5px}
-.matchPhoto{position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:#10131d}
-.matchPhoto img{width:100%;height:100%;object-fit:cover}
-.matchInfo{position:absolute;left:0;right:0;bottom:0;padding:55px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.9))}
-.matchInfo b{font-size:23px}.matchInfo span{display:block;font-size:12px}
-.timer{text-align:center;margin:12px 0;font-size:13px;color:var(--muted)}
-.timer strong{display:block;color:#ff5eac;font-size:22px}
-.actions{display:grid;gap:8px}.keep{border-color:#693455}
+.app{
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  padding:14px 14px 88px
+}
 
-.activeMatch{display:none;position:fixed;right:12px;bottom:82px;z-index:40;border:0;border-radius:999px;padding:11px 14px;background:linear-gradient(90deg,var(--violet),var(--pink));color:#fff;font-weight:900}
+.view{
+  display:none
+}
 
-.chat{height:calc(100vh - 160px);display:flex;flex-direction:column}
-.chatTop{display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--line);padding-bottom:10px}
-.back{width:38px;height:38px;border:0;background:transparent;color:#fff;font-size:22px}
-.chatAvatar,.friendAvatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;overflow:hidden;font-weight:900}
-.chatAvatar img,.friendAvatar img,.profileAvatar img{width:100%;height:100%;object-fit:cover}
-.messages{flex:1;overflow:auto;padding:12px 0;display:flex;flex-direction:column;gap:8px}
-.bubble{max-width:78%;padding:10px 12px;border-radius:14px;background:#151925;font-size:14px}
-.bubble.me{align-self:flex-end;background:linear-gradient(135deg,#b5286f,#e03d8d)}
-.composer{display:flex;gap:7px}
-.composer input{flex:1;height:48px;border-radius:13px;border:1px solid var(--line);background:#0d1018;color:#fff;padding:0 11px}
-.send{width:48px;border:0;border-radius:50%;background:var(--pink);color:#fff}
+.view.active{
+  display:block
+}
 
-.pageTitle{text-align:center;font-size:30px}
-.friend{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #171b25}
-.friendMain{flex:1}.friendMain b{display:block;font-size:15px}.friendMain small{color:#63dc92}
-.friend button{width:40px;height:40px;border:0;border-radius:50%;background:#151925;color:#fff}
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 0 12px
+}
 
-.profile{text-align:center}
-.profileAvatar{width:116px;height:116px;border-radius:50%;margin:auto;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-size:42px;font-weight:900;overflow:hidden}
-.photoBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
-.photoBtns button{min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:#fff;font-size:12px}
-.menu{margin-top:16px;border-top:1px solid #191d28}
-.row{min-height:49px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #191d28;font-size:15px}
-.row small{color:#8f95a8}
+.brand{
+  font-size:29px;
+  font-weight:950
+}
 
-.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);height:72px;background:rgba(5,6,10,.96);border-top:1px solid #171b24;display:grid;grid-template-columns:repeat(4,1fr);z-index:30}
-.nav button{border:0;background:transparent;color:#777e91;font-size:11px}
-.nav button b{display:block;font-size:20px}.nav button.active{color:var(--pink)}
+.brand span{
+  color:var(--pink)
+}
 
-.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);display:none;align-items:flex-end;padding:12px}
-.modal.show{display:flex}
-.sheet{width:100%;max-width:520px;margin:auto;background:#11141d;border:1px solid var(--line);border-radius:22px;padding:18px}
-.sheet h3{font-size:22px;margin:0 0 12px}
-.modalBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-.modalBtns button{min-height:46px;border-radius:12px;border:1px solid var(--line);background:#171b26;color:#fff}
-.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:#1a1e28;border:1px solid #303647;padding:10px 13px;border-radius:12px;opacity:0;transition:.2s;z-index:120}
-.toast.show{opacity:1}
+.status{
+  font-size:12px;
+  color:#9af1bc;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:9px 11px
+}
+
+.status:before{
+  content:"";
+  display:inline-block;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  margin-right:6px
+}
+
+.primary,
+.secondary,
+.action{
+  width:100%;
+  min-height:50px;
+  border-radius:14px;
+  color:#fff;
+  font-weight:900
+}
+
+.primary{
+  border:0;
+  background:
+    linear-gradient(
+      90deg,
+      #d92d7f,
+      #ff4f9f
+    )
+}
+
+.secondary,
+.action{
+  border:1px solid var(--line);
+  background:var(--card)
+}
+
+.field{
+  margin-top:11px
+}
+
+.field label{
+  display:block;
+  font-size:13px;
+  color:#a7adbf;
+  margin-bottom:6px
+}
+
+.field input,
+.field select{
+  width:100%;
+  height:49px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0c0f17;
+  color:#fff;
+  padding:0 11px
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px
+}
+
+.register{
+  text-align:center;
+  padding:14px 0
+}
+
+.register h1{
+  font-size:38px;
+  margin:0
+}
+
+.register h1 span{
+  color:var(--pink)
+}
+
+.register p{
+  color:var(--muted);
+  font-size:14px
+}
+
+.avatarRing,
+.profileAvatar{
+  width:116px;
+  height:116px;
+  border-radius:50%;
+  margin:18px auto;
+  background:
+    linear-gradient(
+      135deg,
+      var(--violet),
+      var(--pink)
+    );
+  display:grid;
+  place-items:center;
+  font-size:42px;
+  font-weight:900;
+  overflow:hidden
+}
+
+.avatarRing img,
+.profileAvatar img,
+.chatAvatar img,
+.friendAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+/* CAMERA */
+
+.camera{
+  position:relative;
+  height:calc(100vh - 176px);
+  min-height:500px;
+  max-height:720px;
+  border-radius:0 0 26px 26px;
+  overflow:hidden;
+  background:#0e1118
+}
+
+.camera video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scaleX(-1)
+}
+
+.fallback{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-size:48px;
+  color:var(--muted)
+}
+
+.panel{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:60px 10px 14px;
+  background:
+    linear-gradient(
+      transparent,
+      rgba(3,3,7,.92) 45%
+    )
+}
+
+.panel h3{
+  text-align:center;
+  font-size:14px;
+  margin:0 0 10px
+}
+
+.emotions{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px
+}
+
+.emotion{
+  border:0;
+  background:transparent;
+  color:#fff
+}
+
+.circle{
+  width:50px;
+  height:50px;
+  margin:auto;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#191d27;
+  font-size:23px;
+  border:2px solid transparent
+}
+
+.emotion.selected .circle{
+  border-color:var(--pink);
+  box-shadow:
+    0 0 20px
+    rgba(255,63,159,.3)
+}
+
+.emotion small{
+  display:block;
+  font-size:10px;
+  margin-top:4px;
+  color:#c3c7d2
+}
+
+.shutter{
+  display:block;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  margin:12px auto 0;
+  border:4px solid #fff;
+  background:
+    linear-gradient(
+      135deg,
+      #ff63b4,
+      #d62d7d
+    )
+}
+
+/* SEARCH */
+
+.search{
+  text-align:center;
+  padding-top:55px
+}
+
+.search h2{
+  font-size:26px
+}
+
+.radar{
+  width:230px;
+  height:230px;
+  border-radius:50%;
+  margin:25px auto;
+  position:relative;
+  background:
+    radial-gradient(
+      circle,
+      rgba(139,92,246,.1),
+      transparent 68%
+    );
+  border:
+    1px solid
+    rgba(255,63,159,.25)
+}
+
+.radar:before,
+.radar:after{
+  content:"";
+  position:absolute;
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+  border-radius:50%
+}
+
+.radar:before{
+  inset:35px
+}
+
+.radar:after{
+  inset:70px
+}
+
+.heart{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:
+    translate(-50%,-50%);
+  font-size:40px
+}
+
+.sweep{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:
+    conic-gradient(
+      rgba(255,63,159,.18),
+      transparent 26%
+    );
+  animation:
+    spin 2.3s linear infinite
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg)
+  }
+}
+
+/* MATCH */
+
+.matchHead{
+  text-align:center
+}
+
+.matchHead h2{
+  font-size:29px;
+  margin:5px
+}
+
+.matchPhoto{
+  position:relative;
+  aspect-ratio:4/5;
+  border-radius:20px;
+  overflow:hidden;
+  background:#10131d
+}
+
+.matchPhoto img{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.matchInfo{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:55px 14px 14px;
+  background:
+    linear-gradient(
+      transparent,
+      rgba(0,0,0,.9)
+    )
+}
+
+.matchInfo b{
+  font-size:23px
+}
+
+.matchInfo span{
+  display:block;
+  font-size:12px
+}
+
+.timer{
+  text-align:center;
+  margin:12px 0;
+  font-size:13px;
+  color:var(--muted)
+}
+
+.timer strong{
+  display:block;
+  color:#ff5eac;
+  font-size:22px
+}
+
+.actions{
+  display:grid;
+  gap:8px
+}
+
+.keep{
+  border-color:#693455
+}
+
+/* CHATS LIST */
+
+.pageTitle{
+  text-align:center;
+  font-size:29px;
+  margin:8px 0 18px
+}
+
+.chatListCard{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:12px;
+  border:
+    1px solid
+    var(--line);
+  border-radius:17px;
+  background:
+    linear-gradient(
+      180deg,
+      #141824,
+      #0e1119
+    );
+  margin-bottom:10px
+}
+
+.chatListCard.active{
+  border-color:#6f3659;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(139,92,246,.16),
+      rgba(255,63,159,.11)
+    )
+}
+
+.chatListCard .main{
+  flex:1
+}
+
+.chatListCard b{
+  display:block;
+  font-size:15px
+}
+
+.chatListCard small{
+  color:var(--muted);
+  font-size:11px
+}
+
+.chatListCard .time{
+  color:#ff6bb2;
+  font-size:11px;
+  font-weight:900
+}
+
+/* CHAT */
+
+.chat{
+  height:calc(100vh - 160px);
+  display:flex;
+  flex-direction:column
+}
+
+.chatTop{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border-bottom:
+    1px solid
+    var(--line);
+  padding-bottom:10px
+}
+
+.back{
+  width:38px;
+  height:38px;
+  border:0;
+  background:transparent;
+  color:#fff;
+  font-size:22px
+}
+
+.chatAvatar,
+.friendAvatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:
+    linear-gradient(
+      135deg,
+      var(--violet),
+      var(--pink)
+    );
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  font-weight:900;
+  flex:0 0 auto
+}
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:14px 0;
+  display:flex;
+  flex-direction:column;
+  gap:10px
+}
+
+.msgRow{
+  display:flex;
+  align-items:flex-end;
+  gap:7px
+}
+
+.msgRow.me{
+  justify-content:flex-end
+}
+
+.miniAvatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  overflow:hidden;
+  background:
+    linear-gradient(
+      135deg,
+      var(--violet),
+      var(--pink)
+    );
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:900;
+  flex:0 0 auto
+}
+
+.miniAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.bubble{
+  max-width:76%;
+  padding:10px 12px;
+  border-radius:16px;
+  background:
+    linear-gradient(
+      135deg,
+      #ff3f9f,
+      #d82d7d
+    );
+  color:#fff;
+  font-size:14px;
+  line-height:1.4
+}
+
+/* МОИ СООБЩЕНИЯ — ГОЛУБЫЕ */
+
+.msgRow.me .bubble{
+  background:
+    linear-gradient(
+      135deg,
+      #2f83ff,
+      #1563d9
+    )
+}
+
+.composer{
+  display:flex;
+  gap:7px
+}
+
+.composer input{
+  flex:1;
+  height:48px;
+  border-radius:13px;
+  border:
+    1px solid
+    var(--line);
+  background:#0d1018;
+  color:#fff;
+  padding:0 11px
+}
+
+.send{
+  width:48px;
+  border:0;
+  border-radius:50%;
+  background:var(--pink);
+  color:#fff
+}
+
+/* FRIENDS */
+
+.friend{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:
+    1px solid
+    #171b25
+}
+
+.friendMain{
+  flex:1
+}
+
+.friendMain b{
+  display:block;
+  font-size:15px
+}
+
+.friendMain small{
+  color:#63dc92
+}
+
+.friend button{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:#151925;
+  color:#fff
+}
+
+/* PROFILE */
+
+.profile{
+  text-align:center
+}
+
+.photoBtns{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:7px;
+  margin:12px 0
+}
+
+.photoBtns button{
+  min-height:46px;
+  border-radius:12px;
+  border:
+    1px solid
+    var(--line);
+  background:var(--card);
+  color:#fff;
+  font-size:12px
+}
+
+.menu{
+  margin-top:16px;
+  border-top:
+    1px solid
+    #191d28
+}
+
+.row{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:
+    1px solid
+    #191d28;
+  font-size:15px
+}
+
+.row small{
+  color:#8f95a8
+}
+
+/* SETTINGS */
+
+.settingsHead{
+  position:relative
+}
+
+.settingsHead .backSquare{
+  position:absolute;
+  left:0;
+  top:-2px;
+  width:44px;
+  height:44px;
+  border-radius:13px;
+  border:
+    1px solid
+    var(--line);
+  background:var(--card);
+  color:#fff;
+  font-size:23px
+}
+
+.settingsSectionTitle{
+  font-size:13px;
+  color:#8e95a9;
+  font-weight:900;
+  margin:18px 0 4px
+}
+
+.danger{
+  color:#ff687b
+}
+
+/* NAV */
+
+.nav{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(520px,100%);
+  height:72px;
+  background:
+    rgba(5,6,10,.96);
+  border-top:
+    1px solid
+    #171b24;
+  display:grid;
+  grid-template-columns:
+    repeat(4,1fr);
+  z-index:30
+}
+
+.nav button{
+  border:0;
+  background:transparent;
+  color:#777e91;
+  font-size:11px
+}
+
+.nav button b{
+  display:block;
+  font-size:20px
+}
+
+.nav button.active{
+  color:var(--pink)
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:
+    rgba(0,0,0,.7);
+  display:none;
+  align-items:flex-end;
+  padding:12px
+}
+
+.modal.show{
+  display:flex
+}
+
+.sheet{
+  width:100%;
+  max-width:520px;
+  margin:auto;
+  background:#11141d;
+  border:
+    1px solid
+    var(--line);
+  border-radius:22px;
+  padding:18px
+}
+
+.sheet h3{
+  font-size:22px;
+  margin:0 0 12px
+}
+
+.modalBtns{
+  display:grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap:8px;
+  margin-top:14px
+}
+
+.modalBtns button{
+  min-height:46px;
+  border-radius:12px;
+  border:
+    1px solid
+    var(--line);
+  background:#171b26;
+  color:#fff
+}
+
+/* KEEP THE VIBE ANIMATION */
+
+.heartOverlay{
+  position:fixed;
+  inset:0;
+  z-index:150;
+  background:
+    rgba(4,4,9,.82);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px;
+  backdrop-filter:blur(8px)
+}
+
+.heartOverlay.show{
+  display:flex
+}
+
+.heartBox{
+  max-width:360px
+}
+
+.bigHeart{
+  font-size:95px;
+  animation:
+    heartPop .8s
+    cubic-bezier(.2,.8,.2,1)
+}
+
+@keyframes heartPop{
+  0%{
+    transform:scale(.2);
+    opacity:0
+  }
+
+  55%{
+    transform:scale(1.25);
+    opacity:1
+  }
+
+  100%{
+    transform:scale(1)
+  }
+}
+
+.heartBox h2{
+  font-size:26px;
+  margin:8px 0
+}
+
+.heartBox p{
+  color:#d1d4df;
+  line-height:1.5
+}
+
+.heartChoices{
+  display:grid;
+  gap:8px;
+  margin-top:16px
+}
+
+.heartParticles{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:149;
+  overflow:hidden
+}
+
+.particle{
+  position:absolute;
+  font-size:28px;
+  animation:
+    fly 1.6s
+    ease-out forwards
+}
+
+@keyframes fly{
+  from{
+    transform:
+      translateY(0)
+      scale(.5);
+    opacity:1
+  }
+
+  to{
+    transform:
+      translateY(-55vh)
+      scale(1.5);
+    opacity:0
+  }
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:82px;
+  transform:translateX(-50%);
+  background:#1a1e28;
+  border:
+    1px solid
+    #303647;
+  padding:10px 13px;
+  border-radius:12px;
+  opacity:0;
+  transition:.2s;
+  z-index:170
+}
+
+.toast.show{
+  opacity:1
+}
 </style>
 </head>
 
 <body>
+
 <div class="app">
+
 <header class="top" id="top">
-  <div class="brand">Snap<span>Vibe</span></div>
-  <div class="status" id="statusText">Онлайн</div>
+  <div class="brand">
+    Snap<span>Vibe</span> ♡
+  </div>
+
+  <div class="status" id="statusText">
+    Онлайн
+  </div>
 </header>
 
 <section class="view" id="registerView">
+
   <div class="register">
-    <h1>Snap<span>Vibe</span></h1>
-    <p>Создай профиль, чтобы находить людей на твоей волне.</p>
-    <div class="avatarRing">🙂</div>
+    <h1>
+      Snap<span>Vibe</span>
+    </h1>
+
+    <p>
+      Создай профиль, чтобы находить людей на твоей волне.
+    </p>
+
+    <div class="avatarRing">
+      🙂
+    </div>
   </div>
 
   <div class="field">
@@ -124,418 +988,1156 @@ button,input,select{font:inherit}
   </div>
 
   <div class="grid2">
+
     <div class="field">
       <label>Возраст</label>
-      <input id="regAge" type="number" min="18" max="99">
+
+      <input
+        id="regAge"
+        type="number"
+        min="18"
+        max="99"
+      >
     </div>
 
     <div class="field">
       <label>Пол</label>
+
       <select id="regGender">
-        <option value="male">Мужской</option>
-        <option value="female">Женский</option>
-        <option value="other">Другой</option>
+        <option value="male">
+          Мужской
+        </option>
+
+        <option value="female">
+          Женский
+        </option>
+
+        <option value="other">
+          Другой
+        </option>
       </select>
     </div>
+
   </div>
 
   <div class="field">
-    <label>Кого искать</label>
-    <select id="regSearchGender">
-      <option value="female">Девушек</option>
-      <option value="male">Парней</option>
-      <option value="all">Всех</option>
-    </select>
+    <label>Страна</label>
+
+    <select id="regCountry"></select>
   </div>
 
-  <div class="field">
-    <label>Страна / город</label>
-    <input id="regCountry" maxlength="60">
-  </div>
+  <button
+    class="primary"
+    id="finishRegister"
+  >
+    Продолжить
+  </button>
 
-  <button class="primary" id="finishRegister">Продолжить</button>
 </section>
 
+
 <section class="view" id="cameraView">
+
   <div class="camera">
-    <video id="video" autoplay playsinline muted></video>
-    <div class="fallback" id="fallback">📸</div>
+
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted
+    ></video>
+
+    <div
+      class="fallback"
+      id="fallback"
+    >
+      📸
+    </div>
 
     <div class="panel">
-      <h3>Покажи свою эмоцию</h3>
+
+      <h3>
+        Покажи свою эмоцию
+      </h3>
 
       <div class="emotions">
-        <button class="emotion selected" data-emotion="happy">
+
+        <button
+          class="emotion selected"
+          data-emotion="happy"
+        >
           <span class="circle">😊</span>
           <small>Радость</small>
         </button>
 
-        <button class="emotion" data-emotion="angry">
+        <button
+          class="emotion"
+          data-emotion="angry"
+        >
           <span class="circle">😠</span>
           <small>Злость</small>
         </button>
 
-        <button class="emotion" data-emotion="sad">
+        <button
+          class="emotion"
+          data-emotion="sad"
+        >
           <span class="circle">😢</span>
           <small>Грусть</small>
         </button>
 
-        <button class="emotion" data-emotion="fun">
+        <button
+          class="emotion"
+          data-emotion="fun"
+        >
           <span class="circle">🤩</span>
           <small>Веселье</small>
         </button>
 
-        <button class="emotion" data-emotion="calm">
+        <button
+          class="emotion"
+          data-emotion="calm"
+        >
           <span class="circle">😌</span>
           <small>Спокойствие</small>
         </button>
+
       </div>
 
-      <button class="shutter" id="capture"></button>
+      <button
+        class="shutter"
+        id="capture"
+      ></button>
+
     </div>
+
   </div>
+
 </section>
 
+
 <section class="view" id="searchView">
+
   <div class="search">
-    <h2>Ищем того, кто чувствует то же самое...</h2>
+
+    <h2>
+      Ищем того, кто чувствует то же самое...
+    </h2>
+
     <div class="radar">
       <div class="sweep"></div>
       <div class="heart">💗</div>
     </div>
-    <div>Время поиска: <strong id="searchSeconds">0 сек</strong></div>
-    <button class="secondary" id="cancelSearch">Отмена</button>
+
+    <div>
+      Время поиска:
+      <strong id="searchSeconds">
+        0 сек
+      </strong>
+    </div>
+
+    <button
+      class="secondary"
+      id="cancelSearch"
+    >
+      Отмена
+    </button>
+
   </div>
+
 </section>
 
+
 <section class="view" id="matchView">
+
   <div class="matchHead">
     <h2>It's a Match! 💕</h2>
-    <p>Вы поймали одинаковую эмоцию</p>
+    <p>
+      Вы поймали одинаковую эмоцию
+    </p>
   </div>
 
   <div class="matchPhoto">
+
     <img id="matchPhoto">
+
     <div class="matchInfo">
       <b id="matchName"></b>
       <span id="matchMeta"></span>
     </div>
+
   </div>
 
   <div class="timer">
     Время общения:
-    <strong id="countdown">24:00:00</strong>
+
+    <strong id="countdown">
+      24:00:00
+    </strong>
   </div>
 
   <div class="actions">
-    <button class="primary" id="openMatchChat">Открыть чат</button>
-    <button class="action keep" id="keepVibe">Сохранить связь 💗</button>
-    <button class="secondary" id="newMatch">Следующий мэтч ↻</button>
-  </div>
-</section>
 
-<section class="view" id="chatView">
-  <div class="chat">
-    <div class="chatTop">
-      <button class="back" id="chatBack">‹</button>
-      <div class="chatAvatar" id="chatAvatar">S</div>
-      <div>
-        <b id="chatName">SnapVibe</b>
-        <div><small>Онлайн</small></div>
-      </div>
-    </div>
+    <button
+      class="primary"
+      id="openMatchChat"
+    >
+      Открыть чат
+    </button>
 
-    <div class="messages" id="messages"></div>
-
-    <div class="composer">
-      <input id="messageInput" maxlength="1000" placeholder="Напиши сообщение...">
-      <button class="send" id="sendMessage">➤</button>
-    </div>
-
-    <button class="action keep" id="keepVibeChat" style="margin-top:8px">
+    <button
+      class="action keep"
+      id="keepVibe"
+    >
       Сохранить связь 💗
     </button>
+
+    <button
+      class="secondary"
+      id="newMatch"
+    >
+      Следующий мэтч ↻
+    </button>
+
   </div>
+
 </section>
+
+
+<section class="view" id="chatsView">
+
+  <h1 class="pageTitle">
+    Чаты
+  </h1>
+
+  <div id="activeMatchCard"></div>
+
+  <div id="chatFriendList"></div>
+
+</section>
+
+
+<section class="view" id="chatView">
+
+  <div class="chat">
+
+    <div class="chatTop">
+
+      <button
+        class="back"
+        id="chatBack"
+      >
+        ‹
+      </button>
+
+      <div
+        class="chatAvatar"
+        id="chatAvatar"
+      >
+        S
+      </div>
+
+      <div>
+        <b id="chatName">
+          SnapVibe
+        </b>
+
+        <div>
+          <small>
+            Онлайн
+          </small>
+        </div>
+      </div>
+
+    </div>
+
+    <div
+      class="messages"
+      id="messages"
+    ></div>
+
+    <div class="composer">
+
+      <input
+        id="messageInput"
+        maxlength="1000"
+        placeholder="Напиши сообщение..."
+      >
+
+      <button
+        class="send"
+        id="sendMessage"
+      >
+        ➤
+      </button>
+
+    </div>
+
+    <button
+      class="action keep"
+      id="keepVibeChat"
+      style="margin-top:8px"
+    >
+      Сохранить связь 💗
+    </button>
+
+  </div>
+
+</section>
+
 
 <section class="view" id="friendsView">
-  <h1 class="pageTitle">Друзья</h1>
+
+  <h1 class="pageTitle">
+    Друзья
+  </h1>
+
   <div id="friendList"></div>
+
 </section>
 
+
 <section class="view" id="profileView">
+
   <div class="profile">
-    <div class="profileAvatar" id="profileAvatar">S</div>
+
+    <div
+      class="profileAvatar"
+      id="profileAvatar"
+    >
+      S
+    </div>
+
     <h2 id="profileNameTitle"></h2>
+
     <p id="profileMeta"></p>
+
   </div>
 
   <div class="photoBtns">
-    <button id="takeAvatar">📷 Сфоткаться</button>
-    <button id="chooseAvatar">🖼 Галерея</button>
-    <button id="removeAvatar">✕ Удалить</button>
+
+    <button id="takeAvatar">
+      📷 Сфоткаться
+    </button>
+
+    <button id="chooseAvatar">
+      🖼 Галерея
+    </button>
+
+    <button id="removeAvatar">
+      ✕ Удалить
+    </button>
+
   </div>
 
-  <input type="file" id="cameraAvatarInput" accept="image/*" capture="user" hidden>
-  <input type="file" id="galleryAvatarInput" accept="image/*" hidden>
+  <input
+    type="file"
+    id="cameraAvatarInput"
+    accept="image/*"
+    capture="user"
+    hidden
+  >
+
+  <input
+    type="file"
+    id="galleryAvatarInput"
+    accept="image/*"
+    hidden
+  >
 
   <div class="field">
     <label>Имя</label>
-    <input id="editName" maxlength="30">
+    <input
+      id="editName"
+      maxlength="30"
+    >
   </div>
 
   <div class="grid2">
+
     <div class="field">
       <label>Возраст</label>
-      <input id="editAge" type="number" min="18" max="99">
+
+      <input
+        id="editAge"
+        type="number"
+        min="18"
+        max="99"
+      >
     </div>
 
     <div class="field">
       <label>Пол</label>
+
       <select id="editGender">
-        <option value="male">Мужской</option>
-        <option value="female">Женский</option>
-        <option value="other">Другой</option>
+        <option value="male">
+          Мужской
+        </option>
+
+        <option value="female">
+          Женский
+        </option>
+
+        <option value="other">
+          Другой
+        </option>
       </select>
     </div>
+
   </div>
 
   <div class="field">
-    <label>Страна / город</label>
-    <input id="editCountry" maxlength="60">
+    <label>Страна</label>
+
+    <select id="editCountry"></select>
   </div>
 
-  <button class="primary" id="saveProfile">Сохранить профиль</button>
+  <button
+    class="primary"
+    id="saveProfile"
+  >
+    Сохранить профиль
+  </button>
 
   <div class="menu">
-    <div class="row" id="searchSettings">
-      <span>⚙ Настройки поиска</span>
+
+    <div
+      class="row"
+      id="searchSettings"
+    >
+      <span>
+        ⚙ Настройки поиска
+      </span>
+
       <span>›</span>
     </div>
 
-    <div class="row" id="languageSettings">
-      <span>🌐 Язык</span>
-      <small id="languageLabel">Русский ›</small>
+    <div
+      class="row"
+      id="languageSettings"
+    >
+      <span>
+        🌐 Язык
+      </span>
+
+      <small id="languageLabel">
+        Русский ›
+      </small>
     </div>
 
     <div class="row">
-      <span>◇ Безопасность</span>
+      <span>
+        ◇ Безопасность
+      </span>
+
       <span>›</span>
     </div>
+
   </div>
+
 </section>
+
 
 <section class="view" id="settingsView">
-  <h1 class="pageTitle">Настройки поиска</h1>
 
-  <div class="row" id="setGender">
+  <div class="settingsHead">
+
+    <button
+      class="backSquare"
+      id="settingsBack"
+    >
+      ‹
+    </button>
+
+    <h1 class="pageTitle">
+      Настройки
+    </h1>
+
+  </div>
+
+  <div class="settingsSectionTitle">
+    Кого показывать
+  </div>
+
+  <div
+    class="row"
+    id="setGender"
+  >
     <span>Пол</span>
-    <small id="genderLabel">Девушек ›</small>
+
+    <small id="genderLabel">
+      Девушек ›
+    </small>
   </div>
 
-  <div class="row" id="setAge">
+  <div
+    class="row"
+    id="setAge"
+  >
     <span>Возраст</span>
-    <small id="ageLabel">18 — 35 ›</small>
+
+    <small id="ageLabel">
+      18 — 35 ›
+    </small>
   </div>
 
-  <div class="row" id="setLocation">
-    <span>Страна / город</span>
-    <small id="locationLabel">Не выбрано ›</small>
+  <div
+    class="row"
+    id="setCountry"
+  >
+    <span>Страна</span>
+
+    <small id="countryLabel">
+      Все страны ›
+    </small>
   </div>
 
-  <button class="secondary" id="settingsBack">Назад</button>
+  <div class="settingsSectionTitle">
+    Приложение
+  </div>
+
+  <div class="row">
+    <span>Уведомления</span>
+    <small>Вкл. ›</small>
+  </div>
+
+  <div class="row">
+    <span>
+      Конфиденциальность
+    </span>
+
+    <small>›</small>
+  </div>
+
+  <div class="row">
+    <span>
+      Заблокированные
+    </span>
+
+    <small>›</small>
+  </div>
+
+  <div class="row">
+    <span>
+      Безопасность
+    </span>
+
+    <small>›</small>
+  </div>
+
+  <div class="row">
+    <span>
+      Правила сообщества
+    </span>
+
+    <small>›</small>
+  </div>
+
+  <div class="row">
+    <span>
+      Политика конфиденциальности
+    </span>
+
+    <small>›</small>
+  </div>
+
+  <div class="row danger">
+    <span>
+      Удалить аккаунт
+    </span>
+
+    <small>›</small>
+  </div>
+
 </section>
+
 </div>
 
-<button class="activeMatch" id="activeMatch">💞 Активный мэтч</button>
 
 <nav class="nav" id="nav">
-  <button class="navBtn active" data-view="cameraView">
-    <b>📷</b>Vibe
+
+  <button
+    class="navBtn active"
+    data-view="cameraView"
+  >
+    <b>📷</b>
+    Vibe
   </button>
 
-  <button class="navBtn" data-view="friendsView">
-    <b>💬</b><span data-nav="chats">Чаты</span>
+  <button
+    class="navBtn"
+    data-view="chatsView"
+  >
+    <b>💬</b>
+    Чаты
   </button>
 
-  <button class="navBtn" data-view="friendsView">
-    <b>👥</b><span data-nav="friends">Друзья</span>
+  <button
+    class="navBtn"
+    data-view="friendsView"
+  >
+    <b>👥</b>
+    Друзья
   </button>
 
-  <button class="navBtn" data-view="profileView">
-    <b>👤</b><span data-nav="profile">Профиль</span>
+  <button
+    class="navBtn"
+    data-view="profileView"
+  >
+    <b>👤</b>
+    Профиль
   </button>
+
 </nav>
 
+
 <div class="modal" id="modal">
+
   <div class="sheet">
+
     <h3 id="modalTitle"></h3>
+
     <div id="modalBody"></div>
+
     <div class="modalBtns">
-      <button id="modalCancel">Закрыть</button>
-      <button id="modalSave">Сохранить</button>
+
+      <button id="modalCancel">
+        Закрыть
+      </button>
+
+      <button id="modalSave">
+        Сохранить
+      </button>
+
     </div>
+
   </div>
+
 </div>
 
-<div class="toast" id="toast"></div>
+
+<div
+  class="heartParticles"
+  id="heartParticles"
+></div>
+
+
+<div
+  class="heartOverlay"
+  id="heartOverlay"
+>
+
+  <div class="heartBox">
+
+    <div class="bigHeart">
+      💗
+    </div>
+
+    <h2 id="heartTitle"></h2>
+
+    <p id="heartText"></p>
+
+    <div
+      class="heartChoices"
+      id="heartChoices"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
 
 <script>
 "use strict";
 
-const $ = id => document.getElementById(id);
+const $ =
+  id =>
+    document.getElementById(id);
 
-const I18N = {
-  ru:{online:"Онлайн",chats:"Чаты",friends:"Друзья",profile:"Профиль",keep:"Сохранить связь 💗",active:"💞 Активный мэтч",lang:"Русский"},
-  en:{online:"Online",chats:"Chats",friends:"Friends",profile:"Profile",keep:"Keep the Vibe 💗",active:"💞 Active match",lang:"English"},
-  et:{online:"Võrgus",chats:"Vestlused",friends:"Sõbrad",profile:"Profiil",keep:"Hoia ühendust 💗",active:"💞 Aktiivne vaste",lang:"Eesti"},
-  uk:{online:"Онлайн",chats:"Чати",friends:"Друзі",profile:"Профіль",keep:"Зберегти зв’язок 💗",active:"💞 Активний метч",lang:"Українська"},
-  de:{online:"Online",chats:"Chats",friends:"Freunde",profile:"Profil",keep:"Verbindung behalten 💗",active:"💞 Aktives Match",lang:"Deutsch"},
-  es:{online:"En línea",chats:"Chats",friends:"Amigos",profile:"Perfil",keep:"Mantener conexión 💗",active:"💞 Match activo",lang:"Español"}
+
+const COUNTRIES = [
+
+  ["","Все страны"],
+
+  ["EE","Эстония"],
+  ["LV","Латвия"],
+  ["LT","Литва"],
+  ["FI","Финляндия"],
+  ["SE","Швеция"],
+  ["NO","Норвегия"],
+  ["DK","Дания"],
+  ["IS","Исландия"],
+
+  ["DE","Германия"],
+  ["FR","Франция"],
+  ["ES","Испания"],
+  ["PT","Португалия"],
+  ["IT","Италия"],
+  ["NL","Нидерланды"],
+  ["BE","Бельгия"],
+  ["LU","Люксембург"],
+  ["IE","Ирландия"],
+  ["GB","Великобритания"],
+
+  ["PL","Польша"],
+  ["CZ","Чехия"],
+  ["SK","Словакия"],
+  ["AT","Австрия"],
+  ["CH","Швейцария"],
+  ["HU","Венгрия"],
+  ["RO","Румыния"],
+  ["BG","Болгария"],
+  ["GR","Греция"],
+  ["HR","Хорватия"],
+
+  ["SI","Словения"],
+  ["RS","Сербия"],
+  ["BA","Босния и Герцеговина"],
+  ["ME","Черногория"],
+  ["MK","Северная Македония"],
+  ["AL","Албания"],
+  ["MD","Молдова"],
+  ["UA","Украина"],
+  ["TR","Турция"],
+
+  ["US","США"],
+  ["CA","Канада"],
+  ["AU","Австралия"],
+  ["NZ","Новая Зеландия"],
+  ["JP","Япония"],
+  ["KR","Южная Корея"]
+
+];
+
+
+const LANGS = {
+  ru:"Русский",
+  en:"English",
+  et:"Eesti",
+  uk:"Українська",
+  de:"Deutsch",
+  es:"Español"
 };
 
-let lang = localStorage.getItem("snapvibe_language") || "ru";
-if (!I18N[lang]) lang = "ru";
 
-let userId = localStorage.getItem("snapvibe_user_id");
+let lang =
+  localStorage.getItem(
+    "snapvibe_language"
+  ) || "ru";
+
+
+let userId =
+  localStorage.getItem(
+    "snapvibe_user_id"
+  );
+
 
 if (!userId) {
-  userId = "user_" + crypto.randomUUID();
-  localStorage.setItem("snapvibe_user_id", userId);
+
+  userId =
+    "user_" +
+    crypto.randomUUID();
+
+  localStorage.setItem(
+    "snapvibe_user_id",
+    userId
+  );
 }
 
-let avatar = localStorage.getItem("snapvibe_avatar") || "";
+
+let avatar =
+  localStorage.getItem(
+    "snapvibe_avatar"
+  ) || "";
+
 
 let profile = {
-  id: userId,
-  name: localStorage.getItem("snapvibe_user_name") || "",
-  age: Number(localStorage.getItem("snapvibe_age")) || null,
-  gender: localStorage.getItem("snapvibe_gender") || "male",
-  country: localStorage.getItem("snapvibe_country") || "",
-  language: lang,
+
+  userId,
+
+  name:
+    localStorage.getItem(
+      "snapvibe_user_name"
+    ) || "",
+
+  age:
+    Number(
+      localStorage.getItem(
+        "snapvibe_age"
+      )
+    ) || null,
+
+  gender:
+    localStorage.getItem(
+      "snapvibe_gender"
+    ) || "male",
+
+  country:
+    localStorage.getItem(
+      "snapvibe_country"
+    ) || "EE",
+
+  language:
+    lang,
+
   avatar
+
 };
+
 
 let settings = {
-  gender: localStorage.getItem("snapvibe_search_gender") || "female",
-  ageMin: Number(localStorage.getItem("snapvibe_age_min")) || 18,
-  ageMax: Number(localStorage.getItem("snapvibe_age_max")) || 35,
-  location: localStorage.getItem("snapvibe_search_location") || ""
+
+  gender:
+    localStorage.getItem(
+      "snapvibe_search_gender"
+    ) || "female",
+
+  ageMin:
+    Number(
+      localStorage.getItem(
+        "snapvibe_age_min"
+      )
+    ) || 18,
+
+  ageMax:
+    Number(
+      localStorage.getItem(
+        "snapvibe_age_max"
+      )
+    ) || 35,
+
+  country:
+    localStorage.getItem(
+      "snapvibe_search_country"
+    ) || ""
+
 };
 
+
 let socket = null;
+
 let stream = null;
+
 let emotion = "happy";
+
 let friends = [];
+
 let match = null;
-let activeChat = {id:null,type:null,person:null};
+
+let activeChat = {
+  id:null,
+  type:null,
+  person:null
+};
+
 let searchTimer = null;
+
 let searchAt = 0;
+
 let countTimer = null;
 
-function toast(text) {
-  $("toast").textContent = text;
-  $("toast").classList.add("show");
 
-  clearTimeout($("toast").timer);
+/* COUNTRY HELPERS */
 
-  $("toast").timer = setTimeout(() => {
-    $("toast").classList.remove("show");
-  }, 2000);
+function countryName(code){
+
+  return (
+    COUNTRIES.find(
+      item =>
+        item[0] === code
+    )?.[1]
+    ||
+    code
+    ||
+    "Все страны"
+  );
+
 }
 
-function show(id) {
+
+function fillCountrySelect(
+  element,
+  allowAll = false
+){
+
+  element.innerHTML = "";
+
+  COUNTRIES
+    .filter(
+      item =>
+        allowAll ||
+        item[0]
+    )
+    .forEach(
+      ([value,name]) => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          value;
+
+        option.textContent =
+          name;
+
+        element.appendChild(
+          option
+        );
+
+      }
+    );
+
+}
+
+
+/* TOAST */
+
+function toast(text){
+
+  $("toast").textContent =
+    text;
+
+  $("toast").classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    $("toast").timer
+  );
+
+  $("toast").timer =
+    setTimeout(
+      () =>
+        $("toast")
+          .classList
+          .remove("show"),
+      1800
+    );
+
+}
+
+
+/* VIEWS */
+
+function show(id){
+
   [
     "registerView",
     "cameraView",
     "searchView",
     "matchView",
+    "chatsView",
     "chatView",
     "friendsView",
     "profileView",
     "settingsView"
-  ].forEach(v => {
-    $(v).classList.toggle("active", v === id);
-  });
+  ]
+  .forEach(
+    view => {
 
-  $("top").style.display = id === "registerView" ? "none" : "flex";
-  $("nav").style.display = id === "registerView" ? "none" : "grid";
+      $(view)
+        .classList
+        .toggle(
+          "active",
+          view === id
+        );
 
-  document.querySelectorAll(".navBtn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.view === id);
-  });
+    }
+  );
 
-  if (id === "friendsView") {
-    send({type:"friends_list"});
+
+  $("top").style.display =
+    id === "registerView"
+      ? "none"
+      : "flex";
+
+
+  $("nav").style.display =
+    id === "registerView"
+      ? "none"
+      : "grid";
+
+
+  document
+    .querySelectorAll(
+      ".navBtn"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.view === id
+        );
+
+      }
+    );
+
+
+  if (
+    id === "friendsView" ||
+    id === "chatsView"
+  ){
+    send({
+      type:"friends_list"
+    });
   }
 
-  if (id === "profileView") {
+
+  if (
+    id === "chatsView"
+  ){
+    renderChats();
+  }
+
+
+  if (
+    id === "profileView"
+  ){
     fillProfile();
   }
+
 }
 
-function send(data) {
-  if (socket?.readyState === WebSocket.OPEN) {
-    socket.send(JSON.stringify(data));
+
+/* SOCKET */
+
+function send(data){
+
+  if (
+    socket?.readyState ===
+    WebSocket.OPEN
+  ){
+
+    socket.send(
+      JSON.stringify(data)
+    );
+
     return true;
+
   }
 
   return false;
+
 }
 
-function registerProfile() {
+
+function registerProfile(){
+
   send({
-    type: "register_profile",
-    ...profile,
-    language: lang,
+
+    type:
+      "register_profile",
+
+    userId,
+
+    name:
+      profile.name,
+
+    age:
+      profile.age,
+
+    gender:
+      profile.gender,
+
+    country:
+      profile.country,
+
+    language:
+      lang,
+
     avatar
+
   });
+
 }
 
-function applyLang() {
-  const L = I18N[lang];
 
-  $("statusText").textContent = L.online;
+function connect(){
 
-  document.querySelector('[data-nav="chats"]').textContent = L.chats;
-  document.querySelector('[data-nav="friends"]').textContent = L.friends;
-  document.querySelector('[data-nav="profile"]').textContent = L.profile;
+  const protocol =
+    location.protocol ===
+    "https:"
+      ? "wss:"
+      : "ws:";
 
-  $("keepVibe").textContent = L.keep;
-  $("keepVibeChat").textContent = L.keep;
-  $("activeMatch").textContent = L.active;
-  $("languageLabel").textContent = L.lang + " ›";
+
+  socket =
+    new WebSocket(
+      protocol +
+      "//" +
+      location.host
+    );
+
+
+  socket.onopen =
+    () => {
+
+      if (
+        profile.name
+      ){
+        registerProfile();
+      }
+
+    };
+
+
+  socket.onclose =
+    () => {
+
+      setTimeout(
+        connect,
+        2500
+      );
+
+    };
+
+
+  socket.onmessage =
+    event => {
+
+      try{
+
+        handle(
+          JSON.parse(
+            event.data
+          )
+        );
+
+      }catch(error){
+
+        console.error(
+          error
+        );
+
+      }
+
+    };
+
 }
 
-function connect() {
-  const proto = location.protocol === "https:" ? "wss:" : "ws:";
 
-  socket = new WebSocket(
-    proto + "//" + location.host
-  );
+/* SERVER EVENTS */
 
-  socket.onopen = () => {
-    if (profile.name) {
-      registerProfile();
-    }
-  };
+function handle(data){
 
-  socket.onclose = () => {
-    setTimeout(connect, 2500);
-  };
+  if (
+    data.type ===
+    "bootstrap"
+  ){
 
-  socket.onmessage = event => {
-    try {
-      handle(JSON.parse(event.data));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-}
+    if (
+      data.profile
+    ){
 
-function handle(data) {
-  if (data.type === "bootstrap") {
-    if (data.profile) {
       profile = {
         ...profile,
         ...data.profile
@@ -544,52 +2146,134 @@ function handle(data) {
       avatar =
         data.profile.avatar ||
         avatar;
+
     }
+
 
     friends =
       data.friends || [];
 
-    renderFriends();
 
-    if (data.activeMatch) {
+    if (
+      data.activeMatch
+    ){
+
       loadMatch(
         data.activeMatch
       );
 
-      $("activeMatch").style.display =
-        "block";
-    } else {
-      $("activeMatch").style.display =
-        "none";
+    }else{
+
+      match =
+        null;
+
     }
+
+
+    renderFriends();
+    renderChats();
+
   }
 
-  else if (data.type === "searching") {
+
+  else if (
+    data.type ===
+    "searching"
+  ){
+
     startSearch();
+
   }
 
-  else if (data.type === "search_cancelled") {
-    clearInterval(searchTimer);
-    show("cameraView");
+
+  else if (
+    data.type ===
+    "search_cancelled"
+  ){
+
+    clearInterval(
+      searchTimer
+    );
+
+    show(
+      "cameraView"
+    );
+
   }
 
-  else if (data.type === "match_found") {
+
+  else if (
+    data.type ===
+    "match_found"
+  ){
+
+    clearInterval(
+      searchTimer
+    );
+
     loadMatch(data);
-    show("matchView");
+
+    show(
+      "matchView"
+    );
+
   }
 
-  else if (data.type === "match_expired") {
-    match = null;
-    $("activeMatch").style.display = "none";
-    clearInterval(countTimer);
-    show("cameraView");
+
+  else if (
+    data.type ===
+    "match_expired"
+  ){
+
+    match =
+      null;
+
+    clearInterval(
+      countTimer
+    );
+
+    renderChats();
+
+    show(
+      "cameraView"
+    );
+
   }
 
-  else if (data.type === "keep_vibe_pending") {
-    toast(I18N[lang].keep);
+
+  else if (
+    data.type ===
+    "keep_vibe_pending"
+  ){
+
+    toast(
+      "💗 Связь сохранена. Ждём ответ"
+    );
+
   }
 
-  else if (data.type === "friendship_created") {
+
+  else if (
+    data.type ===
+    "keep_vibe_received"
+  ){
+
+    showIncomingHeart(
+      data
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "keep_vibe_mutual"
+  ){
+
+    mutualHeart(
+      data
+    );
+
     friends = [
       data.friend,
       ...friends.filter(
@@ -600,74 +2284,755 @@ function handle(data) {
     ];
 
     renderFriends();
-    toast("❤️");
+    renderChats();
+
   }
 
-  else if (data.type === "friends_list") {
+
+  else if (
+    data.type ===
+    "friendship_created"
+  ){
+
+    friends = [
+      data.friend,
+      ...friends.filter(
+        friend =>
+          friend.id !==
+          data.friend.id
+      )
+    ];
+
+    renderFriends();
+    renderChats();
+
+  }
+
+
+  else if (
+    data.type ===
+    "friends_list"
+  ){
+
     friends =
       data.friends || [];
 
     renderFriends();
+    renderChats();
+
   }
 
-  else if (data.type === "friend_chat_ready") {
+
+  else if (
+    data.type ===
+    "friend_chat_ready"
+  ){
+
     openChat(
+
       data.chatId,
-      data.friend?.name || "SnapVibe",
+
+      data.friend?.name ||
+      "SnapVibe",
+
       "friend",
+
       data.friend,
+
       data.messages || []
+
     );
+
   }
 
-  else if (data.type === "chat_history") {
+
+  else if (
+    data.type ===
+    "chat_history"
+  ){
+
     if (
       activeChat.id ===
       data.chatId
-    ) {
+    ){
+
       renderMessages(
         data.messages || []
       );
+
     }
+
   }
 
-  else if (data.type === "chat_message") {
+
+  else if (
+    data.type ===
+    "chat_message"
+  ){
+
     if (
       activeChat.id ===
       data.chatId
-    ) {
+    ){
+
       appendMessage(
         data.message
       );
+
     }
+
   }
 
-  else if (data.type === "error") {
+
+  else if (
+    data.type ===
+    "error"
+  ){
+
     toast(
-      data.message || "Ошибка"
+      data.message ||
+      "Ошибка"
     );
+
   }
+
 }
 
-function loadMatch(data) {
+
+/* HEART SOUND */
+
+function playChime(
+  mutual = false
+){
+
+  try{
+
+    const AudioClass =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+
+    const context =
+      new AudioClass();
+
+
+    const now =
+      context.currentTime;
+
+
+    const notes =
+      mutual
+        ? [523,659,784]
+        : [440,554,659];
+
+
+    notes.forEach(
+      (frequency,index) => {
+
+        const oscillator =
+          context.createOscillator();
+
+        const gain =
+          context.createGain();
+
+
+        oscillator.frequency.value =
+          frequency;
+
+
+        oscillator.type =
+          "sine";
+
+
+        gain.gain.setValueAtTime(
+          .0001,
+          now +
+          index * .11
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          .16,
+          now +
+          index * .11 +
+          .02
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          .0001,
+          now +
+          index * .11 +
+          .18
+        );
+
+
+        oscillator.connect(
+          gain
+        );
+
+        gain.connect(
+          context.destination
+        );
+
+
+        oscillator.start(
+          now +
+          index * .11
+        );
+
+
+        oscillator.stop(
+          now +
+          index * .11 +
+          .2
+        );
+
+      }
+    );
+
+  }catch(error){}
+
+}
+
+
+/* FIRST HEART */
+
+function showIncomingHeart(
+  data
+){
+
+  playChime(false);
+
+
+  $("heartTitle").textContent =
+    "💗 Новый сигнал";
+
+
+  $("heartText").textContent =
+    (
+      data.fromName ||
+      "Кто-то"
+    ) +
+    " хочет сохранить связь с тобой";
+
+
+  $("heartChoices").innerHTML =
+    `
+    <button
+      class="primary"
+      id="acceptHeart"
+    >
+      💗 Сохранить связь
+    </button>
+
+    <button
+      class="secondary"
+      id="laterHeart"
+    >
+      Не сейчас
+    </button>
+    `;
+
+
+  $("heartOverlay")
+    .classList
+    .add("show");
+
+
+  $("acceptHeart").onclick =
+    () => {
+
+      if (
+        match
+      ){
+
+        send({
+
+          type:
+            "keep_vibe",
+
+          matchId:
+            match.id
+
+        });
+
+      }
+
+
+      $("heartOverlay")
+        .classList
+        .remove("show");
+
+    };
+
+
+  $("laterHeart").onclick =
+    () => {
+
+      $("heartOverlay")
+        .classList
+        .remove("show");
+
+    };
+
+}
+
+
+/* MUTUAL HEART */
+
+function mutualHeart(data){
+
+  playChime(true);
+
+
+  $("heartTitle").textContent =
+    "Вы сохранили связь!";
+
+
+  $("heartText").textContent =
+    "Теперь вы друзья, и чат останется доступен после окончания мэтча.";
+
+
+  $("heartChoices").innerHTML =
+    `
+    <button
+      class="primary"
+      id="closeMutual"
+    >
+      Продолжить 💗
+    </button>
+    `;
+
+
+  $("heartOverlay")
+    .classList
+    .add("show");
+
+
+  for(
+    let i = 0;
+    i < 18;
+    i++
+  ){
+
+    setTimeout(
+      spawnHeart,
+      i * 55
+    );
+
+  }
+
+
+  $("closeMutual").onclick =
+    () => {
+
+      $("heartOverlay")
+        .classList
+        .remove("show");
+
+    };
+
+}
+
+
+function spawnHeart(){
+
+  const particle =
+    document.createElement(
+      "div"
+    );
+
+
+  particle.className =
+    "particle";
+
+
+  particle.textContent =
+    Math.random() > .5
+      ? "💗"
+      : "💕";
+
+
+  particle.style.left =
+    (
+      10 +
+      Math.random() *
+      80
+    ) +
+    "%";
+
+
+  particle.style.bottom =
+    "-20px";
+
+
+  $("heartParticles")
+    .appendChild(
+      particle
+    );
+
+
+  setTimeout(
+    () =>
+      particle.remove(),
+    1800
+  );
+
+}
+
+
+/* CAMERA */
+
+async function startCamera(){
+
+  try{
+
+    stream =
+      await navigator
+        .mediaDevices
+        .getUserMedia({
+
+          video:{
+            facingMode:{
+              ideal:"user"
+            },
+            width:{
+              ideal:1280
+            }
+          },
+
+          audio:false
+
+        });
+
+
+    $("video").srcObject =
+      stream;
+
+
+    $("fallback").style.display =
+      "none";
+
+  }catch(error){
+
+    toast(
+      "Камера недоступна"
+    );
+
+  }
+
+}
+
+
+function takePhoto(){
+
+  const video =
+    $("video");
+
+
+  if (
+    !stream ||
+    !video.videoWidth
+  ){
+
+    return null;
+
+  }
+
+
+  const width =
+    Math.min(
+      720,
+      video.videoWidth
+    );
+
+
+  const height =
+    Math.round(
+      video.videoHeight *
+      width /
+      video.videoWidth
+    );
+
+
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+
+  canvas.width =
+    width;
+
+  canvas.height =
+    height;
+
+
+  const ctx =
+    canvas.getContext(
+      "2d"
+    );
+
+
+  ctx.translate(
+    width,
+    0
+  );
+
+
+  ctx.scale(
+    -1,
+    1
+  );
+
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  return canvas.toDataURL(
+    "image/jpeg",
+    .82
+  );
+
+}
+
+
+async function hash(value){
+
+  const buffer =
+    await crypto
+      .subtle
+      .digest(
+
+        "SHA-256",
+
+        new TextEncoder()
+          .encode(
+            "snapvibe:" +
+            value
+          )
+
+      );
+
+
+  return [
+    ...new Uint8Array(
+      buffer
+    )
+  ]
+  .map(
+    item =>
+      item
+        .toString(16)
+        .padStart(
+          2,
+          "0"
+        )
+  )
+  .join("");
+
+}
+
+
+/* EMOTION SELECT */
+
+document
+  .querySelectorAll(
+    ".emotion"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        () => {
+
+          document
+            .querySelectorAll(
+              ".emotion"
+            )
+            .forEach(
+              item =>
+                item
+                  .classList
+                  .remove(
+                    "selected"
+                  )
+            );
+
+
+          button
+            .classList
+            .add(
+              "selected"
+            );
+
+
+          emotion =
+            button.dataset.emotion;
+
+        };
+
+    }
+  );
+
+
+$("capture").onclick =
+  async () => {
+
+    const photo =
+      takePhoto();
+
+
+    if (!photo){
+
+      return toast(
+        "Камера не готова"
+      );
+
+    }
+
+
+    const emotionHash =
+      await hash(
+        emotion
+      );
+
+
+    if (
+      send({
+
+        type:
+          "capture",
+
+        emotionHash,
+
+        photo,
+
+        searchGender:
+          settings.gender,
+
+        ageMin:
+          settings.ageMin,
+
+        ageMax:
+          settings.ageMax,
+
+        searchCountry:
+          settings.country
+
+      })
+    ){
+
+      show(
+        "searchView"
+      );
+
+      startSearch();
+
+    }
+
+  };
+
+
+function startSearch(){
+
+  clearInterval(
+    searchTimer
+  );
+
+
+  searchAt =
+    Date.now();
+
+
+  searchTimer =
+    setInterval(
+      () => {
+
+        $("searchSeconds")
+          .textContent =
+          Math.floor(
+            (
+              Date.now() -
+              searchAt
+            ) /
+            1000
+          ) +
+          " сек";
+
+      },
+      1000
+    );
+
+}
+
+
+$("cancelSearch").onclick =
+  () => {
+
+    send({
+      type:
+        "cancel_search"
+    });
+
+
+    clearInterval(
+      searchTimer
+    );
+
+
+    show(
+      "cameraView"
+    );
+
+  };
+
+
+/* MATCH */
+
+function loadMatch(data){
+
   match = {
-    id: data.matchId,
-    chatId: data.matchChatId,
-    expiresAt: Number(data.expiresAt),
-    partnerId: data.partnerUserId,
+
+    id:
+      data.matchId,
+
+    chatId:
+      data.matchChatId,
+
+    expiresAt:
+      Number(
+        data.expiresAt
+      ),
+
+    partnerId:
+      data.partnerUserId,
+
     partnerName:
       data.partnerName ||
       "SnapVibe User",
+
     partnerProfile:
       data.partnerProfile ||
       {},
+
     partnerPhoto:
       data.partnerPhoto ||
       ""
+
   };
+
 
   $("matchPhoto").src =
     match.partnerPhoto;
+
 
   $("matchName").textContent =
     match.partnerName +
@@ -678,14 +3043,17 @@ function loadMatch(data) {
         : ""
     );
 
+
   $("matchMeta").textContent =
-    match.partnerProfile.country ||
-    "";
+    countryName(
+      match.partnerProfile.country
+    );
 
-  $("activeMatch").style.display =
-    "block";
 
-  clearInterval(countTimer);
+  clearInterval(
+    countTimer
+  );
+
 
   countTimer =
     setInterval(
@@ -693,328 +3061,238 @@ function loadMatch(data) {
       1000
     );
 
+
   countdown();
+
+  renderChats();
+
 }
 
-function countdown() {
-  if (!match) return;
+
+function countdown(){
+
+  if (!match){
+    return;
+  }
+
 
   const seconds =
     Math.floor(
       Math.max(
         0,
         match.expiresAt -
-          Date.now()
-      ) / 1000
-    );
-
-  $("countdown").textContent =
-    String(
-      Math.floor(
-        seconds / 3600
-      )
-    ).padStart(2, "0") +
-    ":" +
-    String(
-      Math.floor(
-        (seconds % 3600) /
-          60
-      )
-    ).padStart(2, "0") +
-    ":" +
-    String(
-      seconds % 60
-    ).padStart(2, "0");
-
-  if (seconds <= 0) {
-    match = null;
-    $("activeMatch").style.display =
-      "none";
-
-    clearInterval(countTimer);
-    show("cameraView");
-  }
-}
-
-async function startCamera() {
-  try {
-    stream =
-      await navigator.mediaDevices
-        .getUserMedia({
-          video: {
-            facingMode: {
-              ideal: "user"
-            },
-            width: {
-              ideal: 1280
-            }
-          },
-          audio: false
-        });
-
-    $("video").srcObject =
-      stream;
-
-    $("fallback").style.display =
-      "none";
-  } catch {
-    toast(
-      "Камера недоступна"
-    );
-  }
-}
-
-function takePhoto() {
-  const video =
-    $("video");
-
-  if (
-    !stream ||
-    !video.videoWidth
-  ) {
-    return null;
-  }
-
-  const width =
-    Math.min(
-      720,
-      video.videoWidth
-    );
-
-  const height =
-    Math.round(
-      video.videoHeight *
-        width /
-        video.videoWidth
-    );
-
-  const canvas =
-    document.createElement(
-      "canvas"
-    );
-
-  canvas.width =
-    width;
-
-  canvas.height =
-    height;
-
-  const ctx =
-    canvas.getContext("2d");
-
-  ctx.translate(
-    width,
-    0
-  );
-
-  ctx.scale(
-    -1,
-    1
-  );
-
-  ctx.drawImage(
-    video,
-    0,
-    0,
-    width,
-    height
-  );
-
-  return canvas.toDataURL(
-    "image/jpeg",
-    0.82
-  );
-}
-
-async function hash(value) {
-  const buffer =
-    await crypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(
-        "snapvibe:" +
-          value
-      )
-    );
-
-  return [
-    ...new Uint8Array(
-      buffer
-    )
-  ]
-    .map(
-      x =>
-        x.toString(16)
-          .padStart(
-            2,
-            "0"
-          )
-    )
-    .join("");
-}
-
-document
-  .querySelectorAll(
-    ".emotion"
-  )
-  .forEach(button => {
-    button.onclick = () => {
-      document
-        .querySelectorAll(
-          ".emotion"
-        )
-        .forEach(
-          item =>
-            item.classList.remove(
-              "selected"
-            )
-        );
-
-      button.classList.add(
-        "selected"
-      );
-
-      emotion =
-        button.dataset.emotion;
-    };
-  });
-
-$("capture").onclick =
-  async () => {
-    const photo =
-      takePhoto();
-
-    if (!photo) {
-      return toast(
-        "Камера не готова"
-      );
-    }
-
-    const emotionHash =
-      await hash(
-        emotion
-      );
-
-    if (
-      send({
-        type: "capture",
-        emotionHash,
-        photo,
-        searchGender:
-          settings.gender,
-        ageMin:
-          settings.ageMin,
-        ageMax:
-          settings.ageMax
-      })
-    ) {
-      show("searchView");
-      startSearch();
-    }
-  };
-
-function startSearch() {
-  clearInterval(
-    searchTimer
-  );
-
-  searchAt =
-    Date.now();
-
-  searchTimer =
-    setInterval(
-      () => {
-        $("searchSeconds")
-          .textContent =
-          Math.floor(
-            (
-              Date.now() -
-              searchAt
-            ) / 1000
-          ) +
-          " сек";
-      },
+        Date.now()
+      ) /
       1000
     );
-}
 
-$("cancelSearch").onclick =
-  () => {
-    send({
-      type:
-        "cancel_search"
-    });
+
+  const text =
+    String(
+      Math.floor(
+        seconds /
+        3600
+      )
+    ).padStart(
+      2,
+      "0"
+    )
+    +
+    ":"
+    +
+    String(
+      Math.floor(
+        (
+          seconds %
+          3600
+        ) /
+        60
+      )
+    ).padStart(
+      2,
+      "0"
+    )
+    +
+    ":"
+    +
+    String(
+      seconds %
+      60
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  $("countdown").textContent =
+    text;
+
+
+  const activeTime =
+    $("activeChatTime");
+
+
+  if (
+    activeTime
+  ){
+
+    activeTime.textContent =
+      text;
+
+  }
+
+
+  if (
+    seconds <= 0
+  ){
+
+    match =
+      null;
+
 
     clearInterval(
-      searchTimer
+      countTimer
     );
 
-    show(
-      "cameraView"
-    );
-  };
+
+    renderChats();
+
+  }
+
+}
+
 
 $("openMatchChat").onclick =
   () => {
-    if (!match) return;
+
+    if (!match){
+      return;
+    }
+
 
     openChat(
+
       match.chatId,
+
       match.partnerName,
+
       "match",
+
       match.partnerProfile,
+
       []
+
     );
 
+
     send({
+
       type:
         "chat_history",
+
       chatId:
         match.chatId
+
     });
+
   };
+
 
 $("keepVibe").onclick =
 $("keepVibeChat").onclick =
   () => {
-    if (match) {
+
+    if (
+      match
+    ){
+
       send({
+
         type:
           "keep_vibe",
+
         matchId:
           match.id
+
       });
+
     }
+
   };
+
 
 $("newMatch").onclick =
   () => {
-    if (match) {
+
+    if (
+      match
+    ){
+
       send({
+
         type:
           "end_match",
+
         matchId:
           match.id
+
       });
+
     }
 
-    match = null;
 
-    $("activeMatch").style.display =
-      "none";
+    match =
+      null;
+
+
+    renderChats();
+
 
     show(
       "cameraView"
     );
+
   };
 
-$("activeMatch").onclick =
-  () => {
-    if (match) {
-      show(
-        "matchView"
-      );
-    }
-  };
+
+/* AVATAR */
+
+function setAvatar(
+  element,
+  source,
+  name
+){
+
+  if (
+    source
+  ){
+
+    element.innerHTML =
+      "<img>";
+
+
+    element
+      .querySelector(
+        "img"
+      )
+      .src =
+      source;
+
+  }else{
+
+    element.textContent =
+      (
+        name ||
+        "S"
+      )[0]
+      .toUpperCase();
+
+  }
+
+}
+
+
+/* CHAT */
 
 function openChat(
   id,
@@ -1022,48 +3300,76 @@ function openChat(
   type,
   person,
   messages
-) {
+){
+
   activeChat = {
     id,
     type,
     person
   };
 
+
   $("chatName").textContent =
     name;
 
+
   setAvatar(
+
     $("chatAvatar"),
+
     person?.avatar,
+
     name
+
   );
+
 
   renderMessages(
     messages
   );
 
+
+  $("keepVibeChat")
+    .style.display =
+    type === "match"
+      ? "block"
+      : "none";
+
+
   show(
     "chatView"
   );
+
 }
 
-function renderMessages(list) {
+
+function renderMessages(
+  list
+){
+
   $("messages").innerHTML =
     "";
+
 
   list.forEach(
     appendMessage
   );
+
 }
 
-function appendMessage(message) {
-  const div =
+
+function appendMessage(
+  message
+){
+
+  const row =
     document.createElement(
       "div"
     );
 
-  div.className =
-    "bubble" +
+
+  row.className =
+    "msgRow" +
     (
       message.senderId ===
       userId
@@ -1071,135 +3377,309 @@ function appendMessage(message) {
         : ""
     );
 
-  div.textContent =
+
+  if (
+    message.senderId !==
+    userId
+  ){
+
+    const avatarBox =
+      document.createElement(
+        "div"
+      );
+
+
+    avatarBox.className =
+      "miniAvatar";
+
+
+    setAvatar(
+
+      avatarBox,
+
+      message.senderAvatar,
+
+      message.senderName ||
+      activeChat.person?.name
+
+    );
+
+
+    row.appendChild(
+      avatarBox
+    );
+
+  }
+
+
+  const bubble =
+    document.createElement(
+      "div"
+    );
+
+
+  bubble.className =
+    "bubble";
+
+
+  bubble.textContent =
     message.text;
 
+
+  row.appendChild(
+    bubble
+  );
+
+
   $("messages")
-    .appendChild(div);
+    .appendChild(
+      row
+    );
+
 
   $("messages").scrollTop =
     $("messages")
       .scrollHeight;
+
 }
 
-function sendMessage() {
+
+function sendMessage(){
+
   const input =
     $("messageInput");
+
 
   const text =
     input.value.trim();
 
+
   if (
     text &&
     activeChat.id
-  ) {
+  ){
+
     send({
+
       type:
         "chat_message",
+
       chatId:
         activeChat.id,
+
       text
+
     });
+
 
     input.value =
       "";
+
   }
+
 }
+
 
 $("sendMessage").onclick =
   sendMessage;
 
+
 $("messageInput").onkeydown =
   event => {
+
     if (
       event.key ===
       "Enter"
-    ) {
+    ){
+
       sendMessage();
+
     }
+
   };
 
+
 $("chatBack").onclick =
-  () =>
+  () => {
+
     show(
-      match &&
       activeChat.type ===
-        "match"
+      "match" &&
+      match
         ? "matchView"
-        : "friendsView"
+        : "chatsView"
     );
 
-function setAvatar(
-  element,
-  source,
-  name
-) {
-  if (source) {
-    element.innerHTML =
-      "<img>";
+  };
 
-    element
-      .querySelector("img")
-      .src =
-      source;
-  } else {
-    element.textContent =
-      (
-        name ||
-        "S"
-      )[0]
-        .toUpperCase();
-  }
-}
 
-function renderFriends() {
-  const box =
-    $("friendList");
+/* CHATS LIST */
 
-  box.innerHTML =
+function renderChats(){
+
+  const active =
+    $("activeMatchCard");
+
+
+  const list =
+    $("chatFriendList");
+
+
+  active.innerHTML =
     "";
 
-  if (!friends.length) {
-    box.innerHTML =
-      '<p style="text-align:center;color:#777;padding:50px">Пока друзей нет</p>';
 
-    return;
+  list.innerHTML =
+    "";
+
+
+  if (
+    match
+  ){
+
+    const card =
+      document.createElement(
+        "div"
+      );
+
+
+    card.className =
+      "chatListCard active";
+
+
+    const avatarBox =
+      document.createElement(
+        "div"
+      );
+
+
+    avatarBox.className =
+      "friendAvatar";
+
+
+    setAvatar(
+
+      avatarBox,
+
+      match.partnerProfile?.avatar,
+
+      match.partnerName
+
+    );
+
+
+    const main =
+      document.createElement(
+        "div"
+      );
+
+
+    main.className =
+      "main";
+
+
+    main.innerHTML =
+      `
+      <b></b>
+      <small>
+        Активный мэтч · нажми, чтобы вернуться
+      </small>
+      `;
+
+
+    main
+      .querySelector("b")
+      .textContent =
+      match.partnerName;
+
+
+    const time =
+      document.createElement(
+        "div"
+      );
+
+
+    time.className =
+      "time";
+
+
+    time.id =
+      "activeChatTime";
+
+
+    card.append(
+      avatarBox,
+      main,
+      time
+    );
+
+
+    card.onclick =
+      () =>
+        show(
+          "matchView"
+        );
+
+
+    active.appendChild(
+      card
+    );
+
   }
+
 
   friends.forEach(
     friend => {
-      const row =
+
+      const card =
         document.createElement(
           "div"
         );
 
-      row.className =
-        "friend";
+
+      card.className =
+        "chatListCard";
+
 
       const avatarBox =
         document.createElement(
           "div"
         );
 
+
       avatarBox.className =
         "friendAvatar";
 
+
       setAvatar(
+
         avatarBox,
+
         friend.avatar,
+
         friend.name
+
       );
+
 
       const main =
         document.createElement(
           "div"
         );
 
+
       main.className =
-        "friendMain";
+        "main";
+
 
       main.innerHTML =
-        "<b></b><small>Онлайн</small>";
+        `
+        <b></b>
+        <small>
+          Постоянный чат
+        </small>
+        `;
+
 
       main
         .querySelector("b")
@@ -1207,22 +3687,152 @@ function renderFriends() {
         friend.name ||
         "SnapVibe";
 
+
+      card.append(
+        avatarBox,
+        main
+      );
+
+
+      card.onclick =
+        () =>
+          send({
+
+            type:
+              "friend_chat_open",
+
+            friendId:
+              friend.id
+
+          });
+
+
+      list.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* FRIENDS */
+
+function renderFriends(){
+
+  const box =
+    $("friendList");
+
+
+  box.innerHTML =
+    "";
+
+
+  if (
+    !friends.length
+  ){
+
+    box.innerHTML =
+      `
+      <p
+        style="
+        text-align:center;
+        color:#777;
+        padding:50px
+        "
+      >
+        Пока друзей нет
+      </p>
+      `;
+
+    return;
+
+  }
+
+
+  friends.forEach(
+    friend => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "friend";
+
+
+      const avatarBox =
+        document.createElement(
+          "div"
+        );
+
+
+      avatarBox.className =
+        "friendAvatar";
+
+
+      setAvatar(
+
+        avatarBox,
+
+        friend.avatar,
+
+        friend.name
+
+      );
+
+
+      const main =
+        document.createElement(
+          "div"
+        );
+
+
+      main.className =
+        "friendMain";
+
+
+      main.innerHTML =
+        `
+        <b></b>
+        <small>
+          Друг
+        </small>
+        `;
+
+
+      main
+        .querySelector("b")
+        .textContent =
+        friend.name ||
+        "SnapVibe";
+
+
       const button =
         document.createElement(
           "button"
         );
 
+
       button.textContent =
         "💬";
+
 
       button.onclick =
         () =>
           send({
+
             type:
               "friend_chat_open",
+
             friendId:
               friend.id
+
           });
+
 
       row.append(
         avatarBox,
@@ -1230,18 +3840,26 @@ function renderFriends() {
         button
       );
 
+
       box.appendChild(
         row
       );
+
     }
   );
+
 }
 
-function fillProfile() {
+
+/* PROFILE */
+
+function fillProfile(){
+
   $("profileNameTitle")
     .textContent =
     profile.name ||
     "SnapVibe";
+
 
   $("profileMeta")
     .textContent =
@@ -1250,37 +3868,56 @@ function fillProfile() {
         ? profile.age +
           " лет"
         : "",
-      profile.country
+
+      countryName(
+        profile.country
+      )
     ]
-      .filter(Boolean)
-      .join(", ");
+    .filter(Boolean)
+    .join(", ");
+
 
   setAvatar(
+
     $("profileAvatar"),
+
     avatar,
+
     profile.name
+
   );
 
+
   $("editName").value =
-    profile.name || "";
+    profile.name ||
+    "";
+
 
   $("editAge").value =
-    profile.age || "";
+    profile.age ||
+    "";
+
 
   $("editGender").value =
     profile.gender ||
     "male";
 
+
   $("editCountry").value =
     profile.country ||
-    "";
+    "EE";
+
 }
+
 
 $("saveProfile").onclick =
   () => {
+
     const name =
       $("editName")
-        .value.trim();
+        .value
+        .trim();
+
 
     const age =
       Number(
@@ -1288,20 +3925,29 @@ $("saveProfile").onclick =
           .value
       );
 
-    if (!name) {
+
+    if (
+      !name
+    ){
+
       return toast(
         "Введите имя"
       );
+
     }
+
 
     if (
       age < 18 ||
       age > 99
-    ) {
+    ){
+
       return toast(
         "Возраст 18–99"
       );
+
     }
+
 
     profile.name =
       name.slice(
@@ -1309,99 +3955,133 @@ $("saveProfile").onclick =
         30
       );
 
+
     profile.age =
       age;
 
+
     profile.gender =
-      $("editGender").value;
+      $("editGender")
+        .value;
+
 
     profile.country =
       $("editCountry")
-        .value
-        .trim()
-        .slice(
-          0,
-          60
-        );
+        .value;
+
 
     localStorage.setItem(
       "snapvibe_user_name",
       profile.name
     );
 
+
     localStorage.setItem(
       "snapvibe_age",
       profile.age
     );
+
 
     localStorage.setItem(
       "snapvibe_gender",
       profile.gender
     );
 
+
     localStorage.setItem(
       "snapvibe_country",
       profile.country
     );
 
+
     registerProfile();
+
     fillProfile();
+
 
     toast(
       "Профиль сохранён"
     );
+
   };
 
-function loadAvatar(file) {
-  if (!file) return;
+
+function loadAvatar(
+  file
+){
+
+  if (
+    !file
+  ){
+    return;
+  }
+
 
   if (
     file.size >
-    5 * 1024 * 1024
-  ) {
+    5 *
+    1024 *
+    1024
+  ){
+
     return toast(
       "Фото слишком большое"
     );
+
   }
+
 
   const reader =
     new FileReader();
 
+
   reader.onload =
     () => {
+
       avatar =
         reader.result;
 
+
       profile.avatar =
         avatar;
+
 
       localStorage.setItem(
         "snapvibe_avatar",
         avatar
       );
 
+
       registerProfile();
+
       fillProfile();
+
 
       toast(
         "Фото обновлено"
       );
+
     };
+
 
   reader.readAsDataURL(
     file
   );
+
 }
+
 
 $("takeAvatar").onclick =
   () =>
     $("cameraAvatarInput")
       .click();
 
+
 $("chooseAvatar").onclick =
   () =>
     $("galleryAvatarInput")
       .click();
+
 
 $("cameraAvatarInput").onchange =
   event =>
@@ -1410,6 +4090,7 @@ $("cameraAvatarInput").onchange =
         .files?.[0]
     );
 
+
 $("galleryAvatarInput").onchange =
   event =>
     loadAvatar(
@@ -1417,156 +4098,104 @@ $("galleryAvatarInput").onchange =
         .files?.[0]
     );
 
+
 $("removeAvatar").onclick =
   () => {
-    avatar = "";
-    profile.avatar = "";
+
+    avatar =
+      "";
+
+
+    profile.avatar =
+      "";
+
 
     localStorage.removeItem(
       "snapvibe_avatar"
     );
 
+
     registerProfile();
+
     fillProfile();
+
   };
 
-$("finishRegister").onclick =
-  () => {
-    const name =
-      $("regName")
-        .value.trim();
 
-    const age =
-      Number(
-        $("regAge")
-          .value
-      );
-
-    if (!name) {
-      return toast(
-        "Введите имя"
-      );
-    }
-
-    if (
-      age < 18 ||
-      age > 99
-    ) {
-      return toast(
-        "Возраст 18–99"
-      );
-    }
-
-    profile.name =
-      name.slice(
-        0,
-        30
-      );
-
-    profile.age =
-      age;
-
-    profile.gender =
-      $("regGender").value;
-
-    profile.country =
-      $("regCountry")
-        .value
-        .trim()
-        .slice(
-          0,
-          60
-        );
-
-    settings.gender =
-      $("regSearchGender")
-        .value;
-
-    localStorage.setItem(
-      "snapvibe_user_name",
-      profile.name
-    );
-
-    localStorage.setItem(
-      "snapvibe_age",
-      profile.age
-    );
-
-    localStorage.setItem(
-      "snapvibe_gender",
-      profile.gender
-    );
-
-    localStorage.setItem(
-      "snapvibe_country",
-      profile.country
-    );
-
-    localStorage.setItem(
-      "snapvibe_search_gender",
-      settings.gender
-    );
-
-    registerProfile();
-    show("cameraView");
-  };
+/* MODAL */
 
 function openModal(
   title,
   body,
   save
-) {
+){
+
   $("modalTitle")
     .textContent =
     title;
+
 
   $("modalBody")
     .innerHTML =
     body;
 
+
   $("modal")
     .classList
-    .add("show");
+    .add(
+      "show"
+    );
+
 
   $("modalSave").onclick =
     () => {
-      if (save) save();
+
+      if (
+        save
+      ){
+        save();
+      }
+
 
       $("modal")
         .classList
-        .remove("show");
+        .remove(
+          "show"
+        );
+
     };
+
 }
+
 
 $("modalCancel").onclick =
   () =>
     $("modal")
       .classList
-      .remove("show");
+      .remove(
+        "show"
+      );
 
-$("searchSettings").onclick =
-  () => {
-    renderSettings();
-    show("settingsView");
-  };
 
-$("settingsBack").onclick =
-  () =>
-    show("profileView");
+/* SETTINGS */
 
-function renderSettings() {
+function renderSettings(){
+
   $("genderLabel")
     .textContent =
     (
       settings.gender ===
       "female"
         ? "Девушек"
+
         : settings.gender ===
           "male"
           ? "Парней"
           : "Всех"
-    ) +
+    )
+    +
     " ›";
+
 
   $("ageLabel")
     .textContent =
@@ -1575,76 +4204,156 @@ function renderSettings() {
     settings.ageMax +
     " ›";
 
-  $("locationLabel")
+
+  $("countryLabel")
     .textContent =
     (
-      settings.location ||
-      "Не выбрано"
-    ) +
+      settings.country
+        ? countryName(
+            settings.country
+          )
+        : "Все страны"
+    )
+    +
     " ›";
+
 }
+
+
+$("searchSettings").onclick =
+  () => {
+
+    renderSettings();
+
+    show(
+      "settingsView"
+    );
+
+  };
+
+
+$("settingsBack").onclick =
+  () =>
+    show(
+      "profileView"
+    );
+
 
 $("setGender").onclick =
   () => {
+
     openModal(
-      "Кого показывать",
-      '<div class="field"><select id="mGender"><option value="female">Девушек</option><option value="male">Парней</option><option value="all">Всех</option></select></div>',
+
+      "Пол",
+
+      `
+      <div class="field">
+
+        <select id="mGender">
+
+          <option value="female">
+            Девушек
+          </option>
+
+          <option value="male">
+            Парней
+          </option>
+
+          <option value="all">
+            Всех
+          </option>
+
+        </select>
+
+      </div>
+      `,
+
       () => {
+
         settings.gender =
-          $("mGender").value;
+          $("mGender")
+            .value;
+
 
         localStorage.setItem(
           "snapvibe_search_gender",
           settings.gender
         );
 
+
         renderSettings();
+
       }
+
     );
 
+
     setTimeout(
-      () => {
-        $("mGender").value =
-          settings.gender;
-      },
+      () =>
+        $("mGender")
+          .value =
+          settings.gender,
       0
     );
+
   };
+
 
 $("setAge").onclick =
   () => {
+
     openModal(
+
       "Возраст",
+
       `
       <div class="grid2">
+
         <div class="field">
           <label>От</label>
-          <input id="mMin" type="number" min="18" max="99" value="${settings.ageMin}">
+
+          <input
+            id="mMin"
+            type="number"
+            min="18"
+            max="99"
+            value="${settings.ageMin}"
+          >
         </div>
+
         <div class="field">
           <label>До</label>
-          <input id="mMax" type="number" min="18" max="99" value="${settings.ageMax}">
+
+          <input
+            id="mMax"
+            type="number"
+            min="18"
+            max="99"
+            value="${settings.ageMax}"
+          >
         </div>
+
       </div>
       `,
+
       () => {
+
         let min =
           Number(
-            $("mMin")
-              .value
-          ) ||
-          18;
+            $("mMin").value
+          ) || 18;
+
 
         let max =
           Number(
-            $("mMax")
-              .value
-          ) ||
-          35;
+            $("mMax").value
+          ) || 35;
+
 
         if (
           min > max
-        ) {
+        ){
+
           [
             min,
             max
@@ -1652,7 +4361,9 @@ $("setAge").onclick =
             max,
             min
           ];
+
         }
+
 
         settings.ageMin =
           Math.max(
@@ -1660,93 +4371,270 @@ $("setAge").onclick =
             min
           );
 
+
         settings.ageMax =
           Math.min(
             99,
             max
           );
 
+
         localStorage.setItem(
           "snapvibe_age_min",
           settings.ageMin
         );
+
 
         localStorage.setItem(
           "snapvibe_age_max",
           settings.ageMax
         );
 
+
         renderSettings();
+
       }
+
     );
+
   };
 
-$("setLocation").onclick =
+
+$("setCountry").onclick =
   () => {
+
     openModal(
-      "Страна / город",
+
+      "Страна",
+
       `
       <div class="field">
-        <input id="mLoc" value="${(settings.location || "").replace(/"/g, "&quot;")}">
+
+        <select id="mCountry"></select>
+
       </div>
       `,
+
       () => {
-        settings.location =
-          $("mLoc")
-            .value
-            .trim();
+
+        settings.country =
+          $("mCountry")
+            .value;
+
 
         localStorage.setItem(
-          "snapvibe_search_location",
-          settings.location
+          "snapvibe_search_country",
+          settings.country
         );
 
+
         renderSettings();
+
       }
+
     );
+
+
+    setTimeout(
+      () => {
+
+        fillCountrySelect(
+          $("mCountry"),
+          true
+        );
+
+
+        $("mCountry").value =
+          settings.country;
+
+      },
+      0
+    );
+
   };
+
+
+/* LANGUAGES */
 
 $("languageSettings").onclick =
   () => {
+
     openModal(
+
       "Язык",
+
       `
       <div class="field">
+
         <select id="mLang">
-          <option value="ru">🇷🇺 Русский</option>
-          <option value="en">🇬🇧 English</option>
-          <option value="et">🇪🇪 Eesti</option>
-          <option value="uk">🇺🇦 Українська</option>
-          <option value="de">🇩🇪 Deutsch</option>
-          <option value="es">🇪🇸 Español</option>
+
+          <option value="ru">
+            🇷🇺 Русский
+          </option>
+
+          <option value="en">
+            🇬🇧 English
+          </option>
+
+          <option value="et">
+            🇪🇪 Eesti
+          </option>
+
+          <option value="uk">
+            🇺🇦 Українська
+          </option>
+
+          <option value="de">
+            🇩🇪 Deutsch
+          </option>
+
+          <option value="es">
+            🇪🇸 Español
+          </option>
+
         </select>
+
       </div>
       `,
+
       () => {
+
         lang =
-          $("mLang").value;
+          $("mLang")
+            .value;
+
 
         profile.language =
           lang;
+
 
         localStorage.setItem(
           "snapvibe_language",
           lang
         );
 
-        applyLang();
+
+        $("languageLabel")
+          .textContent =
+          LANGS[lang] +
+          " ›";
+
+
         registerProfile();
+
       }
+
     );
 
+
     setTimeout(
-      () => {
-        $("mLang").value =
-          lang;
-      },
+      () =>
+        $("mLang")
+          .value =
+          lang,
       0
     );
+
   };
+
+
+/* REGISTER */
+
+$("finishRegister").onclick =
+  () => {
+
+    const name =
+      $("regName")
+        .value
+        .trim();
+
+
+    const age =
+      Number(
+        $("regAge")
+          .value
+      );
+
+
+    if (
+      !name
+    ){
+
+      return toast(
+        "Введите имя"
+      );
+
+    }
+
+
+    if (
+      age < 18 ||
+      age > 99
+    ){
+
+      return toast(
+        "Возраст 18–99"
+      );
+
+    }
+
+
+    profile.name =
+      name.slice(
+        0,
+        30
+      );
+
+
+    profile.age =
+      age;
+
+
+    profile.gender =
+      $("regGender")
+        .value;
+
+
+    profile.country =
+      $("regCountry")
+        .value;
+
+
+    localStorage.setItem(
+      "snapvibe_user_name",
+      profile.name
+    );
+
+
+    localStorage.setItem(
+      "snapvibe_age",
+      profile.age
+    );
+
+
+    localStorage.setItem(
+      "snapvibe_gender",
+      profile.gender
+    );
+
+
+    localStorage.setItem(
+      "snapvibe_country",
+      profile.country
+    );
+
+
+    registerProfile();
+
+
+    show(
+      "cameraView"
+    );
+
+  };
+
+
+/* NAVIGATION */
 
 document
   .querySelectorAll(
@@ -1754,30 +4642,71 @@ document
   )
   .forEach(
     button => {
+
       button.onclick =
         () =>
           show(
             button.dataset.view
           );
+
     }
   );
+
+
+/* INITIAL */
+
+fillCountrySelect(
+  $("regCountry")
+);
+
+
+fillCountrySelect(
+  $("editCountry")
+);
+
+
+$("regCountry").value =
+  profile.country ||
+  "EE";
+
+
+$("editCountry").value =
+  profile.country ||
+  "EE";
+
+
+$("languageLabel")
+  .textContent =
+  (
+    LANGS[lang] ||
+    "Русский"
+  ) +
+  " ›";
+
+
+renderSettings();
+
 
 setInterval(
   () =>
     send({
-      type: "ping"
+      type:"ping"
     }),
   25000
 );
 
-applyLang();
+
 connect();
+
 startCamera();
+
+
 show(
   profile.name
     ? "cameraView"
     : "registerView"
 );
 </script>
+
 </body>
   </html>
