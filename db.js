@@ -1,173 +1,461 @@
-// SnapVibe — временная база данных
-// Позже её можно заменить на PostgreSQL без изменения интерфейса приложения.
+const crypto = require("crypto");
 
-// Зарегистрированные пользователи
 const users = new Map();
-
-// Друзья пользователя
-// userId -> Set(friendId)
 const friends = new Map();
-
-// Заявки в друзья
-// userId -> Set(userId тех, кто отправил заявку)
-const friendRequests = new Map();
-
-// Постоянные чаты между друзьями
-// chatId -> объект чата
 const chats = new Map();
-
-// Сообщения
-// chatId -> массив сообщений
 const messages = new Map();
+const reports = [];
+const blocks = new Map();
 
-function createUser(user) {
-  if (!user || !user.id) {
-    throw new Error("User ID is required");
-  }
-
-  const newUser = {
-    id: user.id,
-    name: user.name || "SnapVibe User",
-    avatar: user.avatar || null,
-    language: user.language || "ru",
-    createdAt: Date.now()
-  };
-
-  users.set(newUser.id, newUser);
-
-  if (!friends.has(newUser.id)) {
-    friends.set(newUser.id, new Set());
-  }
-
-  if (!friendRequests.has(newUser.id)) {
-    friendRequests.set(newUser.id, new Set());
-  }
-
-  return newUser;
-}
-
-function getUser(userId) {
-  return users.get(userId) || null;
-}
-
-function sendFriendRequest(fromUserId, toUserId) {
-  if (!fromUserId || !toUserId) return false;
-  if (fromUserId === toUserId) return false;
-
-  if (!friendRequests.has(toUserId)) {
-    friendRequests.set(toUserId, new Set());
-  }
-
-  friendRequests.get(toUserId).add(fromUserId);
-
-  return true;
-}
-
-function acceptFriendRequest(userId, fromUserId) {
-  const requests = friendRequests.get(userId);
-
-  if (!requests || !requests.has(fromUserId)) {
-    return false;
-  }
-
-  requests.delete(fromUserId);
-
+function ensure(userId) {
   if (!friends.has(userId)) {
     friends.set(userId, new Set());
   }
 
-  if (!friends.has(fromUserId)) {
-    friends.set(fromUserId, new Set());
+  if (!blocks.has(userId)) {
+    blocks.set(userId, new Set());
+  }
+}
+
+function clean(value, max = 500) {
+  return String(value ?? "")
+    .trim()
+    .slice(0, max);
+}
+
+function createOrUpdateUser(input) {
+  if (!input || !input.id) {
+    throw new Error("User ID is required");
   }
 
-  friends.get(userId).add(fromUserId);
-  friends.get(fromUserId).add(userId);
+  const oldUser =
+    users.get(input.id) || {};
 
-  return true;
+  const user = {
+    id: input.id,
+
+    name: clean(
+      input.name ||
+        oldUser.name ||
+        "SnapVibe User",
+      30
+    ),
+
+    language: clean(
+      input.language ||
+        oldUser.language ||
+        "en",
+      8
+    ),
+
+    age:
+      input.age
+        ? Math.max(
+            18,
+            Math.min(
+              99,
+              Number(input.age)
+            )
+          )
+        : oldUser.age || null,
+
+    gender: clean(
+      input.gender ||
+        oldUser.gender ||
+        "",
+      20
+    ),
+
+    country: clean(
+      input.country ||
+        oldUser.country ||
+        "",
+      40
+    ),
+
+    createdAt:
+      oldUser.createdAt ||
+      Date.now(),
+
+    updatedAt:
+      Date.now()
+  };
+
+  users.set(
+    user.id,
+    user
+  );
+
+  ensure(
+    user.id
+  );
+
+  return user;
 }
 
-function getFriends(userId) {
-  const list = friends.get(userId);
+function getUser(userId) {
+  return (
+    users.get(userId) ||
+    null
+  );
+}
 
-  if (!list) return [];
+function publicUser(userId) {
+  const user =
+    getUser(userId);
 
-  return Array.from(list)
-    .map(id => users.get(id))
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    language: user.language,
+    age: user.age,
+    gender: user.gender,
+    country: user.country
+  };
+}
+
+function areFriends(
+  userA,
+  userB
+) {
+  return !!friends
+    .get(userA)
+    ?.has(userB);
+}
+
+function makeFriends(
+  userA,
+  userB
+) {
+  ensure(userA);
+  ensure(userB);
+
+  friends
+    .get(userA)
+    .add(userB);
+
+  friends
+    .get(userB)
+    .add(userA);
+}
+
+function removeFriend(
+  userA,
+  userB
+) {
+  friends
+    .get(userA)
+    ?.delete(userB);
+
+  friends
+    .get(userB)
+    ?.delete(userA);
+}
+
+function getFriends(
+  userId
+) {
+  ensure(userId);
+
+  return Array.from(
+    friends.get(userId)
+  )
+    .map(publicUser)
     .filter(Boolean);
 }
 
-function getFriendRequests(userId) {
-  const requests = friendRequests.get(userId);
-
-  if (!requests) return [];
-
-  return Array.from(requests)
-    .map(id => users.get(id))
-    .filter(Boolean);
+function friendChatId(
+  userA,
+  userB
+) {
+  return (
+    "friend_" +
+    [userA, userB]
+      .sort()
+      .join("_")
+  );
 }
 
-function createChat(userA, userB) {
-  const sorted = [userA, userB].sort();
-
-  const chatId = sorted.join("_");
+function createFriendChat(
+  userA,
+  userB
+) {
+  const chatId =
+    friendChatId(
+      userA,
+      userB
+    );
 
   if (!chats.has(chatId)) {
-    chats.set(chatId, {
-      id: chatId,
-      users: sorted,
-      createdAt: Date.now()
-    });
+    chats.set(
+      chatId,
+      {
+        id: chatId,
 
-    messages.set(chatId, []);
+        users: [
+          userA,
+          userB
+        ].sort(),
+
+        type: "friend",
+
+        createdAt:
+          Date.now()
+      }
+    );
+
+    messages.set(
+      chatId,
+      []
+    );
   }
 
-  return chats.get(chatId);
+  return chats.get(
+    chatId
+  );
 }
 
-function addMessage(chatId, senderId, text) {
-  if (!messages.has(chatId)) {
-    messages.set(chatId, []);
+function createMatchChat(
+  matchId,
+  userA,
+  userB
+) {
+  const chatId =
+    "matchchat_" +
+    matchId;
+
+  chats.set(
+    chatId,
+    {
+      id: chatId,
+
+      users: [
+        userA,
+        userB
+      ],
+
+      type: "match",
+
+      matchId,
+
+      createdAt:
+        Date.now()
+    }
+  );
+
+  messages.set(
+    chatId,
+    []
+  );
+
+  return chats.get(
+    chatId
+  );
+}
+
+function getChat(
+  chatId
+) {
+  return (
+    chats.get(chatId) ||
+    null
+  );
+}
+
+function deleteChat(
+  chatId
+) {
+  chats.delete(chatId);
+  messages.delete(chatId);
+}
+
+function addMessage(
+  chatId,
+  senderId,
+  text
+) {
+  const chat =
+    chats.get(chatId);
+
+  if (!chat) {
+    return null;
+  }
+
+  if (
+    !chat.users.includes(
+      senderId
+    )
+  ) {
+    return null;
+  }
+
+  const messageText =
+    clean(
+      text,
+      1000
+    );
+
+  if (!messageText) {
+    return null;
   }
 
   const message = {
     id:
-      Date.now().toString(36) +
-      Math.random().toString(36).slice(2),
+      crypto.randomUUID(),
+
+    chatId,
 
     senderId,
-    text: String(text || "").trim(),
-    createdAt: Date.now()
+
+    text:
+      messageText,
+
+    createdAt:
+      Date.now()
   };
 
-  if (!message.text) {
-    return null;
+  if (
+    !messages.has(chatId)
+  ) {
+    messages.set(
+      chatId,
+      []
+    );
   }
 
-  messages.get(chatId).push(message);
+  messages
+    .get(chatId)
+    .push(message);
+
+  if (
+    messages
+      .get(chatId)
+      .length > 500
+  ) {
+    messages
+      .get(chatId)
+      .splice(
+        0,
+        messages
+          .get(chatId)
+          .length -
+          500
+      );
+  }
 
   return message;
 }
 
-function getMessages(chatId) {
-  return messages.get(chatId) || [];
+function getMessages(
+  chatId,
+  limit = 100
+) {
+  const list =
+    messages.get(chatId) ||
+    [];
+
+  const safeLimit =
+    Math.max(
+      1,
+      Math.min(
+        200,
+        limit
+      )
+    );
+
+  return list.slice(
+    -safeLimit
+  );
+}
+
+function blockUser(
+  userId,
+  targetUserId
+) {
+  ensure(userId);
+
+  blocks
+    .get(userId)
+    .add(
+      targetUserId
+    );
+
+  removeFriend(
+    userId,
+    targetUserId
+  );
+}
+
+function isBlockedEitherWay(
+  userA,
+  userB
+) {
+  return (
+    !!blocks
+      .get(userA)
+      ?.has(userB) ||
+
+    !!blocks
+      .get(userB)
+      ?.has(userA)
+  );
+}
+
+function reportUser(
+  fromUserId,
+  targetUserId,
+  reason
+) {
+  reports.push({
+    id:
+      crypto.randomUUID(),
+
+    fromUserId,
+
+    targetUserId,
+
+    reason:
+      clean(
+        reason,
+        120
+      ),
+
+    createdAt:
+      Date.now()
+  });
 }
 
 module.exports = {
   users,
   friends,
-  friendRequests,
   chats,
   messages,
+  reports,
+  blocks,
 
-  createUser,
+  createOrUpdateUser,
   getUser,
+  publicUser,
 
-  sendFriendRequest,
-  acceptFriendRequest,
+  areFriends,
+  makeFriends,
+  removeFriend,
   getFriends,
-  getFriendRequests,
 
-  createChat,
+  createFriendChat,
+  createMatchChat,
+  getChat,
+  deleteChat,
+
   addMessage,
-  getMessages
+  getMessages,
+
+  blockUser,
+  isBlockedEitherWay,
+
+  reportUser
 };
