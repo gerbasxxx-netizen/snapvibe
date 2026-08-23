@@ -46,6 +46,10 @@ button,input,select{
   font:inherit
 }
 
+button{
+  cursor:pointer
+}
+
 .app{
   max-width:520px;
   margin:auto;
@@ -107,12 +111,11 @@ button,input,select{
 
 .primary{
   border:0;
-  background:
-    linear-gradient(
-      90deg,
-      #d92d7f,
-      #ff4f9f
-    )
+  background:linear-gradient(
+    90deg,
+    #d92d7f,
+    #ff4f9f
+  )
 }
 
 .secondary,
@@ -174,12 +177,11 @@ button,input,select{
   height:116px;
   border-radius:50%;
   margin:18px auto;
-  background:
-    linear-gradient(
-      135deg,
-      var(--violet),
-      var(--pink)
-    );
+  background:linear-gradient(
+    135deg,
+    var(--violet),
+    var(--pink)
+  );
   display:grid;
   place-items:center;
   font-size:42px;
@@ -230,11 +232,10 @@ button,input,select{
   right:0;
   bottom:0;
   padding:60px 10px 14px;
-  background:
-    linear-gradient(
-      transparent,
-      rgba(3,3,7,.92) 45%
-    )
+  background:linear-gradient(
+    transparent,
+    rgba(3,3,7,.92) 45%
+  )
 }
 
 .panel h3{
@@ -269,9 +270,7 @@ button,input,select{
 
 .emotion.selected .circle{
   border-color:var(--pink);
-  box-shadow:
-    0 0 20px
-    rgba(255,63,159,.3)
+  box-shadow:0 0 20px rgba(255,63,159,.3)
 }
 
 .emotion small{
@@ -288,12 +287,41 @@ button,input,select{
   border-radius:50%;
   margin:12px auto 0;
   border:4px solid #fff;
-  background:
-    linear-gradient(
-      135deg,
-      #ff63b4,
-      #d62d7d
-    )
+  background:linear-gradient(
+    135deg,
+    #ff63b4,
+    #d62d7d
+  )
+}
+
+/* PHOTO PREVIEW */
+
+.previewTitle{
+  text-align:center;
+  font-size:27px;
+  margin:8px 0 8px
+}
+
+.previewSub{
+  text-align:center;
+  color:var(--muted);
+  margin:0 0 14px
+}
+
+.previewPhoto{
+  width:100%;
+  max-height:64vh;
+  object-fit:cover;
+  border-radius:22px;
+  background:#10131d;
+  display:block
+}
+
+.previewActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:14px
 }
 
 /* SEARCH */
@@ -313,24 +341,19 @@ button,input,select{
   border-radius:50%;
   margin:25px auto;
   position:relative;
-  background:
-    radial-gradient(
-      circle,
-      rgba(139,92,246,.1),
-      transparent 68%
-    );
-  border:
-    1px solid
-    rgba(255,63,159,.25)
+  background:radial-gradient(
+    circle,
+    rgba(139,92,246,.1),
+    transparent 68%
+  );
+  border:1px solid rgba(255,63,159,.25)
 }
 
 .radar:before,
 .radar:after{
   content:"";
   position:absolute;
-  border:
-    1px solid
-    rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.12);
   border-radius:50%
 }
 
@@ -346,8 +369,7 @@ button,input,select{
   position:absolute;
   left:50%;
   top:50%;
-  transform:
-    translate(-50%,-50%);
+  transform:translate(-50%,-50%);
   font-size:40px
 }
 
@@ -355,19 +377,15 @@ button,input,select{
   position:absolute;
   inset:0;
   border-radius:50%;
-  background:
-    conic-gradient(
-      rgba(255,63,159,.18),
-      transparent 26%
-    );
-  animation:
-    spin 2.3s linear infinite
+  background:conic-gradient(
+    rgba(255,63,159,.18),
+    transparent 26%
+  );
+  animation:spin 2.3s linear infinite
 }
 
 @keyframes spin{
-  to{
-    transform:rotate(360deg)
-  }
+  to{transform:rotate(360deg)}
 }
 
 /* MATCH */
@@ -401,11 +419,10 @@ button,input,select{
   right:0;
   bottom:0;
   padding:55px 14px 14px;
-  background:
-    linear-gradient(
-      transparent,
-      rgba(0,0,0,.9)
-    )
+  background:linear-gradient(
+    transparent,
+    rgba(0,0,0,.9)
+  )
 }
 
 .matchInfo b{
@@ -439,7 +456,7 @@ button,input,select{
   border-color:#693455
 }
 
-/* CHATS LIST */
+/* CHATS */
 
 .pageTitle{
   text-align:center;
@@ -447,32 +464,25 @@ button,input,select{
   margin:8px 0 18px
 }
 
+.chatEmpty{
+  text-align:center;
+  padding:70px 20px;
+  color:var(--muted)
+}
+
 .chatListCard{
   display:flex;
   gap:12px;
   align-items:center;
   padding:12px;
-  border:
-    1px solid
-    var(--line);
+  border:1px solid var(--line);
   border-radius:17px;
-  background:
-    linear-gradient(
-      180deg,
-      #141824,
-      #0e1119
-    );
+  background:linear-gradient(
+    180deg,
+    #141824,
+    #0e1119
+  );
   margin-bottom:10px
-}
-
-.chatListCard.active{
-  border-color:#6f3659;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(139,92,246,.16),
-      rgba(255,63,159,.11)
-    )
 }
 
 .chatListCard .main{
@@ -489,12 +499,6 @@ button,input,select{
   font-size:11px
 }
 
-.chatListCard .time{
-  color:#ff6bb2;
-  font-size:11px;
-  font-weight:900
-}
-
 /* CHAT */
 
 .chat{
@@ -507,9 +511,7 @@ button,input,select{
   display:flex;
   align-items:center;
   gap:9px;
-  border-bottom:
-    1px solid
-    var(--line);
+  border-bottom:1px solid var(--line);
   padding-bottom:10px
 }
 
@@ -527,12 +529,11 @@ button,input,select{
   width:44px;
   height:44px;
   border-radius:50%;
-  background:
-    linear-gradient(
-      135deg,
-      var(--violet),
-      var(--pink)
-    );
+  background:linear-gradient(
+    135deg,
+    var(--violet),
+    var(--pink)
+  );
   display:grid;
   place-items:center;
   overflow:hidden;
@@ -564,12 +565,11 @@ button,input,select{
   height:30px;
   border-radius:50%;
   overflow:hidden;
-  background:
-    linear-gradient(
-      135deg,
-      var(--violet),
-      var(--pink)
-    );
+  background:linear-gradient(
+    135deg,
+    var(--violet),
+    var(--pink)
+  );
   display:grid;
   place-items:center;
   font-size:11px;
@@ -587,26 +587,22 @@ button,input,select{
   max-width:76%;
   padding:10px 12px;
   border-radius:16px;
-  background:
-    linear-gradient(
-      135deg,
-      #ff3f9f,
-      #d82d7d
-    );
+  background:linear-gradient(
+    135deg,
+    #ff3f9f,
+    #d82d7d
+  );
   color:#fff;
   font-size:14px;
   line-height:1.4
 }
 
-/* МОИ СООБЩЕНИЯ — ГОЛУБЫЕ */
-
 .msgRow.me .bubble{
-  background:
-    linear-gradient(
-      135deg,
-      #2f83ff,
-      #1563d9
-    )
+  background:linear-gradient(
+    135deg,
+    #2f83ff,
+    #1563d9
+  )
 }
 
 .composer{
@@ -618,9 +614,7 @@ button,input,select{
   flex:1;
   height:48px;
   border-radius:13px;
-  border:
-    1px solid
-    var(--line);
+  border:1px solid var(--line);
   background:#0d1018;
   color:#fff;
   padding:0 11px
@@ -641,9 +635,7 @@ button,input,select{
   align-items:center;
   gap:10px;
   padding:10px 0;
-  border-bottom:
-    1px solid
-    #171b25
+  border-bottom:1px solid #171b25
 }
 
 .friendMain{
@@ -676,8 +668,7 @@ button,input,select{
 
 .photoBtns{
   display:grid;
-  grid-template-columns:
-    repeat(3,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:7px;
   margin:12px 0
 }
@@ -685,29 +676,27 @@ button,input,select{
 .photoBtns button{
   min-height:46px;
   border-radius:12px;
-  border:
-    1px solid
-    var(--line);
+  border:1px solid var(--line);
   background:var(--card);
   color:#fff;
   font-size:12px
 }
 
+#saveProfile{
+  margin-top:20px
+}
+
 .menu{
-  margin-top:16px;
-  border-top:
-    1px solid
-    #191d28
+  margin-top:28px;
+  border-top:1px solid #191d28
 }
 
 .row{
-  min-height:52px;
+  min-height:54px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  border-bottom:
-    1px solid
-    #191d28;
+  border-bottom:1px solid #191d28;
   font-size:15px
 }
 
@@ -728,9 +717,7 @@ button,input,select{
   width:44px;
   height:44px;
   border-radius:13px;
-  border:
-    1px solid
-    var(--line);
+  border:1px solid var(--line);
   background:var(--card);
   color:#fff;
   font-size:23px
@@ -747,7 +734,40 @@ button,input,select{
   color:#ff687b
 }
 
-/* NAV */
+.toggle{
+  width:48px;
+  height:27px;
+  border-radius:999px;
+  background:#262b38;
+  position:relative;
+  transition:.2s
+}
+
+.toggle:after{
+  content:"";
+  position:absolute;
+  width:21px;
+  height:21px;
+  border-radius:50%;
+  background:#fff;
+  left:3px;
+  top:3px;
+  transition:.2s
+}
+
+.toggle.on{
+  background:linear-gradient(
+    90deg,
+    #d92d7f,
+    #ff4f9f
+  )
+}
+
+.toggle.on:after{
+  left:24px
+}
+
+/* NAV - 5 BUTTONS */
 
 .nav{
   position:fixed;
@@ -756,14 +776,10 @@ button,input,select{
   transform:translateX(-50%);
   width:min(520px,100%);
   height:72px;
-  background:
-    rgba(5,6,10,.96);
-  border-top:
-    1px solid
-    #171b24;
+  background:rgba(5,6,10,.96);
+  border-top:1px solid #171b24;
   display:grid;
-  grid-template-columns:
-    repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   z-index:30
 }
 
@@ -771,7 +787,8 @@ button,input,select{
   border:0;
   background:transparent;
   color:#777e91;
-  font-size:11px
+  font-size:10px;
+  position:relative
 }
 
 .nav button b{
@@ -783,14 +800,44 @@ button,input,select{
   color:var(--pink)
 }
 
+.matchNav{
+  color:#4f5360 !important
+}
+
+.matchNav.available{
+  color:#ff5eac !important
+}
+
+.matchNav.available b{
+  filter:drop-shadow(
+    0 0 9px
+    rgba(255,63,159,.65)
+  )
+}
+
+.matchDot{
+  display:none;
+  position:absolute;
+  right:22%;
+  top:10px;
+  width:8px;
+  height:8px;
+  background:#ff3f9f;
+  border-radius:50%;
+  box-shadow:0 0 10px #ff3f9f
+}
+
+.matchNav.available .matchDot{
+  display:block
+}
+
 /* MODAL */
 
 .modal{
   position:fixed;
   inset:0;
   z-index:100;
-  background:
-    rgba(0,0,0,.7);
+  background:rgba(0,0,0,.7);
   display:none;
   align-items:flex-end;
   padding:12px
@@ -805,9 +852,7 @@ button,input,select{
   max-width:520px;
   margin:auto;
   background:#11141d;
-  border:
-    1px solid
-    var(--line);
+  border:1px solid var(--line);
   border-radius:22px;
   padding:18px
 }
@@ -817,10 +862,14 @@ button,input,select{
   margin:0 0 12px
 }
 
+.sheet p{
+  color:#c8ccd7;
+  line-height:1.55
+}
+
 .modalBtns{
   display:grid;
-  grid-template-columns:
-    1fr 1fr;
+  grid-template-columns:1fr 1fr;
   gap:8px;
   margin-top:14px
 }
@@ -828,21 +877,18 @@ button,input,select{
 .modalBtns button{
   min-height:46px;
   border-radius:12px;
-  border:
-    1px solid
-    var(--line);
+  border:1px solid var(--line);
   background:#171b26;
   color:#fff
 }
 
-/* KEEP THE VIBE ANIMATION */
+/* HEART */
 
 .heartOverlay{
   position:fixed;
   inset:0;
   z-index:150;
-  background:
-    rgba(4,4,9,.82);
+  background:rgba(4,4,9,.82);
   display:none;
   align-items:center;
   justify-content:center;
@@ -861,9 +907,7 @@ button,input,select{
 
 .bigHeart{
   font-size:95px;
-  animation:
-    heartPop .8s
-    cubic-bezier(.2,.8,.2,1)
+  animation:heartPop .8s cubic-bezier(.2,.8,.2,1)
 }
 
 @keyframes heartPop{
@@ -909,23 +953,17 @@ button,input,select{
 .particle{
   position:absolute;
   font-size:28px;
-  animation:
-    fly 1.6s
-    ease-out forwards
+  animation:fly 1.6s ease-out forwards
 }
 
 @keyframes fly{
   from{
-    transform:
-      translateY(0)
-      scale(.5);
+    transform:translateY(0) scale(.5);
     opacity:1
   }
 
   to{
-    transform:
-      translateY(-55vh)
-      scale(1.5);
+    transform:translateY(-55vh) scale(1.5);
     opacity:0
   }
 }
@@ -936,9 +974,7 @@ button,input,select{
   bottom:82px;
   transform:translateX(-50%);
   background:#1a1e28;
-  border:
-    1px solid
-    #303647;
+  border:1px solid #303647;
   padding:10px 13px;
   border-radius:12px;
   opacity:0;
@@ -957,6 +993,7 @@ button,input,select{
 <div class="app">
 
 <header class="top" id="top">
+
   <div class="brand">
     Snap<span>Vibe</span> ♡
   </div>
@@ -964,11 +1001,14 @@ button,input,select{
   <div class="status" id="statusText">
     Онлайн
   </div>
+
 </header>
+
 
 <section class="view" id="registerView">
 
   <div class="register">
+
     <h1>
       Snap<span>Vibe</span>
     </h1>
@@ -980,6 +1020,7 @@ button,input,select{
     <div class="avatarRing">
       🙂
     </div>
+
   </div>
 
   <div class="field">
@@ -990,6 +1031,7 @@ button,input,select{
   <div class="grid2">
 
     <div class="field">
+
       <label>Возраст</label>
 
       <input
@@ -998,12 +1040,15 @@ button,input,select{
         min="18"
         max="99"
       >
+
     </div>
 
     <div class="field">
+
       <label>Пол</label>
 
       <select id="regGender">
+
         <option value="male">
           Мужской
         </option>
@@ -1015,20 +1060,25 @@ button,input,select{
         <option value="other">
           Другой
         </option>
+
       </select>
+
     </div>
 
   </div>
 
   <div class="field">
+
     <label>Страна</label>
 
     <select id="regCountry"></select>
+
   </div>
 
   <button
     class="primary"
     id="finishRegister"
+    style="margin-top:18px"
   >
     Продолжить
   </button>
@@ -1116,6 +1166,43 @@ button,input,select{
 </section>
 
 
+<section class="view" id="photoPreviewView">
+
+  <h1 class="previewTitle">
+    Нравится фото?
+  </h1>
+
+  <p class="previewSub">
+    Ты можешь переснять его перед поиском.
+  </p>
+
+  <img
+    class="previewPhoto"
+    id="previewPhoto"
+    alt="Предпросмотр"
+  >
+
+  <div class="previewActions">
+
+    <button
+      class="secondary"
+      id="retakePhoto"
+    >
+      ↻ Переснять
+    </button>
+
+    <button
+      class="primary"
+      id="usePhoto"
+    >
+      Использовать фото
+    </button>
+
+  </div>
+
+</section>
+
+
 <section class="view" id="searchView">
 
   <div class="search">
@@ -1125,20 +1212,29 @@ button,input,select{
     </h2>
 
     <div class="radar">
+
       <div class="sweep"></div>
-      <div class="heart">💗</div>
+
+      <div class="heart">
+        💗
+      </div>
+
     </div>
 
     <div>
+
       Время поиска:
+
       <strong id="searchSeconds">
         0 сек
       </strong>
+
     </div>
 
     <button
       class="secondary"
       id="cancelSearch"
+      style="margin-top:18px"
     >
       Отмена
     </button>
@@ -1151,10 +1247,15 @@ button,input,select{
 <section class="view" id="matchView">
 
   <div class="matchHead">
-    <h2>It's a Match! 💕</h2>
+
+    <h2>
+      It's a Match! 💕
+    </h2>
+
     <p>
       Вы поймали одинаковую эмоцию
     </p>
+
   </div>
 
   <div class="matchPhoto">
@@ -1162,18 +1263,23 @@ button,input,select{
     <img id="matchPhoto">
 
     <div class="matchInfo">
+
       <b id="matchName"></b>
+
       <span id="matchMeta"></span>
+
     </div>
 
   </div>
 
   <div class="timer">
+
     Время общения:
 
     <strong id="countdown">
       24:00:00
     </strong>
+
   </div>
 
   <div class="actions">
@@ -1210,8 +1316,6 @@ button,input,select{
     Чаты
   </h1>
 
-  <div id="activeMatchCard"></div>
-
   <div id="chatFriendList"></div>
 
 </section>
@@ -1238,15 +1342,15 @@ button,input,select{
       </div>
 
       <div>
+
         <b id="chatName">
           SnapVibe
         </b>
 
         <div>
-          <small>
-            Онлайн
-          </small>
+          <small>Онлайн</small>
         </div>
+
       </div>
 
     </div>
@@ -1346,16 +1450,20 @@ button,input,select{
   >
 
   <div class="field">
+
     <label>Имя</label>
+
     <input
       id="editName"
       maxlength="30"
     >
+
   </div>
 
   <div class="grid2">
 
     <div class="field">
+
       <label>Возраст</label>
 
       <input
@@ -1364,12 +1472,15 @@ button,input,select{
         min="18"
         max="99"
       >
+
     </div>
 
     <div class="field">
+
       <label>Пол</label>
 
       <select id="editGender">
+
         <option value="male">
           Мужской
         </option>
@@ -1381,15 +1492,19 @@ button,input,select{
         <option value="other">
           Другой
         </option>
+
       </select>
+
     </div>
 
   </div>
 
   <div class="field">
+
     <label>Страна</label>
 
     <select id="editCountry"></select>
+
   </div>
 
   <button
@@ -1405,17 +1520,20 @@ button,input,select{
       class="row"
       id="searchSettings"
     >
+
       <span>
         ⚙ Настройки поиска
       </span>
 
       <span>›</span>
+
     </div>
 
     <div
       class="row"
       id="languageSettings"
     >
+
       <span>
         🌐 Язык
       </span>
@@ -1423,14 +1541,20 @@ button,input,select{
       <small id="languageLabel">
         Русский ›
       </small>
+
     </div>
 
-    <div class="row">
+    <div
+      class="row"
+      id="profileSafety"
+    >
+
       <span>
         ◇ Безопасность
       </span>
 
       <span>›</span>
+
     </div>
 
   </div>
@@ -1463,90 +1587,135 @@ button,input,select{
     class="row"
     id="setGender"
   >
+
     <span>Пол</span>
 
     <small id="genderLabel">
       Девушек ›
     </small>
+
   </div>
 
   <div
     class="row"
     id="setAge"
   >
+
     <span>Возраст</span>
 
     <small id="ageLabel">
       18 — 35 ›
     </small>
+
   </div>
 
   <div
     class="row"
     id="setCountry"
   >
+
     <span>Страна</span>
 
     <small id="countryLabel">
       Все страны ›
     </small>
+
   </div>
 
   <div class="settingsSectionTitle">
     Приложение
   </div>
 
-  <div class="row">
+  <div
+    class="row"
+    id="notificationsRow"
+  >
+
     <span>Уведомления</span>
-    <small>Вкл. ›</small>
+
+    <div
+      class="toggle"
+      id="notificationsToggle"
+    ></div>
+
   </div>
 
-  <div class="row">
+  <div
+    class="row"
+    id="privacyRow"
+  >
+
     <span>
       Конфиденциальность
     </span>
 
     <small>›</small>
+
   </div>
 
-  <div class="row">
+  <div
+    class="row"
+    id="blockedRow"
+  >
+
     <span>
       Заблокированные
     </span>
 
     <small>›</small>
+
   </div>
 
-  <div class="row">
+  <div
+    class="row"
+    id="securityRow"
+  >
+
     <span>
       Безопасность
     </span>
 
     <small>›</small>
+
   </div>
 
-  <div class="row">
+  <div
+    class="row"
+    id="rulesRow"
+  >
+
     <span>
       Правила сообщества
     </span>
 
     <small>›</small>
+
   </div>
 
-  <div class="row">
+  <div
+    class="row"
+    id="policyRow"
+  >
+
     <span>
       Политика конфиденциальности
     </span>
 
     <small>›</small>
+
   </div>
 
-  <div class="row danger">
+  <div
+    class="row danger"
+    id="deleteRow"
+  >
+
     <span>
       Удалить аккаунт
     </span>
 
     <small>›</small>
+
   </div>
 
 </section>
@@ -1554,7 +1723,10 @@ button,input,select{
 </div>
 
 
-<nav class="nav" id="nav">
+<nav
+  class="nav"
+  id="nav"
+>
 
   <button
     class="navBtn active"
@@ -1562,6 +1734,18 @@ button,input,select{
   >
     <b>📷</b>
     Vibe
+  </button>
+
+  <button
+    class="matchNav"
+    id="matchNav"
+  >
+
+    <span class="matchDot"></span>
+
+    <b>💞</b>
+    Мэтч
+
   </button>
 
   <button
@@ -1591,7 +1775,10 @@ button,input,select{
 </nav>
 
 
-<div class="modal" id="modal">
+<div
+  class="modal"
+  id="modal"
+>
 
   <div class="sheet">
 
@@ -1738,7 +1925,7 @@ let userId =
   );
 
 
-if (!userId) {
+if (!userId){
 
   userId =
     "user_" +
@@ -1748,6 +1935,7 @@ if (!userId) {
     "snapvibe_user_id",
     userId
   );
+
 }
 
 
@@ -1820,11 +2008,21 @@ let settings = {
 };
 
 
+let notificationsEnabled =
+  localStorage.getItem(
+    "snapvibe_notifications"
+  ) !== "off";
+
+
 let socket = null;
 
 let stream = null;
 
 let emotion = "happy";
+
+let pendingPhoto = null;
+
+let pendingEmotionHash = null;
 
 let friends = [];
 
@@ -1843,7 +2041,7 @@ let searchAt = 0;
 let countTimer = null;
 
 
-/* COUNTRY HELPERS */
+/* COUNTRIES */
 
 function countryName(code){
 
@@ -1905,9 +2103,9 @@ function toast(text){
   $("toast").textContent =
     text;
 
-  $("toast").classList.add(
-    "show"
-  );
+  $("toast")
+    .classList
+    .add("show");
 
   clearTimeout(
     $("toast").timer
@@ -1932,6 +2130,7 @@ function show(id){
   [
     "registerView",
     "cameraView",
+    "photoPreviewView",
     "searchView",
     "matchView",
     "chatsView",
@@ -1986,24 +2185,44 @@ function show(id){
     id === "friendsView" ||
     id === "chatsView"
   ){
+
     send({
       type:"friends_list"
     });
+
   }
 
 
   if (
     id === "chatsView"
   ){
+
     renderChats();
+
   }
 
 
   if (
     id === "profileView"
   ){
+
     fillProfile();
+
   }
+
+}
+
+
+/* MATCH NAV */
+
+function updateMatchNav(){
+
+  $("matchNav")
+    .classList
+    .toggle(
+      "available",
+      !!match
+    );
 
 }
 
@@ -2084,7 +2303,9 @@ function connect(){
       if (
         profile.name
       ){
+
         registerProfile();
+
       }
 
     };
@@ -2167,10 +2388,13 @@ function handle(data){
       match =
         null;
 
+      updateMatchNav();
+
     }
 
 
     renderFriends();
+
     renderChats();
 
   }
@@ -2232,6 +2456,8 @@ function handle(data){
       countTimer
     );
 
+    updateMatchNav();
+
     renderChats();
 
     show(
@@ -2284,6 +2510,7 @@ function handle(data){
     ];
 
     renderFriends();
+
     renderChats();
 
   }
@@ -2304,6 +2531,7 @@ function handle(data){
     ];
 
     renderFriends();
+
     renderChats();
 
   }
@@ -2318,6 +2546,7 @@ function handle(data){
       data.friends || [];
 
     renderFriends();
+
     renderChats();
 
   }
@@ -2496,7 +2725,7 @@ function playChime(
 }
 
 
-/* FIRST HEART */
+/* HEART */
 
 function showIncomingHeart(
   data
@@ -2578,8 +2807,6 @@ function showIncomingHeart(
 
 }
 
-
-/* MUTUAL HEART */
 
 function mutualHeart(data){
 
@@ -2841,7 +3068,7 @@ async function hash(value){
 }
 
 
-/* EMOTION SELECT */
+/* EMOTIONS */
 
 document
   .querySelectorAll(
@@ -2883,6 +3110,8 @@ document
   );
 
 
+/* TAKE PHOTO -> PREVIEW */
+
 $("capture").onclick =
   async () => {
 
@@ -2890,7 +3119,9 @@ $("capture").onclick =
       takePhoto();
 
 
-    if (!photo){
+    if (
+      !photo
+    ){
 
       return toast(
         "Камера не готова"
@@ -2899,10 +3130,55 @@ $("capture").onclick =
     }
 
 
-    const emotionHash =
+    pendingPhoto =
+      photo;
+
+
+    pendingEmotionHash =
       await hash(
         emotion
       );
+
+
+    $("previewPhoto").src =
+      pendingPhoto;
+
+
+    show(
+      "photoPreviewView"
+    );
+
+  };
+
+
+$("retakePhoto").onclick =
+  () => {
+
+    pendingPhoto =
+      null;
+
+    pendingEmotionHash =
+      null;
+
+
+    show(
+      "cameraView"
+    );
+
+  };
+
+
+$("usePhoto").onclick =
+  () => {
+
+    if (
+      !pendingPhoto ||
+      !pendingEmotionHash
+    ){
+
+      return;
+
+    }
 
 
     if (
@@ -2911,9 +3187,11 @@ $("capture").onclick =
         type:
           "capture",
 
-        emotionHash,
+        emotionHash:
+          pendingEmotionHash,
 
-        photo,
+        photo:
+          pendingPhoto,
 
         searchGender:
           settings.gender,
@@ -2930,9 +3208,17 @@ $("capture").onclick =
       })
     ){
 
+      pendingPhoto =
+        null;
+
+      pendingEmotionHash =
+        null;
+
+
       show(
         "searchView"
       );
+
 
       startSearch();
 
@@ -2940,6 +3226,8 @@ $("capture").onclick =
 
   };
 
+
+/* SEARCH */
 
 function startSearch(){
 
@@ -3064,15 +3352,19 @@ function loadMatch(data){
 
   countdown();
 
-  renderChats();
+  updateMatchNav();
 
 }
 
 
 function countdown(){
 
-  if (!match){
+  if (
+    !match
+  ){
+
     return;
+
   }
 
 
@@ -3128,20 +3420,6 @@ function countdown(){
     text;
 
 
-  const activeTime =
-    $("activeChatTime");
-
-
-  if (
-    activeTime
-  ){
-
-    activeTime.textContent =
-      text;
-
-  }
-
-
   if (
     seconds <= 0
   ){
@@ -3155,7 +3433,7 @@ function countdown(){
     );
 
 
-    renderChats();
+    updateMatchNav();
 
   }
 
@@ -3165,8 +3443,12 @@ function countdown(){
 $("openMatchChat").onclick =
   () => {
 
-    if (!match){
+    if (
+      !match
+    ){
+
       return;
+
     }
 
 
@@ -3245,12 +3527,34 @@ $("newMatch").onclick =
       null;
 
 
-    renderChats();
+    updateMatchNav();
 
 
     show(
       "cameraView"
     );
+
+  };
+
+
+$("matchNav").onclick =
+  () => {
+
+    if (
+      match
+    ){
+
+      show(
+        "matchView"
+      );
+
+    }else{
+
+      toast(
+        "Сейчас активного мэтча нет"
+      );
+
+    }
 
   };
 
@@ -3502,31 +3806,33 @@ $("messageInput").onkeydown =
 $("chatBack").onclick =
   () => {
 
-    show(
+    if (
       activeChat.type ===
       "match" &&
       match
-        ? "matchView"
-        : "chatsView"
-    );
+    ){
+
+      show(
+        "matchView"
+      );
+
+    }else{
+
+      show(
+        "chatsView"
+      );
+
+    }
 
   };
 
 
-/* CHATS LIST */
+/* CHATS - ONLY PERMANENT */
 
 function renderChats(){
 
-  const active =
-    $("activeMatchCard");
-
-
   const list =
     $("chatFriendList");
-
-
-  active.innerHTML =
-    "";
 
 
   list.innerHTML =
@@ -3534,96 +3840,28 @@ function renderChats(){
 
 
   if (
-    match
+    !friends.length
   ){
 
-    const card =
-      document.createElement(
-        "div"
-      );
-
-
-    card.className =
-      "chatListCard active";
-
-
-    const avatarBox =
-      document.createElement(
-        "div"
-      );
-
-
-    avatarBox.className =
-      "friendAvatar";
-
-
-    setAvatar(
-
-      avatarBox,
-
-      match.partnerProfile?.avatar,
-
-      match.partnerName
-
-    );
-
-
-    const main =
-      document.createElement(
-        "div"
-      );
-
-
-    main.className =
-      "main";
-
-
-    main.innerHTML =
+    list.innerHTML =
       `
-      <b></b>
-      <small>
-        Активный мэтч · нажми, чтобы вернуться
-      </small>
+      <div class="chatEmpty">
+        <div style="font-size:45px">
+          💬
+        </div>
+
+        <h3>
+          Пока чатов нет
+        </h3>
+
+        <p>
+          Если вы оба сохраните связь 💗,
+          постоянный чат появится здесь.
+        </p>
+      </div>
       `;
 
-
-    main
-      .querySelector("b")
-      .textContent =
-      match.partnerName;
-
-
-    const time =
-      document.createElement(
-        "div"
-      );
-
-
-    time.className =
-      "time";
-
-
-    time.id =
-      "activeChatTime";
-
-
-    card.append(
-      avatarBox,
-      main,
-      time
-    );
-
-
-    card.onclick =
-      () =>
-        show(
-          "matchView"
-        );
-
-
-    active.appendChild(
-      card
-    );
+    return;
 
   }
 
@@ -3675,6 +3913,7 @@ function renderChats(){
       main.innerHTML =
         `
         <b></b>
+
         <small>
           Постоянный чат
         </small>
@@ -3798,6 +4037,7 @@ function renderFriends(){
       main.innerHTML =
         `
         <b></b>
+
         <small>
           Друг
         </small>
@@ -3996,6 +4236,7 @@ $("saveProfile").onclick =
 
     registerProfile();
 
+
     fillProfile();
 
 
@@ -4013,7 +4254,9 @@ function loadAvatar(
   if (
     !file
   ){
+
     return;
+
   }
 
 
@@ -4053,6 +4296,7 @@ function loadAvatar(
 
 
       registerProfile();
+
 
       fillProfile();
 
@@ -4117,7 +4361,13 @@ $("removeAvatar").onclick =
 
     registerProfile();
 
+
     fillProfile();
+
+
+    toast(
+      "Фото удалено"
+    );
 
   };
 
@@ -4127,7 +4377,8 @@ $("removeAvatar").onclick =
 function openModal(
   title,
   body,
-  save
+  save = null,
+  showSave = true
 ){
 
   $("modalTitle")
@@ -4138,6 +4389,13 @@ function openModal(
   $("modalBody")
     .innerHTML =
     body;
+
+
+  $("modalSave")
+    .style.display =
+    showSave
+      ? "block"
+      : "none";
 
 
   $("modal")
@@ -4153,7 +4411,9 @@ function openModal(
       if (
         save
       ){
+
         save();
+
       }
 
 
@@ -4170,6 +4430,7 @@ function openModal(
 
 $("modalCancel").onclick =
   () =>
+
     $("modal")
       .classList
       .remove(
@@ -4177,7 +4438,7 @@ $("modalCancel").onclick =
       );
 
 
-/* SETTINGS */
+/* SEARCH SETTINGS */
 
 function renderSettings(){
 
@@ -4216,6 +4477,14 @@ function renderSettings(){
     )
     +
     " ›";
+
+
+  $("notificationsToggle")
+    .classList
+    .toggle(
+      "on",
+      notificationsEnabled
+    );
 
 }
 
@@ -4310,6 +4579,7 @@ $("setAge").onclick =
       <div class="grid2">
 
         <div class="field">
+
           <label>От</label>
 
           <input
@@ -4319,9 +4589,11 @@ $("setAge").onclick =
             max="99"
             value="${settings.ageMin}"
           >
+
         </div>
 
         <div class="field">
+
           <label>До</label>
 
           <input
@@ -4331,6 +4603,7 @@ $("setAge").onclick =
             max="99"
             value="${settings.ageMax}"
           >
+
         </div>
 
       </div>
@@ -4449,6 +4722,233 @@ $("setCountry").onclick =
 
       },
       0
+    );
+
+  };
+
+
+/* APP SETTINGS */
+
+$("notificationsRow").onclick =
+  () => {
+
+    notificationsEnabled =
+      !notificationsEnabled;
+
+
+    localStorage.setItem(
+      "snapvibe_notifications",
+      notificationsEnabled
+        ? "on"
+        : "off"
+    );
+
+
+    renderSettings();
+
+
+    toast(
+      notificationsEnabled
+        ? "Уведомления включены"
+        : "Уведомления выключены"
+    );
+
+  };
+
+
+$("privacyRow").onclick =
+  () => {
+
+    openModal(
+
+      "Конфиденциальность",
+
+      `
+      <p>
+        Твои данные профиля используются
+        для работы SnapVibe и поиска мэтчей.
+      </p>
+
+      <p>
+        Фото эмоции доступно только участникам
+        активного мэтча и не должно
+        публиковаться как открытая фотография профиля.
+      </p>
+      `,
+
+      null,
+      false
+
+    );
+
+  };
+
+
+$("blockedRow").onclick =
+  () => {
+
+    openModal(
+
+      "Заблокированные",
+
+      `
+      <p>
+        Здесь будут отображаться люди,
+        которых ты заблокировал.
+      </p>
+
+      <p>
+        Сейчас список пуст.
+      </p>
+      `,
+
+      null,
+      false
+
+    );
+
+  };
+
+
+function openSafety(){
+
+  openModal(
+
+    "Безопасность",
+
+    `
+    <p>
+      Не отправляй деньги людям,
+      с которыми познакомился в приложении.
+    </p>
+
+    <p>
+      Если встречаетесь лично,
+      выбирайте публичное место
+      и сообщите близкому человеку,
+      куда вы идёте.
+    </p>
+
+    <p>
+      Если пользователь ведёт себя агрессивно
+      или нарушает правила,
+      прекрати общение.
+    </p>
+    `,
+
+    null,
+    false
+
+  );
+
+}
+
+
+$("securityRow").onclick =
+  openSafety;
+
+
+$("profileSafety").onclick =
+  openSafety;
+
+
+$("rulesRow").onclick =
+  () => {
+
+    openModal(
+
+      "Правила сообщества",
+
+      `
+      <p>
+        Уважай других пользователей.
+      </p>
+
+      <p>
+        Запрещены угрозы, травля,
+        мошенничество, спам,
+        публикация чужих личных данных
+        и нежелательный сексуальный контент.
+      </p>
+      `,
+
+      null,
+      false
+
+    );
+
+  };
+
+
+$("policyRow").onclick =
+  () => {
+
+    openModal(
+
+      "Политика конфиденциальности",
+
+      `
+      <p>
+        Перед публикацией SnapVibe
+        в Google Play здесь будет размещена
+        полноценная политика конфиденциальности.
+      </p>
+
+      <p>
+        Она должна описывать хранение профиля,
+        фотографий, сообщений,
+        блокировок и удаления аккаунта.
+      </p>
+      `,
+
+      null,
+      false
+
+    );
+
+  };
+
+
+$("deleteRow").onclick =
+  () => {
+
+    openModal(
+
+      "Удалить аккаунт",
+
+      `
+      <p>
+        Удалить локальные данные профиля
+        с этого телефона?
+      </p>
+      `,
+
+      () => {
+
+        [
+          "snapvibe_user_id",
+          "snapvibe_user_name",
+          "snapvibe_age",
+          "snapvibe_gender",
+          "snapvibe_country",
+          "snapvibe_avatar",
+          "snapvibe_search_gender",
+          "snapvibe_age_min",
+          "snapvibe_age_max",
+          "snapvibe_search_country"
+        ]
+        .forEach(
+          key =>
+            localStorage.removeItem(
+              key
+            )
+        );
+
+
+        location.reload();
+
+      }
+
     );
 
   };
@@ -4686,6 +5186,8 @@ $("languageLabel")
 
 renderSettings();
 
+updateMatchNav();
+
 
 setInterval(
   () =>
@@ -4709,4 +5211,4 @@ show(
 </script>
 
 </body>
-  </html>
+          </html>
