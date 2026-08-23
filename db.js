@@ -1,162 +1,246 @@
-const crypto =
-  require("crypto");
+"use strict";
 
-const users =
-  new Map();
+const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
+const SUPABASE_SECRET_KEY = String(process.env.SUPABASE_SECRET_KEY || "");
 
-const friends =
-  new Map();
-
-const chats =
-  new Map();
-
-const messages =
-  new Map();
-
-const reports =
-  [];
-
-const blocks =
-  new Map();
-
-
-function ensureUser(
-  userId
-) {
-
-  if (
-    !friends.has(
-      userId
-    )
-  ) {
-    friends.set(
-      userId,
-      new Set()
-    );
-  }
-
-
-  if (
-    !blocks.has(
-      userId
-    )
-  ) {
-    blocks.set(
-      userId,
-      new Set()
-    );
-  }
-
+function configured() {
+  return Boolean(SUPABASE_URL && SUPABASE_SECRET_KEY);
 }
 
-
-function cleanText(
-  value,
-  maxLength = 500
-) {
-
-  return String(
-    value ?? ""
-  )
-    .trim()
-    .slice(
-      0,
-      maxLength
-    );
-
+function requireConfig() {
+  if (!configured()) {
+    throw new Error("Supabase is not configured: SUPABASE_URL / SUPABASE_SECRET_KEY");
+  }
 }
 
+function cleanText(value, maxLength = 500) {
+  return String(value ?? "").trim().slice(0, maxLength);
+}
 
-function safeAvatar(
-  value
-) {
-
-  const avatar =
-    String(
-      value || ""
-    );
-
+function safeAvatar(value) {
+  const avatar = String(value || "");
 
   if (
-    avatar.startsWith(
-      "data:image/"
-    ) &&
-    Buffer.byteLength(
-      avatar,
-      "utf8"
-    ) <=
-      5 * 1024 * 1024
+    avatar.startsWith("data:image/") &&
+    Buffer.byteLength(avatar, "utf8") <= 5 * 1024 * 1024
   ) {
     return avatar;
   }
 
+  if (/^https:\/\//i.test(avatar) && avatar.length <= 2048) {
+    return avatar;
+  }
 
   return "";
-
 }
 
-
-function safeAudio(
-  value
-) {
-
-  const audio =
-    String(
-      value || ""
-    );
-
+function safeAudio(value) {
+  const audio = String(value || "");
 
   const validType =
-    audio.startsWith(
-      "data:audio/"
-    ) ||
-    audio.startsWith(
-      "data:application/octet-stream"
-    );
-
+    audio.startsWith("data:audio/") ||
+    audio.startsWith("data:application/octet-stream") ||
+    /^https:\/\//i.test(audio);
 
   if (
     validType &&
-    Buffer.byteLength(
-      audio,
-      "utf8"
-    ) <=
-      8 * 1024 * 1024
+    Buffer.byteLength(audio, "utf8") <= 8 * 1024 * 1024
   ) {
     return audio;
   }
 
-
   return "";
-
 }
 
+function headers(extra = {}) {
+  return {
+    apikey: SUPABASE_SECRET_KEY,
+    Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
+    "Content-Type": "application/json",
+    ...extra
+  };
+}
 
-/* USERS */
+async function request(path, options = {}) {
+  requireConfig();
 
-function createOrUpdateUser(
-  input
-) {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/${path}`,
+    {
+      ...options,
+      headers: headers(options.headers || {})
+    }
+  );
 
-  if (
-    !input?.id
-  ) {
+  if (!response.ok) {
+    const body =
+      await response.text().catch(() => "");
+
     throw new Error(
-      "User ID required"
+      `Supabase ${response.status}: ${body || response.statusText}`
     );
   }
 
+  if (response.status === 204) {
+    return null;
+  }
+
+  const text = await response.text();
+
+  return text ? JSON.parse(text) : null;
+}
+
+function eq(value) {
+  return encodeURIComponent(String(value));
+}
+
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function rowToUser(row) {
+  if (!row) return null;
+
+  return {
+    id: row.user_id,
+    name: row.name,
+    language: row.language || "ru",
+    age: row.age,
+    gender: row.gender || "other",
+    country: row.country || "",
+    avatar: row.avatar || "",
+    createdAt:
+      row.created_at
+        ? Date.parse(row.created_at)
+        : Date.now(),
+    updatedAt:
+      row.updated_at
+        ? Date.parse(row.updated_at)
+        : Date.now()
+  };
+}
+
+function rowToChat(row) {
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    users: [
+      row.user_a,
+      row.user_b
+    ].filter(Boolean),
+
+    type: row.type,
+    matchId: row.match_id || null,
+
+    createdAt:
+      row.created_at
+        ? Date.parse(row.created_at)
+        : Date.now()
+  };
+}
+
+function rowToMessage(row) {
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    chatId: row.chat_id,
+    senderId: row.sender_id,
+    type: row.type || "text",
+    text: row.text || undefined,
+    audio: row.audio || undefined,
+    duration: row.duration || undefined,
+
+    createdAt:
+      row.created_at
+        ? Date.parse(row.created_at)
+        : Date.now(),
+
+    deliveredTo:
+      asArray(row.delivered_to),
+
+    readBy:
+      asArray(row.read_by)
+  };
+}
+
+async function ping() {
+  requireConfig();
+
+  await request(
+    "profiles?select=user_id&limit=1",
+    {
+      method: "GET"
+    }
+  );
+
+  return true;
+}
+
+async function countUsers() {
+  requireConfig();
+
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?select=user_id`,
+    {
+      method: "HEAD",
+
+      headers: headers({
+        Prefer: "count=exact"
+      })
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const range =
+    response.headers.get("content-range") || "";
+
+  const total =
+    Number(range.split("/")[1]);
+
+  return Number.isFinite(total)
+    ? total
+    : null;
+}
+
+
+/* =========================
+   USERS
+========================= */
+
+async function getUser(userId) {
+  const rows =
+    await request(
+      `profiles?user_id=eq.${eq(userId)}&select=*&limit=1`,
+      {
+        method: "GET"
+      }
+    );
+
+  return rowToUser(rows?.[0]);
+}
+
+async function createOrUpdateUser(input) {
+  if (!input?.id) {
+    throw new Error("User ID required");
+  }
 
   const oldUser =
-    users.get(
-      input.id
-    ) || {};
+    (await getUser(input.id)) || {};
 
+  const ageRaw =
+    input.age !== undefined &&
+    input.age !== null &&
+    input.age !== ""
+      ? Number(input.age)
+      : oldUser.age;
 
   const user = {
-
-    id:
-      input.id,
+    id: input.id,
 
     name:
       cleanText(
@@ -175,30 +259,24 @@ function createOrUpdateUser(
       ),
 
     age:
-      input.age
+      ageRaw
         ? Math.max(
             18,
             Math.min(
               99,
-              Number(
-                input.age
-              )
+              ageRaw
             )
           )
-        : oldUser.age ||
-          null,
+        : null,
 
     gender:
       [
         "male",
         "female",
         "other"
-      ].includes(
-        input.gender
-      )
+      ].includes(input.gender)
         ? input.gender
-        : oldUser.gender ||
-          "other",
+        : oldUser.gender || "other",
 
     country:
       cleanText(
@@ -206,947 +284,707 @@ function createOrUpdateUser(
         oldUser.country ||
         "",
         10
-      )
-        .toUpperCase(),
+      ).toUpperCase(),
 
     avatar:
-      input.avatar !==
-      undefined
-        ? safeAvatar(
-            input.avatar
-          )
-        : oldUser.avatar ||
-          "",
-
-    createdAt:
-      oldUser.createdAt ||
-      Date.now(),
-
-    updatedAt:
-      Date.now()
-
+      input.avatar !== undefined
+        ? safeAvatar(input.avatar)
+        : oldUser.avatar || ""
   };
 
-
-  users.set(
-    user.id,
-    user
-  );
-
-
-  ensureUser(
-    user.id
-  );
-
-
-  return user;
-
-}
-
-
-function getUser(
-  userId
-) {
-
-  return (
-    users.get(
-      userId
-    ) ||
-    null
-  );
-
-}
-
-
-function publicUser(
-  userId
-) {
-
-  const user =
-    getUser(
-      userId
-    );
-
-
-  if (
-    !user
-  ) {
-    return null;
-  }
-
-
-  return {
-
-    id:
-      user.id,
-
-    name:
-      user.name,
-
-    language:
-      user.language,
-
-    age:
-      user.age,
-
-    gender:
-      user.gender,
-
-    country:
-      user.country,
-
-    avatar:
-      user.avatar
-
-  };
-
-}
-
-
-/* FRIENDS */
-
-function areFriends(
-  userA,
-  userB
-) {
-
-  return !!friends
-    .get(
-      userA
-    )
-    ?.has(
-      userB
-    );
-
-}
-
-
-function makeFriends(
-  userA,
-  userB
-) {
-
-  ensureUser(
-    userA
-  );
-
-  ensureUser(
-    userB
-  );
-
-
-  friends
-    .get(
-      userA
-    )
-    .add(
-      userB
-    );
-
-
-  friends
-    .get(
-      userB
-    )
-    .add(
-      userA
-    );
-
-}
-
-
-function removeFriend(
-  userA,
-  userB
-) {
-
-  friends
-    .get(
-      userA
-    )
-    ?.delete(
-      userB
-    );
-
-
-  friends
-    .get(
-      userB
-    )
-    ?.delete(
-      userA
-    );
-
-}
-
-
-function getFriends(
-  userId
-) {
-
-  ensureUser(
-    userId
-  );
-
-
-  return [
-    ...friends.get(
-      userId
-    )
-  ]
-    .map(
-      publicUser
-    )
-    .filter(
-      Boolean
-    );
-
-}
-
-
-/* CHATS */
-
-function friendChatId(
-  userA,
-  userB
-) {
-
-  return (
-    "friend_" +
-    [
-      userA,
-      userB
-    ]
-      .sort()
-      .join("_")
-  );
-
-}
-
-
-function createFriendChat(
-  userA,
-  userB
-) {
-
-  const chatId =
-    friendChatId(
-      userA,
-      userB
-    );
-
-
-  if (
-    !chats.has(
-      chatId
-    )
-  ) {
-
-    chats.set(
-      chatId,
+  const rows =
+    await request(
+      "profiles?on_conflict=user_id",
       {
+        method: "POST",
 
-        id:
-          chatId,
+        headers: {
+          Prefer:
+            "resolution=merge-duplicates,return=representation"
+        },
 
-        users:
-          [
-            userA,
-            userB
-          ].sort(),
-
-        type:
-          "friend",
-
-        createdAt:
-          Date.now()
-
+        body: JSON.stringify({
+          user_id: user.id,
+          name: user.name,
+          language: user.language,
+          age: user.age,
+          gender: user.gender,
+          country: user.country,
+          avatar: user.avatar,
+          updated_at:
+            new Date().toISOString()
+        })
       }
     );
 
+  return (
+    rowToUser(rows?.[0]) ||
+    user
+  );
+}
 
-    messages.set(
-      chatId,
-      []
-    );
+async function publicUser(userId) {
+  const user =
+    await getUser(userId);
 
+  if (!user) {
+    return null;
   }
 
-
-  return chats.get(
-    chatId
-  );
-
+  return {
+    id: user.id,
+    name: user.name,
+    language: user.language,
+    age: user.age,
+    gender: user.gender,
+    country: user.country,
+    avatar: user.avatar
+  };
 }
 
 
-function createMatchChat(
+/* =========================
+   FRIENDS
+========================= */
+
+function friendPair(userA, userB) {
+  return [
+    String(userA),
+    String(userB)
+  ].sort();
+}
+
+async function areFriends(userA, userB) {
+  const [a, b] =
+    friendPair(userA, userB);
+
+  const rows =
+    await request(
+      `friendships?user_a=eq.${eq(a)}&user_b=eq.${eq(b)}&select=user_a&limit=1`,
+      {
+        method: "GET"
+      }
+    );
+
+  return Boolean(rows?.length);
+}
+
+async function makeFriends(userA, userB) {
+  const [a, b] =
+    friendPair(userA, userB);
+
+  if (
+    !a ||
+    !b ||
+    a === b
+  ) {
+    return false;
+  }
+
+  await request(
+    "friendships?on_conflict=user_a,user_b",
+    {
+      method: "POST",
+
+      headers: {
+        Prefer:
+          "resolution=merge-duplicates,return=minimal"
+      },
+
+      body: JSON.stringify({
+        user_a: a,
+        user_b: b
+      })
+    }
+  );
+
+  return true;
+}
+
+async function removeFriend(userA, userB) {
+  const [a, b] =
+    friendPair(userA, userB);
+
+  await request(
+    `friendships?user_a=eq.${eq(a)}&user_b=eq.${eq(b)}`,
+    {
+      method: "DELETE",
+
+      headers: {
+        Prefer: "return=minimal"
+      }
+    }
+  );
+}
+
+async function getFriends(userId) {
+  const rows =
+    await request(
+      `friendships?or=(user_a.eq.${eq(userId)},user_b.eq.${eq(userId)})&select=user_a,user_b&order=created_at.desc`,
+      {
+        method: "GET"
+      }
+    );
+
+  const ids =
+    asArray(rows)
+      .map(
+        row =>
+          row.user_a === userId
+            ? row.user_b
+            : row.user_a
+      )
+      .filter(Boolean);
+
+  const users =
+    await Promise.all(
+      ids.map(publicUser)
+    );
+
+  return users.filter(Boolean);
+}
+
+
+/* =========================
+   CHATS
+========================= */
+
+function friendChatId(userA, userB) {
+  return (
+    "friend_" +
+    friendPair(
+      userA,
+      userB
+    ).join("_")
+  );
+}
+
+async function getChat(chatId) {
+  const rows =
+    await request(
+      `chats?id=eq.${eq(chatId)}&select=*&limit=1`,
+      {
+        method: "GET"
+      }
+    );
+
+  return rowToChat(rows?.[0]);
+}
+
+async function createFriendChat(
+  userA,
+  userB
+) {
+  const [a, b] =
+    friendPair(userA, userB);
+
+  const chatId =
+    friendChatId(a, b);
+
+  const rows =
+    await request(
+      "chats?on_conflict=id",
+      {
+        method: "POST",
+
+        headers: {
+          Prefer:
+            "resolution=merge-duplicates,return=representation"
+        },
+
+        body: JSON.stringify({
+          id: chatId,
+          user_a: a,
+          user_b: b,
+          type: "friend",
+          match_id: null
+        })
+      }
+    );
+
+  return (
+    rowToChat(rows?.[0]) ||
+    getChat(chatId)
+  );
+}
+
+async function createMatchChat(
   matchId,
   userA,
   userB
 ) {
-
   const chatId =
-    "matchchat_" +
-    matchId;
+    "matchchat_" + matchId;
 
+  const rows =
+    await request(
+      "chats?on_conflict=id",
+      {
+        method: "POST",
 
-  chats.set(
-    chatId,
-    {
+        headers: {
+          Prefer:
+            "resolution=merge-duplicates,return=representation"
+        },
 
-      id:
-        chatId,
-
-      users: [
-        userA,
-        userB
-      ],
-
-      type:
-        "match",
-
-      matchId,
-
-      createdAt:
-        Date.now()
-
-    }
-  );
-
-
-  messages.set(
-    chatId,
-    []
-  );
-
-
-  return chats.get(
-    chatId
-  );
-
-}
-
-
-function getChat(
-  chatId
-) {
-
-  return (
-    chats.get(
-      chatId
-    ) ||
-    null
-  );
-
-}
-
-
-function deleteChat(
-  chatId
-) {
-
-  chats.delete(
-    chatId
-  );
-
-
-  messages.delete(
-    chatId
-  );
-
-}
-
-
-/* MESSAGE HELPERS */
-
-function ensureMessageList(
-  chatId
-) {
-
-  if (
-    !messages.has(
-      chatId
-    )
-  ) {
-
-    messages.set(
-      chatId,
-      []
+        body: JSON.stringify({
+          id: chatId,
+          user_a: userA,
+          user_b: userB,
+          type: "match",
+          match_id: matchId
+        })
+      }
     );
 
-  }
-
-
-  return messages.get(
-    chatId
+  return (
+    rowToChat(rows?.[0]) ||
+    getChat(chatId)
   );
+}
 
+async function deleteChat(chatId) {
+  await request(
+    `chats?id=eq.${eq(chatId)}`,
+    {
+      method: "DELETE",
+
+      headers: {
+        Prefer: "return=minimal"
+      }
+    }
+  );
 }
 
 
-function baseMessage(
-  chatId,
-  senderId,
-  type
-) {
+/* =========================
+   MESSAGES
+========================= */
 
-  return {
-
-    id:
-      crypto.randomUUID(),
-
-    chatId,
-
-    senderId,
-
-    type,
-
-    createdAt:
-      Date.now(),
-
-    deliveredTo:
-      [
-        senderId
-      ],
-
-    readBy:
-      [
-        senderId
-      ]
-
-  };
-
-}
-
-
-/* OLD TEXT MESSAGE COMPATIBILITY */
-
-function addMessage(
+async function addMessage(
   chatId,
   senderId,
   text
 ) {
-
   return addRichMessage(
     chatId,
     senderId,
     {
-      type:
-        "text",
-
+      type: "text",
       text
     }
   );
-
 }
 
-
-/* TEXT + VOICE */
-
-function addRichMessage(
+async function addRichMessage(
   chatId,
   senderId,
   data
 ) {
-
   const chat =
-    chats.get(
-      chatId
-    );
-
+    await getChat(chatId);
 
   if (
     !chat ||
-    !chat.users.includes(
-      senderId
-    )
+    !chat.users.includes(senderId)
   ) {
     return null;
   }
 
-
   const type =
-    data?.type ===
-    "voice"
+    data?.type === "voice"
       ? "voice"
       : "text";
 
+  const row = {
+    id: cryptoRandomId(),
+    chat_id: chatId,
+    sender_id: senderId,
+    type,
+    delivered_to: [senderId],
+    read_by: [senderId]
+  };
 
-  const message =
-    baseMessage(
-      chatId,
-      senderId,
-      type
-    );
-
-
-  if (
-    type ===
-    "text"
-  ) {
-
+  if (type === "text") {
     const text =
       cleanText(
         data.text,
         1000
       );
 
-
-    if (
-      !text
-    ) {
+    if (!text) {
       return null;
     }
 
-
-    message.text =
-      text;
-
-  }
-
-
-  if (
-    type ===
-    "voice"
-  ) {
-
+    row.text = text;
+  } else {
     const audio =
-      safeAudio(
-        data.audio
-      );
+      safeAudio(data.audio);
 
-
-    if (
-      !audio
-    ) {
+    if (!audio) {
       return null;
     }
 
+    row.audio = audio;
 
-    message.audio =
-      audio;
-
-
-    message.duration =
+    row.duration =
       Math.max(
         1,
         Math.min(
           600,
-          Number(
-            data.duration
-          ) || 1
+          Number(data.duration) || 1
         )
       );
-
   }
 
+  const rows =
+    await request(
+      "messages",
+      {
+        method: "POST",
 
-  const list =
-    ensureMessageList(
-      chatId
+        headers: {
+          Prefer:
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify(row)
+      }
     );
 
-
-  list.push(
-    message
+  return rowToMessage(
+    rows?.[0]
   );
-
-
-  /* чтобы память сервера не росла бесконечно */
-
-  if (
-    list.length >
-    500
-  ) {
-
-    list.splice(
-      0,
-      list.length -
-      500
-    );
-
-  }
-
-
-  return message;
-
 }
 
-
-/* MESSAGE STATUS */
-
-function findMessage(
-  chatId,
-  messageId
-) {
-
-  const list =
-    messages.get(
-      chatId
-    ) || [];
-
-
-  return list.find(
-    item =>
-      item.id ===
-      messageId
-  ) || null;
-
+function cryptoRandomId() {
+  return globalThis.crypto?.randomUUID
+    ? globalThis.crypto.randomUUID()
+    : require("crypto").randomUUID();
 }
 
-
-function markDelivered(
-  chatId,
-  messageId,
-  userId
-) {
-
-  const chat =
-    chats.get(
-      chatId
-    );
-
-
-  if (
-    !chat ||
-    !chat.users.includes(
-      userId
-    )
-  ) {
-    return null;
-  }
-
-
-  const message =
-    findMessage(
-      chatId,
-      messageId
-    );
-
-
-  if (
-    !message
-  ) {
-    return null;
-  }
-
-
-  if (
-    !Array.isArray(
-      message.deliveredTo
-    )
-  ) {
-    message.deliveredTo =
-      [];
-  }
-
-
-  if (
-    !message.deliveredTo.includes(
-      userId
-    )
-  ) {
-
-    message.deliveredTo.push(
-      userId
-    );
-
-  }
-
-
-  return message;
-
-}
-
-
-function markChatRead(
-  chatId,
-  userId
-) {
-
-  const chat =
-    chats.get(
-      chatId
-    );
-
-
-  if (
-    !chat ||
-    !chat.users.includes(
-      userId
-    )
-  ) {
-    return [];
-  }
-
-
-  const list =
-    messages.get(
-      chatId
-    ) || [];
-
-
-  const updatedIds =
-    [];
-
-
-  list.forEach(
-    message => {
-
-      /*
-       * свои сообщения
-       * пользователь не должен
-       * "прочитывать" повторно
-       */
-
-      if (
-        message.senderId ===
-        userId
-      ) {
-        return;
-      }
-
-
-      if (
-        !Array.isArray(
-          message.deliveredTo
-        )
-      ) {
-        message.deliveredTo =
-          [];
-      }
-
-
-      if (
-        !message.deliveredTo.includes(
-          userId
-        )
-      ) {
-
-        message.deliveredTo.push(
-          userId
-        );
-
-      }
-
-
-      if (
-        !Array.isArray(
-          message.readBy
-        )
-      ) {
-        message.readBy =
-          [];
-      }
-
-
-      if (
-        !message.readBy.includes(
-          userId
-        )
-      ) {
-
-        message.readBy.push(
-          userId
-        );
-
-
-        updatedIds.push(
-          message.id
-        );
-
-      }
-
-    }
-  );
-
-
-  return updatedIds;
-
-}
-
-
-function getMessages(
+async function getMessages(
   chatId,
   limit = 100
 ) {
-
-  const list =
-    messages.get(
-      chatId
-    ) || [];
-
-
   const safeLimit =
     Math.max(
       1,
       Math.min(
         200,
-        Number(
-          limit
-        ) || 100
+        Number(limit) || 100
       )
     );
 
+  const rows =
+    await request(
+      `messages?chat_id=eq.${eq(chatId)}&select=*&order=created_at.desc&limit=${safeLimit}`,
+      {
+        method: "GET"
+      }
+    );
 
-  return list.slice(
-    -safeLimit
+  return asArray(rows)
+    .reverse()
+    .map(rowToMessage);
+}
+
+async function markDelivered(
+  chatId,
+  messageId,
+  userId
+) {
+  const rows =
+    await request(
+      "rpc/mark_message_delivered",
+      {
+        method: "POST",
+
+        body:
+          JSON.stringify({
+            p_chat_id: chatId,
+            p_message_id:
+              messageId,
+            p_user_id:
+              userId
+          })
+      }
+    );
+
+  return rowToMessage(
+    rows?.[0]
   );
+}
 
+async function markChatRead(
+  chatId,
+  userId
+) {
+  const rows =
+    await request(
+      "rpc/mark_chat_read",
+      {
+        method: "POST",
+
+        body:
+          JSON.stringify({
+            p_chat_id:
+              chatId,
+            p_user_id:
+              userId
+          })
+      }
+    );
+
+  return asArray(rows)
+    .map(
+      row =>
+        row.message_id
+    )
+    .filter(Boolean);
 }
 
 
-/* BLOCKS */
+/* =========================
+   BLOCKS
+========================= */
 
-function blockUser(
+async function blockUser(
   userId,
   targetUserId
 ) {
+  if (
+    !userId ||
+    !targetUserId ||
+    userId === targetUserId
+  ) {
+    return false;
+  }
 
-  ensureUser(
-    userId
+  await request(
+    "blocks?on_conflict=blocker_id,blocked_id",
+    {
+      method: "POST",
+
+      headers: {
+        Prefer:
+          "resolution=merge-duplicates,return=minimal"
+      },
+
+      body:
+        JSON.stringify({
+          blocker_id:
+            userId,
+
+          blocked_id:
+            targetUserId
+        })
+    }
   );
 
-
-  blocks
-    .get(
-      userId
-    )
-    .add(
-      targetUserId
-    );
-
-
-  removeFriend(
+  await removeFriend(
     userId,
     targetUserId
   );
 
+  return true;
 }
 
-
-function unblockUser(
+async function unblockUser(
   userId,
   targetUserId
 ) {
+  await request(
+    `blocks?blocker_id=eq.${eq(userId)}&blocked_id=eq.${eq(targetUserId)}`,
+    {
+      method: "DELETE",
 
-  blocks
-    .get(
-      userId
-    )
-    ?.delete(
-      targetUserId
-    );
-
+      headers: {
+        Prefer:
+          "return=minimal"
+      }
+    }
+  );
 }
 
-
-function getBlockedUsers(
+async function getBlockedUsers(
   userId
 ) {
-
-  ensureUser(
-    userId
-  );
-
-
-  return [
-    ...blocks.get(
-      userId
-    )
-  ]
-    .map(
-      publicUser
-    )
-    .filter(
-      Boolean
+  const rows =
+    await request(
+      `blocks?blocker_id=eq.${eq(userId)}&select=blocked_id&order=created_at.desc`,
+      {
+        method: "GET"
+      }
     );
 
+  const users =
+    await Promise.all(
+      asArray(rows).map(
+        row =>
+          publicUser(
+            row.blocked_id
+          )
+      )
+    );
+
+  return users.filter(Boolean);
 }
 
-
-function isBlockedEitherWay(
+async function isBlockedEitherWay(
   userA,
   userB
 ) {
+  const rows =
+    await request(
+      `blocks?or=(and(blocker_id.eq.${eq(userA)},blocked_id.eq.${eq(userB)}),and(blocker_id.eq.${eq(userB)},blocked_id.eq.${eq(userA)}))&select=blocker_id&limit=1`,
+      {
+        method: "GET"
+      }
+    );
 
-  return (
-    !!blocks
-      .get(
-        userA
-      )
-      ?.has(
-        userB
-      )
-    ||
-    !!blocks
-      .get(
-        userB
-      )
-      ?.has(
-        userA
-      )
-  );
-
+  return Boolean(rows?.length);
 }
 
 
-/* REPORTS */
+/* =========================
+   REPORTS
+========================= */
 
-function reportUser(
+async function reportUser(
   fromUserId,
   targetUserId,
   reason
 ) {
+  await request(
+    "reports",
+    {
+      method: "POST",
 
-  reports.push({
+      headers: {
+        Prefer:
+          "return=minimal"
+      },
 
-    id:
-      crypto.randomUUID(),
+      body:
+        JSON.stringify({
+          from_user_id:
+            fromUserId,
 
-    fromUserId,
+          target_user_id:
+            targetUserId,
 
-    targetUserId,
-
-    reason:
-      cleanText(
-        reason,
-        200
-      ),
-
-    createdAt:
-      Date.now()
-
-  });
-
-
-  if (
-    reports.length >
-    5000
-  ) {
-
-    reports.splice(
-      0,
-      reports.length -
-      5000
-    );
-
-  }
-
+          reason:
+            cleanText(
+              reason,
+              200
+            )
+        })
+    }
+  );
 }
 
 
-/* EXPORTS */
+/* =========================
+   PUSH NOTIFICATIONS
+========================= */
+
+async function savePushSubscription(
+  userId,
+  subscription
+) {
+  const endpoint =
+    cleanText(
+      subscription?.endpoint,
+      4096
+    );
+
+  if (
+    !userId ||
+    !endpoint
+  ) {
+    return false;
+  }
+
+  await request(
+    "push_subscriptions?on_conflict=endpoint",
+    {
+      method: "POST",
+
+      headers: {
+        Prefer:
+          "resolution=merge-duplicates,return=minimal"
+      },
+
+      body:
+        JSON.stringify({
+          endpoint,
+          user_id:
+            userId,
+          subscription,
+          updated_at:
+            new Date()
+              .toISOString()
+        })
+    }
+  );
+
+  return true;
+}
+
+async function getPushSubscriptions(
+  userId
+) {
+  const rows =
+    await request(
+      `push_subscriptions?user_id=eq.${eq(userId)}&select=endpoint,subscription`,
+      {
+        method: "GET"
+      }
+    );
+
+  return asArray(rows)
+    .map(
+      row => ({
+        endpoint:
+          row.endpoint,
+
+        subscription:
+          row.subscription
+      })
+    )
+    .filter(
+      item =>
+        item.subscription
+    );
+}
+
+async function deletePushSubscription(
+  endpoint
+) {
+  await request(
+    `push_subscriptions?endpoint=eq.${eq(endpoint)}`,
+    {
+      method: "DELETE",
+
+      headers: {
+        Prefer:
+          "return=minimal"
+      }
+    }
+  );
+}
+
+
+/* =========================
+   EXPORTS
+========================= */
 
 module.exports = {
-
-  users,
-  friends,
-  chats,
-  messages,
-  reports,
-  blocks,
+  configured,
+  ping,
+  countUsers,
 
   createOrUpdateUser,
   getUser,
@@ -1164,10 +1002,8 @@ module.exports = {
 
   addMessage,
   addRichMessage,
-
   markDelivered,
   markChatRead,
-
   getMessages,
 
   blockUser,
@@ -1175,6 +1011,9 @@ module.exports = {
   getBlockedUsers,
   isBlockedEitherWay,
 
-  reportUser
+  reportUser,
 
+  savePushSubscription,
+  getPushSubscriptions,
+  deletePushSubscription
 };
