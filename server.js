@@ -1,30 +1,16 @@
+"use strict";
+
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const db = require("./db");
+const webpush = require("web-push");
 
-let webpush = null;
-
-try {
-  webpush = require("web-push");
-} catch (error) {
-  console.log(
-    "web-push пока не установлен"
-  );
-}
-
-const PORT =
-  process.env.PORT || 3000;
-
-const MATCH_TIME =
-  24 * 60 * 60 * 1000;
-
-const MAX_PHOTO =
-  6 * 1024 * 1024;
-
-const MAX_VOICE =
-  8 * 1024 * 1024;
+const PORT = process.env.PORT || 3000;
+const MATCH_TIME = 24 * 60 * 60 * 1000;
+const MAX_PHOTO = 6 * 1024 * 1024;
+const MAX_VOICE = 8 * 1024 * 1024;
 
 const VAPID_PUBLIC_KEY =
   process.env.VAPID_PUBLIC_KEY || "";
@@ -37,7 +23,6 @@ const VAPID_SUBJECT =
   "mailto:admin@snapvibe.app";
 
 if (
-  webpush &&
   VAPID_PUBLIC_KEY &&
   VAPID_PRIVATE_KEY
 ) {
@@ -49,17 +34,14 @@ if (
     );
   } catch (error) {
     console.error(
-      "VAPID error:",
+      "VAPID setup error:",
       error
     );
   }
 }
 
-const app =
-  express();
-
-const server =
-  http.createServer(app);
+const app = express();
+const server = http.createServer(app);
 
 const wss =
   new WebSocket.Server({
@@ -67,6 +49,13 @@ const wss =
     maxPayload:
       12 * 1024 * 1024
   });
+
+
+/* =========================================================
+   ACTIVE / REALTIME STATE
+   Это можно держать в памяти:
+   ожидание поиска, активные соединения и текущие мэтчи
+========================================================= */
 
 const waitingQueue =
   new Map();
@@ -80,31 +69,56 @@ const userMatches =
 const connected =
   new Map();
 
-const pushSubscriptions =
+const profileCache =
   new Map();
+
+
+/* =========================================================
+   STATIC SITE
+========================================================= */
 
 app.use(
   express.static(__dirname)
 );
 
+
+/* =========================================================
+   HEALTH
+========================================================= */
+
 app.get(
   "/health",
-  (req, res) => {
+  async (req, res) => {
+    let users = null;
+    let database = false;
+
+    try {
+      database =
+        await db.ping();
+
+      users =
+        await db.countUsers();
+    } catch (error) {
+      console.error(
+        "Health DB error:",
+        error.message
+      );
+    }
+
     res.json({
       ok: true,
       service:
-        "SnapVibe 4.0",
+        "SnapVibe 5.0",
+      database,
+      users,
       waiting:
         waitingQueue.size,
       matches:
         matches.size,
       connected:
         connected.size,
-      users:
-        db.users?.size || 0,
       pushConfigured:
         Boolean(
-          webpush &&
           VAPID_PUBLIC_KEY &&
           VAPID_PRIVATE_KEY
         ),
@@ -114,6 +128,7 @@ app.get(
     });
   }
 );
+
 
 app.get(
   "/push-public-key",
@@ -125,12 +140,18 @@ app.get(
   }
 );
 
-function makeId(prefix) {
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function makeId(prefix = "") {
   return (
     prefix +
     crypto.randomUUID()
   );
 }
+
 
 function send(ws, data) {
   if (
@@ -149,13 +170,14 @@ function send(ws, data) {
     return true;
   } catch (error) {
     console.error(
-      "Send error:",
+      "WebSocket send error:",
       error
     );
 
     return false;
   }
 }
+
 
 function sendUser(
   userId,
@@ -167,32 +189,15 @@ function sendUser(
   );
 }
 
-function profile(userId) {
-  return (
-    db.publicUser(userId) || {
-      id: userId,
-      name:
-        "SnapVibe User",
-      age: null,
-      gender:
-        "other",
-      country: "",
-      language:
-        "ru",
-      avatar: ""
-    }
-  );
-}
 
 function normalizeCountry(
   value
 ) {
-  return String(
-    value || ""
-  )
+  return String(value || "")
     .trim()
     .toUpperCase();
 }
+
 
 function validHash(value) {
   return (
@@ -202,6 +207,7 @@ function validHash(value) {
       .test(value)
   );
 }
+
 
 function validPhoto(value) {
   return (
@@ -216,6 +222,7 @@ function validPhoto(value) {
     ) <= MAX_PHOTO
   );
 }
+
 
 function validVoice(value) {
   if (
@@ -241,6 +248,69 @@ function validVoice(value) {
     ) <= MAX_VOICE
   );
 }
+
+
+function fallbackProfile(
+  userId
+) {
+  return {
+    id: userId,
+    name:
+      "SnapVibe User",
+    age: null,
+    gender:
+      "other",
+    country: "",
+    language:
+      "ru",
+    avatar: ""
+  };
+}
+
+
+async function getProfile(
+  userId,
+  force = false
+) {
+  if (
+    !force &&
+    profileCache.has(userId)
+  ) {
+    return profileCache.get(
+      userId
+    );
+  }
+
+  try {
+    const profile =
+      await db.publicUser(
+        userId
+      );
+
+    if (profile) {
+      profileCache.set(
+        userId,
+        profile
+      );
+
+      return profile;
+    }
+  } catch (error) {
+    console.error(
+      "Profile error:",
+      error.message
+    );
+  }
+
+  return fallbackProfile(
+    userId
+  );
+}
+
+
+/* =========================================================
+   SEARCH FILTERS
+========================================================= */
 
 function prefAllows(
   pref,
@@ -305,27 +375,54 @@ function prefAllows(
   return true;
 }
 
-function mutuallyCompatible(
+
+async function mutuallyCompatible(
   a,
   b
 ) {
-  return (
-    prefAllows(
+  if (
+    !prefAllows(
       a.search,
-      profile(b.userId)
-    ) &&
-    prefAllows(
-      b.search,
-      profile(a.userId)
-    ) &&
-    !db.isBlockedEitherWay(
-      a.userId,
-      b.userId
+      b.profile
     )
-  );
+  ) {
+    return false;
+  }
+
+  if (
+    !prefAllows(
+      b.search,
+      a.profile
+    )
+  ) {
+    return false;
+  }
+
+  try {
+    const blocked =
+      await db
+        .isBlockedEitherWay(
+          a.userId,
+          b.userId
+        );
+
+    if (blocked) {
+      return false;
+    }
+  } catch (error) {
+    console.error(
+      "Block check error:",
+      error.message
+    );
+
+    return false;
+  }
+
+  return true;
 }
 
-function findOpponent(
+
+async function findOpponent(
   current
 ) {
   let best = null;
@@ -361,7 +458,7 @@ function findOpponent(
     }
 
     if (
-      !mutuallyCompatible(
+      !await mutuallyCompatible(
         current,
         item
       )
@@ -380,6 +477,11 @@ function findOpponent(
 
   return best;
 }
+
+
+/* =========================================================
+   MATCH
+========================================================= */
 
 function serializeMatch(
   userId,
@@ -408,12 +510,10 @@ function serializeMatch(
       partner.userId,
 
     partnerName:
-      partner.name,
+      partner.profile.name,
 
     partnerProfile:
-      profile(
-        partner.userId
-      ),
+      partner.profile,
 
     partnerPhoto:
       partner.photo,
@@ -430,7 +530,8 @@ function serializeMatch(
   };
 }
 
-function createMatch(
+
+async function createMatch(
   a,
   b
 ) {
@@ -444,31 +545,32 @@ function createMatch(
     createdAt +
     MATCH_TIME;
 
-  const profileA =
-    profile(a.userId);
-
-  const profileB =
-    profile(b.userId);
-
   const chat =
-    db.createMatchChat(
+    await db.createMatchChat(
       matchId,
       a.userId,
       b.userId
     );
 
+  if (!chat) {
+    throw new Error(
+      "Не удалось создать чат мэтча"
+    );
+  }
+
   const match = {
     matchId,
     createdAt,
     expiresAt,
+
     chatId:
       chat.id,
 
     userA: {
       userId:
         a.userId,
-      name:
-        profileA.name,
+      profile:
+        a.profile,
       photo:
         a.photo
     },
@@ -476,8 +578,8 @@ function createMatch(
     userB: {
       userId:
         b.userId,
-      name:
-        profileB.name,
+      profile:
+        b.profile,
       photo:
         b.photo
     },
@@ -517,6 +619,7 @@ function createMatch(
     {
       type:
         "match_found",
+
       ...serializeMatch(
         a.userId,
         match
@@ -529,6 +632,7 @@ function createMatch(
     {
       type:
         "match_found",
+
       ...serializeMatch(
         b.userId,
         match
@@ -542,13 +646,16 @@ function createMatch(
         finishMatch(
           matchId,
           "expired"
+        ).catch(
+          console.error
         );
       },
       MATCH_TIME
     );
 }
 
-function finishMatch(
+
+async function finishMatch(
   matchId,
   reason = "ended",
   initiator = null
@@ -633,9 +740,16 @@ function finishMatch(
     );
   }
 
-  db.deleteChat(
-    match.chatId
-  );
+  try {
+    await db.deleteChat(
+      match.chatId
+    );
+  } catch (error) {
+    console.error(
+      "Delete match chat:",
+      error.message
+    );
+  }
 
   match.userA.photo =
     null;
@@ -648,7 +762,12 @@ function finishMatch(
   );
 }
 
-function handleCapture(
+
+/* =========================================================
+   CAPTURE / SEARCH
+========================================================= */
+
+async function handleCapture(
   ws,
   message
 ) {
@@ -660,8 +779,7 @@ function handleCapture(
     return send(
       ws,
       {
-        type:
-          "error",
+        type:"error",
         message:
           "Некорректная эмоция"
       }
@@ -676,8 +794,7 @@ function handleCapture(
     return send(
       ws,
       {
-        type:
-          "error",
+        type:"error",
         message:
           "Некорректное фото"
       }
@@ -692,8 +809,7 @@ function handleCapture(
     return send(
       ws,
       {
-        type:
-          "error",
+        type:"error",
         message:
           "У вас уже есть активный мэтч."
       }
@@ -704,11 +820,19 @@ function handleCapture(
     ws.userId
   );
 
+  const profile =
+    await getProfile(
+      ws.userId,
+      true
+    );
+
   const current = {
     userId:
       ws.userId,
 
     ws,
+
+    profile,
 
     emotionHash:
       message.emotionHash,
@@ -774,11 +898,16 @@ function handleCapture(
   }
 
   const opponent =
-    findOpponent(
+    await findOpponent(
       current
     );
 
-  if (!opponent) {
+  if (
+    !opponent ||
+    !waitingQueue.has(
+      opponent.userId
+    )
+  ) {
     waitingQueue.set(
       ws.userId,
       current
@@ -793,13 +922,18 @@ function handleCapture(
     );
   }
 
-  createMatch(
+  await createMatch(
     opponent,
     current
   );
 }
 
-function keepVibe(
+
+/* =========================================================
+   KEEP THE VIBE
+========================================================= */
+
+async function keepVibe(
   ws,
   message
 ) {
@@ -815,8 +949,7 @@ function keepVibe(
     return send(
       ws,
       {
-        type:
-          "error",
+        type:"error",
         message:
           "Мэтч уже закончился"
       }
@@ -844,7 +977,7 @@ function keepVibe(
     );
 
   const sender =
-    profile(
+    await getProfile(
       ws.userId
     );
 
@@ -858,10 +991,11 @@ function keepVibe(
       {
         type:
           "keep_vibe_pending",
+
         matchId:
           match.matchId,
-        already:
-          true
+
+        already:true
       }
     );
   }
@@ -875,6 +1009,7 @@ function keepVibe(
     {
       type:
         "keep_vibe_pending",
+
       matchId:
         match.matchId
     }
@@ -885,79 +1020,99 @@ function keepVibe(
     {
       type:
         "keep_vibe_received",
+
       matchId:
         match.matchId,
+
       fromUserId:
         ws.userId,
+
       fromName:
         sender.name,
+
       fromAvatar:
         sender.avatar
     }
   );
 
   if (
-    match.keep.size === 2
+    match.keep.size !== 2
   ) {
-    db.makeFriends(
+    return;
+  }
+
+  await db.makeFriends(
+    users[0],
+    users[1]
+  );
+
+  const permanentChat =
+    await db.createFriendChat(
       users[0],
       users[1]
     );
 
-    const permanentChat =
-      db.createFriendChat(
-        users[0],
-        users[1]
+  for (
+    const userId
+    of users
+  ) {
+    const friendId =
+      users.find(
+        id =>
+          id !== userId
       );
 
-    users.forEach(
-      userId => {
-        const friendId =
-          users.find(
-            id =>
-              id !== userId
-          );
+    const friend =
+      await getProfile(
+        friendId,
+        true
+      );
 
-        sendUser(
-          userId,
-          {
-            type:
-              "keep_vibe_mutual",
-            matchId:
-              match.matchId,
-            friend:
-              profile(
-                friendId
-              ),
-            chatId:
-              permanentChat.id
-          }
-        );
+    sendUser(
+      userId,
+      {
+        type:
+          "keep_vibe_mutual",
 
-        sendUser(
-          userId,
-          {
-            type:
-              "friendship_created",
-            friend:
-              profile(
-                friendId
-              ),
-            chatId:
-              permanentChat.id
-          }
-        );
+        matchId:
+          match.matchId,
+
+        friend,
+
+        chatId:
+          permanentChat.id
+      }
+    );
+
+    sendUser(
+      userId,
+      {
+        type:
+          "friendship_created",
+
+        friend,
+
+        chatId:
+          permanentChat.id
       }
     );
   }
 }
-function enrichMessage(message) {
+
+
+/* =========================================================
+   MESSAGE FORMAT
+========================================================= */
+
+async function enrichMessage(
+  message
+) {
   if (!message) {
     return null;
   }
 
   const sender =
-    profile(
+    await getProfile(
       message.senderId
     );
 
@@ -971,123 +1126,152 @@ function enrichMessage(message) {
       sender.avatar,
 
     senderGender:
-      sender.gender || "other",
+      sender.gender ||
+      "other",
 
     deliveredTo:
-      message.deliveredTo || [],
+      message.deliveredTo ||
+      [],
 
     readBy:
-      message.readBy || []
+      message.readBy ||
+      []
   };
 }
 
+
+/* =========================================================
+   PUSH
+========================================================= */
 
 async function sendPush(
   userId,
   payload
 ) {
   if (
-    !webpush ||
     !VAPID_PUBLIC_KEY ||
     !VAPID_PRIVATE_KEY
   ) {
     return;
   }
 
-  const subscription =
-    pushSubscriptions.get(
-      userId
-    );
-
-  if (!subscription) {
-    return;
-  }
+  let subscriptions = [];
 
   try {
-    await webpush
-      .sendNotification(
-        subscription,
-        JSON.stringify(
-          payload
-        )
-      );
+    subscriptions =
+      await db
+        .getPushSubscriptions(
+          userId
+        );
   } catch (error) {
     console.error(
-      "Push error:",
-      error.statusCode ||
+      "Load push subscriptions:",
       error.message
     );
 
-    if (
-      error.statusCode === 404 ||
-      error.statusCode === 410
-    ) {
-      pushSubscriptions.delete(
-        userId
+    return;
+  }
+
+  for (
+    const item
+    of subscriptions
+  ) {
+    try {
+      await webpush
+        .sendNotification(
+          item.subscription,
+          JSON.stringify(
+            payload
+          )
+        );
+    } catch (error) {
+      console.error(
+        "Push error:",
+        error.statusCode ||
+        error.message
       );
+
+      if (
+        error.statusCode === 404 ||
+        error.statusCode === 410
+      ) {
+        try {
+          await db
+            .deletePushSubscription(
+              item.endpoint
+            );
+        } catch (_) {}
+      }
     }
   }
 }
 
 
-function sendMessageNotification(
+async function sendMessageNotification(
   chat,
   senderId,
   savedMessage
 ) {
   const sender =
-    profile(senderId);
+    await getProfile(
+      senderId
+    );
 
-  chat.users
-    .filter(
+  const receivers =
+    chat.users.filter(
       userId =>
-        userId !== senderId
-    )
-    .forEach(
-      userId => {
+        userId !==
+        senderId
+    );
 
-        sendPush(
-          userId,
-          {
-            type:
-              "chat_message",
+  for (
+    const userId
+    of receivers
+  ) {
+    await sendPush(
+      userId,
+      {
+        type:
+          "chat_message",
 
-            title:
-              sender.name,
+        title:
+          sender.name,
 
-            body:
-              savedMessage.type ===
-              "voice"
-                ? "🎤 Голосовое сообщение"
-                : savedMessage.text,
+        body:
+          savedMessage.type ===
+          "voice"
+            ? "🎤 Голосовое сообщение"
+            : savedMessage.text,
 
-            chatId:
-              chat.id,
+        chatId:
+          chat.id,
 
-            senderId,
+        senderId,
 
-            icon:
-              sender.avatar || "",
+        icon:
+          sender.avatar || "",
 
-            url:
-              "/preview3.html?chat=" +
-              encodeURIComponent(
-                chat.id
-              )
-          }
-        );
-
+        url:
+          "/preview3.html?chat=" +
+          encodeURIComponent(
+            chat.id
+          )
       }
     );
+  }
 }
 
 
-function handleTextMessage(
+/* =========================================================
+   TEXT MESSAGE
+========================================================= */
+
+async function handleTextMessage(
   ws,
   message
 ) {
   const chat =
-    db.getChat(
+    await db.getChat(
       String(
         message.chatId ||
         ""
@@ -1102,7 +1286,6 @@ function handleTextMessage(
   ) {
     return;
   }
-
 
   if (
     chat.type ===
@@ -1121,16 +1304,13 @@ function handleTextMessage(
       return send(
         ws,
         {
-          type:
-            "error",
-
+          type:"error",
           message:
             "Чат мэтча уже закрыт"
         }
       );
     }
   }
-
 
   if (
     chat.type ===
@@ -1144,7 +1324,7 @@ function handleTextMessage(
       );
 
     if (
-      !db.areFriends(
+      !await db.areFriends(
         ws.userId,
         other
       )
@@ -1153,50 +1333,28 @@ function handleTextMessage(
     }
   }
 
-
-  let savedMessage = null;
-
-
-  if (
-    typeof db.addRichMessage ===
-    "function"
-  ) {
-    savedMessage =
-      db.addRichMessage(
-        chat.id,
-        ws.userId,
-        {
-          type:
-            "text",
-
-          text:
-            message.text
-        }
-      );
-  } else {
-    savedMessage =
-      db.addMessage(
-        chat.id,
-        ws.userId,
-        message.text
-      );
-  }
-
+  const savedMessage =
+    await db.addRichMessage(
+      chat.id,
+      ws.userId,
+      {
+        type:"text",
+        text:
+          message.text
+      }
+    );
 
   if (!savedMessage) {
     return;
   }
 
-
   const fullMessage =
-    enrichMessage(
+    await enrichMessage(
       savedMessage
     );
 
-
   chat.users.forEach(
     userId => {
-
       sendUser(
         userId,
         {
@@ -1210,25 +1368,29 @@ function handleTextMessage(
             fullMessage
         }
       );
-
     }
   );
-
 
   sendMessageNotification(
     chat,
     ws.userId,
     fullMessage
+  ).catch(
+    console.error
   );
 }
 
 
-function handleVoiceMessage(
+/* =========================================================
+   VOICE MESSAGE
+========================================================= */
+
+async function handleVoiceMessage(
   ws,
   message
 ) {
   const chat =
-    db.getChat(
+    await db.getChat(
       String(
         message.chatId ||
         ""
@@ -1244,7 +1406,6 @@ function handleVoiceMessage(
     return;
   }
 
-
   if (
     !validVoice(
       message.audio
@@ -1253,15 +1414,12 @@ function handleVoiceMessage(
     return send(
       ws,
       {
-        type:
-          "error",
-
+        type:"error",
         message:
           "Не удалось отправить голосовое сообщение"
       }
     );
   }
-
 
   const duration =
     Math.max(
@@ -1274,56 +1432,29 @@ function handleVoiceMessage(
       )
     );
 
-
-  let savedMessage = null;
-
-
-  if (
-    typeof db.addRichMessage ===
-    "function"
-  ) {
-    savedMessage =
-      db.addRichMessage(
-        chat.id,
-        ws.userId,
-        {
-          type:
-            "voice",
-
-          audio:
-            message.audio,
-
-          duration
-        }
-      );
-  } else {
-    return send(
-      ws,
+  const savedMessage =
+    await db.addRichMessage(
+      chat.id,
+      ws.userId,
       {
-        type:
-          "error",
-
-        message:
-          "Голосовые сообщения требуют обновления базы"
+        type:"voice",
+        audio:
+          message.audio,
+        duration
       }
     );
-  }
-
 
   if (!savedMessage) {
     return;
   }
 
-
   const fullMessage =
-    enrichMessage(
+    await enrichMessage(
       savedMessage
     );
 
-
   chat.users.forEach(
     userId => {
-
       sendUser(
         userId,
         {
@@ -1337,20 +1468,24 @@ function handleVoiceMessage(
             fullMessage
         }
       );
-
     }
   );
-
 
   sendMessageNotification(
     chat,
     ws.userId,
     fullMessage
+  ).catch(
+    console.error
   );
 }
 
 
-function markDelivered(
+/* =========================================================
+   DELIVERED / READ
+========================================================= */
+
+async function markDelivered(
   ws,
   message
 ) {
@@ -1366,12 +1501,10 @@ function markDelivered(
       ""
     );
 
-
   const chat =
-    db.getChat(
+    await db.getChat(
       chatId
     );
-
 
   if (
     !chat ||
@@ -1382,31 +1515,19 @@ function markDelivered(
     return;
   }
 
-
-  let updated = null;
-
-
-  if (
-    typeof db.markDelivered ===
-    "function"
-  ) {
-    updated =
-      db.markDelivered(
-        chatId,
-        messageId,
-        ws.userId
-      );
-  }
-
+  const updated =
+    await db.markDelivered(
+      chatId,
+      messageId,
+      ws.userId
+    );
 
   if (!updated) {
     return;
   }
 
-
   chat.users.forEach(
     userId => {
-
       sendUser(
         userId,
         {
@@ -1414,20 +1535,18 @@ function markDelivered(
             "message_delivered",
 
           chatId,
-
           messageId,
 
           userId:
             ws.userId
         }
       );
-
     }
   );
 }
 
 
-function markRead(
+async function markRead(
   ws,
   message
 ) {
@@ -1437,12 +1556,10 @@ function markRead(
       ""
     );
 
-
   const chat =
-    db.getChat(
+    await db.getChat(
       chatId
     );
-
 
   if (
     !chat ||
@@ -1453,21 +1570,11 @@ function markRead(
     return;
   }
 
-
-  let updatedIds = [];
-
-
-  if (
-    typeof db.markChatRead ===
-    "function"
-  ) {
-    updatedIds =
-      db.markChatRead(
-        chatId,
-        ws.userId
-      ) || [];
-  }
-
+  const updatedIds =
+    await db.markChatRead(
+      chatId,
+      ws.userId
+    );
 
   if (
     !updatedIds.length
@@ -1475,10 +1582,8 @@ function markRead(
     return;
   }
 
-
   chat.users.forEach(
     userId => {
-
       sendUser(
         userId,
         {
@@ -1494,13 +1599,16 @@ function markRead(
             ws.userId
         }
       );
-
     }
   );
 }
 
 
-function validCallTarget(
+/* =========================================================
+   CALLS
+========================================================= */
+
+async function validCallTarget(
   fromUserId,
   targetUserId
 ) {
@@ -1512,12 +1620,10 @@ function validCallTarget(
     return false;
   }
 
-
   const matchId =
     userMatches.get(
       fromUserId
     );
-
 
   if (matchId) {
     const match =
@@ -1538,15 +1644,14 @@ function validCallTarget(
     }
   }
 
-
-  return db.areFriends(
+  return await db.areFriends(
     fromUserId,
     targetUserId
   );
 }
 
 
-function handleCallInvite(
+async function handleCallInvite(
   ws,
   message
 ) {
@@ -1556,16 +1661,14 @@ function handleCallInvite(
       ""
     );
 
-
   const callType =
     message.callType ===
     "video"
       ? "video"
       : "audio";
 
-
   if (
-    !validCallTarget(
+    !await validCallTarget(
       ws.userId,
       targetUserId
     )
@@ -1573,27 +1676,20 @@ function handleCallInvite(
     return send(
       ws,
       {
-        type:
-          "call_error",
-
+        type:"call_error",
         message:
           "Звонок недоступен"
       }
     );
   }
 
-
   const caller =
-    profile(
+    await getProfile(
       ws.userId
     );
 
-
   const callId =
-    makeId(
-      "call_"
-    );
-
+    makeId("call_");
 
   sendUser(
     targetUserId,
@@ -1602,7 +1698,6 @@ function handleCallInvite(
         "incoming_call",
 
       callId,
-
       callType,
 
       fromUserId:
@@ -1616,7 +1711,6 @@ function handleCallInvite(
     }
   );
 
-
   send(
     ws,
     {
@@ -1624,13 +1718,10 @@ function handleCallInvite(
         "call_ringing",
 
       callId,
-
       callType,
-
       targetUserId
     }
   );
-
 
   sendPush(
     targetUserId,
@@ -1648,7 +1739,6 @@ function handleCallInvite(
           : "📞 Аудиозвонок",
 
       callId,
-
       callType,
 
       fromUserId:
@@ -1657,11 +1747,13 @@ function handleCallInvite(
       url:
         "/preview3.html"
     }
+  ).catch(
+    console.error
   );
 }
 
 
-function relayCallEvent(
+async function relayCallEvent(
   ws,
   message,
   eventType
@@ -1672,9 +1764,8 @@ function relayCallEvent(
       ""
     );
 
-
   if (
-    !validCallTarget(
+    !await validCallTarget(
       ws.userId,
       targetUserId
     )
@@ -1682,12 +1773,10 @@ function relayCallEvent(
     return;
   }
 
-
   const sender =
-    profile(
+    await getProfile(
       ws.userId
     );
-
 
   sendUser(
     targetUserId,
@@ -1720,13 +1809,16 @@ function relayCallEvent(
 }
 
 
-function savePushSubscription(
+/* =========================================================
+   PUSH SUBSCRIBE
+========================================================= */
+
+async function savePushSubscription(
   ws,
   message
 ) {
   const subscription =
     message.subscription;
-
 
   if (
     !subscription ||
@@ -1736,12 +1828,11 @@ function savePushSubscription(
     return;
   }
 
-
-  pushSubscriptions.set(
-    ws.userId,
-    subscription
-  );
-
+  await db
+    .savePushSubscription(
+      ws.userId,
+      subscription
+    );
 
   send(
     ws,
@@ -1753,15 +1844,295 @@ function savePushSubscription(
 }
 
 
+/* =========================================================
+   PROFILE REGISTER
+========================================================= */
+
+async function registerUser(
+  ws,
+  message
+) {
+  const userId =
+    typeof message.userId ===
+      "string" &&
+    message.userId.length >=
+      10 &&
+    message.userId.length <=
+      120
+
+      ? message.userId
+      : makeId("user_");
+
+  if (
+    connected.get(
+      ws.userId
+    ) === ws
+  ) {
+    connected.delete(
+      ws.userId
+    );
+  }
+
+  ws.userId =
+    userId;
+
+  connected.set(
+    userId,
+    ws
+  );
+
+  const saved =
+    await db.createOrUpdateUser({
+      id:
+        userId,
+
+      name:
+        message.name,
+
+      language:
+        message.language,
+
+      age:
+        message.age,
+
+      gender:
+        message.gender,
+
+      country:
+        message.country,
+
+      avatar:
+        message.avatar
+    });
+
+  profileCache.set(
+    userId,
+    saved
+  );
+
+  const friends =
+    await db.getFriends(
+      userId
+    );
+
+  friends.forEach(
+    friend => {
+      profileCache.set(
+        friend.id,
+        friend
+      );
+    }
+  );
+
+  const activeId =
+    userMatches.get(
+      userId
+    );
+
+  const activeMatch =
+    activeId
+      ? matches.get(
+          activeId
+        )
+      : null;
+
+  send(
+    ws,
+    {
+      type:
+        "profile_saved",
+
+      profile:
+        saved
+    }
+  );
+
+  send(
+    ws,
+    {
+      type:
+        "bootstrap",
+
+      profile:
+        saved,
+
+      friends,
+
+      activeMatch:
+        activeMatch
+          ? serializeMatch(
+              userId,
+              activeMatch
+            )
+          : null
+    }
+  );
+}
+
+
+/* =========================================================
+   FRIEND CHAT
+========================================================= */
+
+async function openFriendChat(
+  ws,
+  friendId
+) {
+  if (
+    !await db.areFriends(
+      ws.userId,
+      friendId
+    )
+  ) {
+    return;
+  }
+
+  const chat =
+    await db.createFriendChat(
+      ws.userId,
+      friendId
+    );
+
+  const messages =
+    await db.getMessages(
+      chat.id
+    );
+
+  const history = [];
+
+  for (
+    const message
+    of messages
+  ) {
+    history.push(
+      await enrichMessage(
+        message
+      )
+    );
+  }
+
+  const friend =
+    await getProfile(
+      friendId,
+      true
+    );
+
+  send(
+    ws,
+    {
+      type:
+        "friend_chat_ready",
+
+      chatId:
+        chat.id,
+
+      friend,
+
+      messages:
+        history
+    }
+  );
+}
+
+
+/* =========================================================
+   CHAT HISTORY
+========================================================= */
+
+async function sendChatHistory(
+  ws,
+  chatId
+) {
+  const chat =
+    await db.getChat(
+      chatId
+    );
+
+  if (
+    !chat ||
+    !chat.users.includes(
+      ws.userId
+    )
+  ) {
+    return;
+  }
+
+  const messages =
+    await db.getMessages(
+      chat.id
+    );
+
+  const history = [];
+
+  for (
+    const message
+    of messages
+  ) {
+    history.push(
+      await enrichMessage(
+        message
+      )
+    );
+  }
+
+  send(
+    ws,
+    {
+      type:
+        "chat_history",
+
+      chatId:
+        chat.id,
+
+      messages:
+        history
+    }
+  );
+}
+
+
+/* =========================================================
+   FRIEND LIST
+========================================================= */
+
+async function sendFriendsList(
+  ws
+) {
+  const friends =
+    await db.getFriends(
+      ws.userId
+    );
+
+  friends.forEach(
+    friend => {
+      profileCache.set(
+        friend.id,
+        friend
+      );
+    }
+  );
+
+  send(
+    ws,
+    {
+      type:
+        "friends_list",
+
+      friends
+    }
+  );
+}
+
+
+/* =========================================================
+   WEBSOCKET CONNECTION
+========================================================= */
+
 wss.on(
   "connection",
   ws => {
-
     ws.userId =
-      makeId(
-        "session_"
-      );
-
+      makeId("session_");
 
     send(
       ws,
@@ -1774,539 +2145,257 @@ wss.on(
       }
     );
 
-
     ws.on(
       "message",
-      raw => {
-
+      async raw => {
         try {
-
           const message =
             JSON.parse(
               raw.toString()
             );
 
-
-          if (
-            message.type ===
-            "register_profile"
+          switch (
+            message.type
           ) {
-
-            const userId =
-              typeof message.userId ===
-                "string" &&
-              message.userId.length >=
-                10 &&
-              message.userId.length <=
-                120
-
-                ? message.userId
-
-                : makeId(
-                    "user_"
-                  );
+            case "register_profile":
+              await registerUser(
+                ws,
+                message
+              );
+              break;
 
 
-            if (
-              connected.get(
-                ws.userId
-              ) === ws
-            ) {
-              connected.delete(
+            case "capture":
+              await handleCapture(
+                ws,
+                message
+              );
+              break;
+
+
+            case "cancel_search":
+              waitingQueue.delete(
                 ws.userId
               );
+
+              send(
+                ws,
+                {
+                  type:
+                    "search_cancelled"
+                }
+              );
+              break;
+
+
+            case "keep_vibe":
+              await keepVibe(
+                ws,
+                message
+              );
+              break;
+
+
+            case "end_match":
+            case "next_match": {
+              const matchId =
+                String(
+                  message.matchId ||
+                  userMatches.get(
+                    ws.userId
+                  ) ||
+                  ""
+                );
+
+              await finishMatch(
+                matchId,
+                "next_match",
+                ws.userId
+              );
+
+              break;
             }
 
 
-            ws.userId =
-              userId;
-
-
-            connected.set(
-              userId,
-              ws
-            );
-
-
-            const saved =
-              db.createOrUpdateUser({
-                id:
-                  userId,
-
-                name:
-                  message.name,
-
-                language:
-                  message.language,
-
-                age:
-                  message.age,
-
-                gender:
-                  message.gender,
-
-                country:
-                  message.country,
-
-                avatar:
-                  message.avatar
-              });
-
-
-            const activeId =
-              userMatches.get(
-                userId
+            case "chat_message":
+              await handleTextMessage(
+                ws,
+                message
               );
+              break;
 
 
-            const activeMatch =
-              activeId
-                ? matches.get(
-                    activeId
-                  )
-                : null;
-
-
-            send(
-              ws,
-              {
-                type:
-                  "profile_saved",
-
-                profile:
-                  saved
-              }
-            );
-
-
-            send(
-              ws,
-              {
-                type:
-                  "bootstrap",
-
-                profile:
-                  saved,
-
-                friends:
-                  db.getFriends(
-                    userId
-                  ),
-
-                activeMatch:
-                  activeMatch
-                    ? serializeMatch(
-                        userId,
-                        activeMatch
-                      )
-                    : null
-              }
-            );
-
-
-            return;
-          }
-
-
-          if (
-            message.type ===
-            "capture"
-          ) {
-            return handleCapture(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "cancel_search"
-          ) {
-
-            waitingQueue.delete(
-              ws.userId
-            );
-
-
-            return send(
-              ws,
-              {
-                type:
-                  "search_cancelled"
-              }
-            );
-          }
-
-
-          if (
-            message.type ===
-            "keep_vibe"
-          ) {
-            return keepVibe(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "end_match" ||
-            message.type ===
-            "next_match"
-          ) {
-
-            const matchId =
-              String(
-                message.matchId ||
-                userMatches.get(
-                  ws.userId
-                ) ||
-                ""
+            case "voice_message":
+              await handleVoiceMessage(
+                ws,
+                message
               );
+              break;
 
 
-            finishMatch(
-              matchId,
-              "next_match",
-              ws.userId
-            );
+            case "message_delivered":
+              await markDelivered(
+                ws,
+                message
+              );
+              break;
 
 
-            return;
-          }
+            case "chat_read":
+              await markRead(
+                ws,
+                message
+              );
+              break;
 
 
-          if (
-            message.type ===
-            "chat_message"
-          ) {
-            return handleTextMessage(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "voice_message"
-          ) {
-            return handleVoiceMessage(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "message_delivered"
-          ) {
-            return markDelivered(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "chat_read"
-          ) {
-            return markRead(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "chat_history"
-          ) {
-
-            const chat =
-              db.getChat(
+            case "chat_history":
+              await sendChatHistory(
+                ws,
                 String(
                   message.chatId ||
                   ""
                 )
               );
+              break;
 
 
-            if (
-              chat &&
-              chat.users.includes(
-                ws.userId
-              )
-            ) {
-
-              const history =
-                db.getMessages(
-                  chat.id
-                )
-                .map(
-                  enrichMessage
-                );
+            case "friends_list":
+              await sendFriendsList(
+                ws
+              );
+              break;
 
 
-              return send(
+            case "friend_chat_open":
+              await openFriendChat(
                 ws,
-                {
-                  type:
-                    "chat_history",
-
-                  chatId:
-                    chat.id,
-
-                  messages:
-                    history
-                }
-              );
-            }
-
-
-            return;
-          }
-
-
-          if (
-            message.type ===
-            "friends_list"
-          ) {
-            return send(
-              ws,
-              {
-                type:
-                  "friends_list",
-
-                friends:
-                  db.getFriends(
-                    ws.userId
-                  )
-              }
-            );
-          }
-
-
-          if (
-            message.type ===
-            "friend_chat_open"
-          ) {
-
-            const friendId =
-              String(
-                message.friendId ||
-                ""
-              );
-
-
-            if (
-              db.areFriends(
-                ws.userId,
-                friendId
-              )
-            ) {
-
-              const chat =
-                db.createFriendChat(
-                  ws.userId,
-                  friendId
-                );
-
-
-              const history =
-                db.getMessages(
-                  chat.id
-                )
-                .map(
-                  enrichMessage
-                );
-
-
-              return send(
-                ws,
-                {
-                  type:
-                    "friend_chat_ready",
-
-                  chatId:
-                    chat.id,
-
-                  friend:
-                    profile(
-                      friendId
-                    ),
-
-                  messages:
-                    history
-                }
-              );
-            }
-
-
-            return;
-          }
-
-
-          if (
-            message.type ===
-            "push_subscribe"
-          ) {
-            return savePushSubscription(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "call_invite"
-          ) {
-            return handleCallInvite(
-              ws,
-              message
-            );
-          }
-
-
-          if (
-            message.type ===
-            "call_accept"
-          ) {
-            return relayCallEvent(
-              ws,
-              message,
-              "call_accepted"
-            );
-          }
-
-
-          if (
-            message.type ===
-            "call_reject"
-          ) {
-            return relayCallEvent(
-              ws,
-              message,
-              "call_rejected"
-            );
-          }
-
-
-          if (
-            message.type ===
-            "call_end"
-          ) {
-            return relayCallEvent(
-              ws,
-              message,
-              "call_ended"
-            );
-          }
-
-
-          if (
-            message.type ===
-            "webrtc_offer"
-          ) {
-            return relayCallEvent(
-              ws,
-              message,
-              "webrtc_offer"
-            );
-          }
-
-
-          if (
-            message.type ===
-            "webrtc_answer"
-          ) {
-            return relayCallEvent(
-              ws,
-              message,
-              "webrtc_answer"
-            );
-          }
-
-
-          if (
-            message.type ===
-            "webrtc_ice"
-          ) {
-            return relayCallEvent(
-              ws,
-              message,
-              "webrtc_ice"
-            );
-          }
-
-
-          if (
-            message.type ===
-            "report_user"
-          ) {
-
-            db.reportUser(
-              ws.userId,
-              String(
-                message.targetUserId ||
+                String(
+                  message.friendId ||
                   ""
-              ),
-              message.reason
-            );
+                )
+              );
+              break;
 
 
-            return send(
-              ws,
-              {
-                type:
-                  "report_received"
-              }
-            );
-          }
+            case "push_subscribe":
+              await savePushSubscription(
+                ws,
+                message
+              );
+              break;
 
 
-          if (
-            message.type ===
-            "ping"
-          ) {
-            return send(
-              ws,
-              {
-                type:
-                  "pong",
+            case "call_invite":
+              await handleCallInvite(
+                ws,
+                message
+              );
+              break;
 
-                time:
-                  Date.now()
-              }
-            );
+
+            case "call_accept":
+              await relayCallEvent(
+                ws,
+                message,
+                "call_accepted"
+              );
+              break;
+
+
+            case "call_reject":
+              await relayCallEvent(
+                ws,
+                message,
+                "call_rejected"
+              );
+              break;
+
+
+            case "call_end":
+              await relayCallEvent(
+                ws,
+                message,
+                "call_ended"
+              );
+              break;
+
+
+            case "webrtc_offer":
+              await relayCallEvent(
+                ws,
+                message,
+                "webrtc_offer"
+              );
+              break;
+
+
+            case "webrtc_answer":
+              await relayCallEvent(
+                ws,
+                message,
+                "webrtc_answer"
+              );
+              break;
+
+
+            case "webrtc_ice":
+              await relayCallEvent(
+                ws,
+                message,
+                "webrtc_ice"
+              );
+              break;
+
+
+            case "report_user":
+              await db.reportUser(
+                ws.userId,
+                String(
+                  message.targetUserId ||
+                  ""
+                ),
+                message.reason
+              );
+
+              send(
+                ws,
+                {
+                  type:
+                    "report_received"
+                }
+              );
+              break;
+
+
+            case "ping":
+              send(
+                ws,
+                {
+                  type:"pong",
+                  time:
+                    Date.now()
+                }
+              );
+              break;
           }
 
         } catch (error) {
-
           console.error(
             "Message error:",
             error
           );
 
-
           send(
             ws,
             {
-              type:
-                "error",
+              type:"error",
 
               message:
-                "Ошибка запроса"
+                "Ошибка сервера"
             }
           );
-
         }
-
       }
     );
 
@@ -2314,85 +2403,99 @@ wss.on(
     ws.on(
       "close",
       () => {
-
         waitingQueue.delete(
           ws.userId
         );
-
 
         if (
           connected.get(
             ws.userId
           ) === ws
         ) {
-
           connected.delete(
             ws.userId
           );
-
         }
-
       }
     );
-
   }
 );
 
 
-setInterval(
-  () => {
+/* =========================================================
+   CLEANUP
+========================================================= */
 
+setInterval(
+  async () => {
     for (
       const [userId, item]
       of waitingQueue
     ) {
-
       if (
         !item.ws ||
         item.ws.readyState !==
           WebSocket.OPEN
       ) {
-
         waitingQueue.delete(
           userId
         );
-
       }
-
     }
-
 
     for (
       const [matchId, item]
       of matches
     ) {
-
       if (
         Date.now() >=
         item.expiresAt
       ) {
-
-        finishMatch(
-          matchId,
-          "expired"
-        );
-
+        try {
+          await finishMatch(
+            matchId,
+            "expired"
+          );
+        } catch (error) {
+          console.error(
+            "Match cleanup:",
+            error.message
+          );
+        }
       }
-
     }
-
   },
   60000
 );
 
 
+/* =========================================================
+   START SERVER
+========================================================= */
+
 server.listen(
   PORT,
-  () => {
-
+  async () => {
     console.log(
-      `SnapVibe 4.0 running on port ${PORT}`
+      `SnapVibe 5.0 running on port ${PORT}`
     );
 
+    console.log(
+      "Supabase configured:",
+      db.configured()
+    );
+
+    try {
+      await db.ping();
+
+      console.log(
+        "Supabase connection: OK"
+      );
+    } catch (error) {
+      console.error(
+        "Supabase connection FAILED:",
+        error.message
+      );
+    }
   }
 );
