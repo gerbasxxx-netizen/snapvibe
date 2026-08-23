@@ -56,6 +56,38 @@ button,input,select{font:inherit}.app{width:100%;max-width:520px;min-height:100v
 
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:72px;background:rgba(5,6,10,.96);border-top:1px solid #171b24;display:grid;grid-template-columns:repeat(4,1fr);z-index:30;backdrop-filter:blur(12px)}.nav button{border:0;background:transparent;color:#777e91;font-size:9px}.nav button b{display:block;font-size:19px;margin-bottom:3px}.nav button.active{color:#ff4fa4}
 .toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:80;background:#1a1e28;border:1px solid #303647;color:#fff;padding:9px 12px;border-radius:10px;font-size:10px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+
+/* SnapVibe 3.1 usability patch */
+body{font-size:16px}
+.brand{font-size:30px}.online{font-size:13px;padding:10px 13px}
+.register .logoBig{font-size:39px}.register .sub{font-size:14px}
+.field label{font-size:13px}.field input,.field select{height:50px;font-size:15px}
+.primary,.secondary,.pinkBtn,.outlineBtn,.tinyBtn{font-size:15px}
+.emotion-title{font-size:14px}.emotion .name{font-size:11px}
+.searchbox h2{font-size:26px}.search-time{font-size:14px}
+.matchHeader h2{font-size:30px}.matchHeader p{font-size:13px}
+.photoInfo b{font-size:24px}.photoInfo span{font-size:12px}
+.timerBlock{font-size:13px}.timerBlock strong{font-size:22px}
+.chatPerson b{font-size:15px}.chatPerson span{font-size:11px}.bubble{font-size:14px}
+.pageTitle{font-size:30px}.friendMain b{font-size:15px}.friendMain span{font-size:11px}
+.profileTop p{font-size:13px}.stat span{font-size:11px}.menuItem,.settingRow{font-size:15px}.settingSection h3{font-size:13px}
+.nav button{font-size:11px}.nav button b{font-size:22px}
+.profilePic{overflow:hidden;background:#11131b}.profilePic img{width:100%;height:100%;object-fit:cover}
+.profilePhotoActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.profilePhotoActions button{min-height:44px;border-radius:12px;border:1px solid var(--line);background:#10131d;color:#fff}
+.settingsBack{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:#10131d;color:#fff;font-size:22px;position:absolute;left:14px;top:8px}
+.settingsHeader{position:relative}
+.settingRow.clickable,.menuItem.clickable{cursor:pointer}
+.switch{width:44px;height:25px;border-radius:999px;background:#272b38;position:relative;transition:.2s}
+.switch:after{content:"";position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;left:3px;top:3px;transition:.2s}
+.switch.on{background:linear-gradient(90deg,#d72d7f,#ff4aa0)}.switch.on:after{left:22px}
+.modal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.7);display:none;align-items:flex-end;padding:12px}.modal.show{display:flex}
+.modalCard{width:100%;max-width:520px;margin:auto;background:#11141d;border:1px solid #2a2f3d;border-radius:22px;padding:18px;max-height:80vh;overflow:auto}
+.modalCard h3{font-size:22px;margin:0 0 12px}.modalCard p{color:#a3a9bb;font-size:14px;line-height:1.55}
+.modalActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.modalActions button{min-height:46px;border-radius:12px;border:1px solid var(--line);background:#171b26;color:#fff}
+.modalActions .dangerBtn{background:#3a1118;border-color:#6b2633;color:#ff9dac}
+
 </style>
 </head>
 <body>
@@ -138,22 +170,43 @@ button,input,select{font:inherit}.app{width:100%;max-width:520px;min-height:100v
   </section>
 
   <section class="view" id="profileView">
-    <div class="profileTop"><div class="profilePic" id="profileAvatar">A</div><h2 id="profileTitle">Alex</h2><p id="profileMeta">24 года, Tallinn</p></div>
+    <div class="profileTop">
+      <div class="profilePic" id="profileAvatar">A</div>
+      <h2 id="profileTitle">Alex</h2><p id="profileMeta">24 года, Tallinn</p>
+      <div class="profilePhotoActions">
+        <button id="chooseAvatar">📷 Фото</button>
+        <button id="removeAvatar">✕ Удалить</button>
+      </div>
+      <input type="file" id="avatarInput" accept="image/*" capture="user" hidden>
+    </div>
     <div class="stats"><div class="stat"><b id="statMatches">17</b><span>Мэтчей</span></div><div class="stat"><b id="statFriends">4</b><span>Друзей</span></div><div class="stat"><b id="statKeeps">2</b><span>Keep the Vibe</span></div></div>
     <div class="menuCard">
-      <div class="menuItem" id="editProfile"><span>✎ Редактировать профиль</span><span>›</span></div>
-      <div class="menuItem"><span>⌕ Настройки поиска</span><span>›</span></div>
-      <div class="menuItem"><span>⊗ Заблокированные</span><span>›</span></div>
-      <div class="menuItem"><span>◇ Безопасность</span><span>›</span></div>
-      <div class="menuItem"><span>↪ Выйти</span><span>›</span></div>
+      <div class="menuItem clickable" id="editProfile"><span>✎ Редактировать профиль</span><span>›</span></div>
+      <div class="menuItem clickable" id="searchPrefs"><span>⌕ Настройки поиска</span><span>›</span></div>
+      <div class="menuItem clickable" id="blockedUsers"><span>⊗ Заблокированные</span><span>›</span></div>
+      <div class="menuItem clickable" id="safetyInfo"><span>◇ Безопасность</span><span>›</span></div>
+      <div class="menuItem clickable" id="logoutBtn"><span>↪ Выйти</span><span>›</span></div>
     </div>
   </section>
 
   <section class="view" id="settingsView">
-    <h1 class="pageTitle">Настройки</h1>
-    <div class="settingSection"><h3>Кого показывать</h3><div class="settingRow"><span>Пол</span><small>Девушек ›</small></div><div class="settingRow"><span>Возраст</span><small>18 — 30 ›</small></div><div class="settingRow"><span>Страна / Город</span><small>Estonia, Tallinn ›</small></div></div>
-    <div class="settingSection"><h3>Приложение</h3><div class="settingRow"><span>Уведомления</span><small>›</small></div><div class="settingRow"><span>Конфиденциальность</span><small>›</small></div><div class="settingRow"><span>Заблокированные</span><small>›</small></div><div class="settingRow"><span>Безопасность</span><small>›</small></div></div>
-    <div class="settingSection"><div class="settingRow"><span>Правила сообщества</span><small>›</small></div><div class="settingRow"><span>Политика конфиденциальности</span><small>›</small></div><div class="settingRow"><span class="dangerTxt">Удалить аккаунт</span><small>›</small></div></div>
+    <div class="settingsHeader"><button class="settingsBack" id="settingsBack">‹</button><h1 class="pageTitle">Настройки</h1></div>
+    <div class="settingSection"><h3>Кого показывать</h3>
+      <div class="settingRow clickable" id="setGender"><span>Пол</span><small id="settingGender">Девушек ›</small></div>
+      <div class="settingRow clickable" id="setAge"><span>Возраст</span><small id="settingAge">18 — 30 ›</small></div>
+      <div class="settingRow clickable" id="setLocation"><span>Страна / Город</span><small id="settingLocation">Estonia, Tallinn ›</small></div>
+    </div>
+    <div class="settingSection"><h3>Приложение</h3>
+      <div class="settingRow clickable" id="toggleNotifications"><span>Уведомления</span><div class="switch" id="notificationSwitch"></div></div>
+      <div class="settingRow clickable" id="privacyBtn"><span>Конфиденциальность</span><small>›</small></div>
+      <div class="settingRow clickable" id="blockedBtn"><span>Заблокированные</span><small>›</small></div>
+      <div class="settingRow clickable" id="securityBtn"><span>Безопасность</span><small>›</small></div>
+    </div>
+    <div class="settingSection">
+      <div class="settingRow clickable" id="rulesBtn"><span>Правила сообщества</span><small>›</small></div>
+      <div class="settingRow clickable" id="policyBtn"><span>Политика конфиденциальности</span><small>›</small></div>
+      <div class="settingRow clickable" id="deleteAccount"><span class="dangerTxt">Удалить аккаунт</span><small>›</small></div>
+    </div>
   </section>
 </div>
 
@@ -164,6 +217,16 @@ button,input,select{font:inherit}.app{width:100%;max-width:520px;min-height:100v
   <button class="navBtn" data-view="profileView"><b>👤</b>Профиль</button>
 </nav>
 <div class="toast" id="toast"></div>
+<div class="modal" id="modal">
+  <div class="modalCard">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div class="modalActions" id="modalActions">
+      <button id="modalCancel">Закрыть</button>
+      <button id="modalOk">Сохранить</button>
+    </div>
+  </div>
+</div>
 
 <script>
 "use strict";
@@ -195,12 +258,89 @@ function appendMessage(m){const d=document.createElement("div");d.className="bub
 function sendMsg(){const i=$("messageInput"),x=i.value.trim();if(x&&activeChat.id){send({type:"chat_message",chatId:activeChat.id,text:x});i.value=""}}
 $("sendMessage").onclick=sendMsg;$("messageInput").onkeydown=e=>{if(e.key==="Enter")sendMsg()};$("chatBack").onclick=()=>show(match&&activeChat.type==="match"?"matchView":"friendsView");
 function renderFriends(){const box=$("friendList");box.innerHTML="";if(!friends.length){box.innerHTML='<div style="text-align:center;color:#7f8799;padding:60px 10px;font-size:12px">Пока друзей нет</div>';return}friends.forEach(f=>{const d=document.createElement("div");d.className="friend";d.innerHTML='<div class="avatar">'+(f.name||"S")[0].toUpperCase()+'</div><div class="friendMain"><b></b><span>Онлайн</span></div>';d.querySelector("b").textContent=f.name||"SnapVibe User";const b=document.createElement("button");b.className="friendChat";b.textContent="💬";b.onclick=()=>send({type:"friend_chat_open",friendId:f.id});d.appendChild(b);box.appendChild(d)})}
-function fillProfile(){$("profileTitle").textContent=profile.name||"SnapVibe User";$("profileAvatar").textContent=(profile.name||"S")[0].toUpperCase();$("profileMeta").textContent=[profile.age?profile.age+" года":"",profile.country].filter(Boolean).join(", ");$("statFriends").textContent=friends.length}
+function fillProfile(){$("profileTitle").textContent=profile.name||"SnapVibe User";renderAvatar();$("profileMeta").textContent=[profile.age?profile.age+" года":"",profile.country].filter(Boolean).join(", ");$("statFriends").textContent=friends.length}
 $("editProfile").onclick=()=>$("settingsView")&&show("settingsView");
 $("finishRegister").onclick=()=>{const n=$("regName").value.trim().slice(0,30),a=Number($("regAge").value);if(!n){toast("Введите имя");return}if(!a||a<18){toast("Возраст 18+");return}profile.name=n;profile.age=a;profile.gender=$("regGender").value;profile.country=$("regCountry").value.trim().slice(0,40);localStorage.setItem("snapvibe_user_name",profile.name);localStorage.setItem("snapvibe_age",profile.age);localStorage.setItem("snapvibe_gender",profile.gender);localStorage.setItem("snapvibe_country",profile.country);send({type:"register_profile",...profile});show("cameraView")};
+
+let avatarData=localStorage.getItem("snapvibe_avatar")||"";
+let settings={
+  gender:localStorage.getItem("snapvibe_search_gender")||"Девушек",
+  ageMin:Number(localStorage.getItem("snapvibe_age_min"))||18,
+  ageMax:Number(localStorage.getItem("snapvibe_age_max"))||30,
+  location:localStorage.getItem("snapvibe_search_location")||profile.country||"Estonia, Tallinn",
+  notifications:localStorage.getItem("snapvibe_notifications")!=="off"
+};
+
+function renderAvatar(){
+  const box=$("profileAvatar");
+  if(avatarData){
+    box.innerHTML='<img alt="Фото профиля">';
+    box.querySelector("img").src=avatarData;
+  }else{
+    box.textContent=(profile.name||"S")[0].toUpperCase();
+  }
+}
+function renderSettings(){
+  $("settingGender").textContent=settings.gender+" ›";
+  $("settingAge").textContent=settings.ageMin+" — "+settings.ageMax+" ›";
+  $("settingLocation").textContent=(settings.location||"Не выбрано")+" ›";
+  $("notificationSwitch").classList.toggle("on",settings.notifications);
+}
+function openModal(title,body,onSave,showSave=true){
+  $("modalTitle").textContent=title;$("modalBody").innerHTML=body;
+  $("modalOk").style.display=showSave?"block":"none";
+  $("modal").classList.add("show");
+  $("modalOk").onclick=()=>{if(onSave)onSave();$("modal").classList.remove("show")};
+}
+$("modalCancel").onclick=()=>$("modal").classList.remove("show");
+$("modal").onclick=e=>{if(e.target===$("modal"))$("modal").classList.remove("show")};
+
+$("chooseAvatar").onclick=()=>$("avatarInput").click();
+$("avatarInput").onchange=e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(file.size>5*1024*1024){toast("Фото слишком большое");return}
+  const reader=new FileReader();
+  reader.onload=()=>{avatarData=reader.result;localStorage.setItem("snapvibe_avatar",avatarData);renderAvatar();toast("Фото обновлено")};
+  reader.readAsDataURL(file);
+};
+$("removeAvatar").onclick=()=>{avatarData="";localStorage.removeItem("snapvibe_avatar");renderAvatar();toast("Фото удалено")};
+
+$("settingsBack").onclick=()=>show("profileView");
+$("searchPrefs").onclick=()=>show("settingsView");
+$("blockedUsers").onclick=()=>$("blockedBtn").click();
+$("safetyInfo").onclick=()=>$("securityBtn").click();
+$("logoutBtn").onclick=()=>openModal("Выйти из аккаунта","<p>Ты останешься зарегистрирован на этом устройстве, но вернёшься к экрану входа.</p>",()=>{localStorage.removeItem("snapvibe_user_name");location.reload()});
+
+$("setGender").onclick=()=>openModal("Кого показывать",`
+  <div class="field"><label>Пол</label><select id="mGender"><option>Девушек</option><option>Парней</option><option>Всех</option></select></div>`,
+  ()=>{settings.gender=$("mGender").value;localStorage.setItem("snapvibe_search_gender",settings.gender);renderSettings()});
+$("setGender").addEventListener("click",()=>setTimeout(()=>{if($("mGender"))$("mGender").value=settings.gender},0));
+
+$("setAge").onclick=()=>openModal("Возраст",`
+  <div class="grid2"><div class="field"><label>От</label><input id="mAgeMin" type="number" min="18" max="99" value="${settings.ageMin}"></div>
+  <div class="field"><label>До</label><input id="mAgeMax" type="number" min="18" max="99" value="${settings.ageMax}"></div></div>`,
+  ()=>{let a=Number($("mAgeMin").value)||18,b=Number($("mAgeMax").value)||30;if(a>b)[a,b]=[b,a];settings.ageMin=Math.max(18,a);settings.ageMax=Math.min(99,b);localStorage.setItem("snapvibe_age_min",settings.ageMin);localStorage.setItem("snapvibe_age_max",settings.ageMax);renderSettings()});
+
+$("setLocation").onclick=()=>openModal("Страна / Город",`
+  <div class="field"><label>Местоположение</label><input id="mLocation" maxlength="60" value="${(settings.location||"").replace(/"/g,"&quot;")}"></div>`,
+  ()=>{settings.location=$("mLocation").value.trim();localStorage.setItem("snapvibe_search_location",settings.location);renderSettings()});
+
+$("toggleNotifications").onclick=()=>{settings.notifications=!settings.notifications;localStorage.setItem("snapvibe_notifications",settings.notifications?"on":"off");renderSettings();toast(settings.notifications?"Уведомления включены":"Уведомления выключены")};
+
+$("privacyBtn").onclick=()=>openModal("Конфиденциальность","<p>Фотографии мэтча доступны только участникам мэтча и удаляются после окончания активного периода. Не публикуй личные данные, которые не хочешь раскрывать.</p>",null,false);
+$("blockedBtn").onclick=()=>openModal("Заблокированные","<p>Здесь будут отображаться пользователи, которых ты заблокировал. В текущей версии список появится после первой блокировки.</p>",null,false);
+$("securityBtn").onclick=()=>openModal("Безопасность","<p>Никогда не отправляй деньги незнакомым людям. Для первой встречи выбирай публичное место. Используй кнопку «Пожаловаться», если собеседник нарушает правила.</p>",null,false);
+$("rulesBtn").onclick=()=>openModal("Правила сообщества","<p>Уважай других пользователей. Запрещены угрозы, травля, сексуальный контент без согласия, мошенничество и публикация чужих персональных данных.</p>",null,false);
+$("policyBtn").onclick=()=>openModal("Политика конфиденциальности","<p>SnapVibe использует данные профиля и фотографии только для работы функций приложения. Перед публикацией приложения понадобится полноценная юридическая политика конфиденциальности.</p>",null,false);
+$("deleteAccount").onclick=()=>openModal("Удалить аккаунт","<p>Это удалит локальный профиль с этого телефона. Действие нельзя отменить.</p>",()=>{
+  ["snapvibe_user_name","snapvibe_age","snapvibe_gender","snapvibe_country","snapvibe_avatar","snapvibe_user_id"].forEach(k=>localStorage.removeItem(k));
+  location.reload();
+});
+
+renderAvatar();renderSettings();
 document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>show(b.dataset.view));
 setInterval(()=>send({type:"ping"}),25000);
 connect();camera();show(profile.name?"cameraView":"registerView");
 </script>
 </body>
-    </html>
+  </html>
