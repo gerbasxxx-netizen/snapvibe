@@ -4,134 +4,279 @@ const WebSocket = require("ws");
 const crypto = require("crypto");
 const db = require("./db");
 
-const PORT = process.env.PORT || 3000;
-const MATCH_TIME = 24 * 60 * 60 * 1000;
+let webpush = null;
 
-const app = express();
-const server = http.createServer(app);
+try {
+  webpush = require("web-push");
+} catch (error) {
+  console.log(
+    "web-push пока не установлен"
+  );
+}
 
-const wss = new WebSocket.Server({
-  server,
-  maxPayload: 8 * 1024 * 1024
-});
+const PORT =
+  process.env.PORT || 3000;
 
-const waitingQueue = new Map();
-const matches = new Map();
-const userMatches = new Map();
-const connected = new Map();
+const MATCH_TIME =
+  24 * 60 * 60 * 1000;
 
-app.use(express.static(__dirname));
+const MAX_PHOTO =
+  6 * 1024 * 1024;
 
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    service: "SnapVibe 3.4",
-    waiting: waitingQueue.size,
-    matches: matches.size,
-    connected: connected.size,
-    users: db.users.size,
-    time: new Date().toISOString()
+const MAX_VOICE =
+  8 * 1024 * 1024;
+
+const VAPID_PUBLIC_KEY =
+  process.env.VAPID_PUBLIC_KEY || "";
+
+const VAPID_PRIVATE_KEY =
+  process.env.VAPID_PRIVATE_KEY || "";
+
+const VAPID_SUBJECT =
+  process.env.VAPID_SUBJECT ||
+  "mailto:admin@snapvibe.app";
+
+if (
+  webpush &&
+  VAPID_PUBLIC_KEY &&
+  VAPID_PRIVATE_KEY
+) {
+  try {
+    webpush.setVapidDetails(
+      VAPID_SUBJECT,
+      VAPID_PUBLIC_KEY,
+      VAPID_PRIVATE_KEY
+    );
+  } catch (error) {
+    console.error(
+      "VAPID error:",
+      error
+    );
+  }
+}
+
+const app =
+  express();
+
+const server =
+  http.createServer(app);
+
+const wss =
+  new WebSocket.Server({
+    server,
+    maxPayload:
+      12 * 1024 * 1024
   });
-});
+
+const waitingQueue =
+  new Map();
+
+const matches =
+  new Map();
+
+const userMatches =
+  new Map();
+
+const connected =
+  new Map();
+
+const pushSubscriptions =
+  new Map();
+
+app.use(
+  express.static(__dirname)
+);
+
+app.get(
+  "/health",
+  (req, res) => {
+    res.json({
+      ok: true,
+      service:
+        "SnapVibe 4.0",
+      waiting:
+        waitingQueue.size,
+      matches:
+        matches.size,
+      connected:
+        connected.size,
+      users:
+        db.users?.size || 0,
+      pushConfigured:
+        Boolean(
+          webpush &&
+          VAPID_PUBLIC_KEY &&
+          VAPID_PRIVATE_KEY
+        ),
+      time:
+        new Date()
+          .toISOString()
+    });
+  }
+);
+
+app.get(
+  "/push-public-key",
+  (req, res) => {
+    res.json({
+      publicKey:
+        VAPID_PUBLIC_KEY
+    });
+  }
+);
 
 function makeId(prefix) {
-  return prefix + crypto.randomUUID();
+  return (
+    prefix +
+    crypto.randomUUID()
+  );
 }
 
 function send(ws, data) {
-  if (ws?.readyState !== WebSocket.OPEN) {
+  if (
+    !ws ||
+    ws.readyState !==
+      WebSocket.OPEN
+  ) {
     return false;
   }
 
   try {
-    ws.send(JSON.stringify(data));
+    ws.send(
+      JSON.stringify(data)
+    );
+
     return true;
   } catch (error) {
-    console.error("SEND ERROR:", error);
+    console.error(
+      "Send error:",
+      error
+    );
+
     return false;
   }
 }
 
-function sendUser(userId, data) {
+function sendUser(
+  userId,
+  data
+) {
   return send(
     connected.get(userId),
     data
   );
 }
 
-function normalizeCountry(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase();
-}
-
-function getProfile(userId) {
+function profile(userId) {
   return (
     db.publicUser(userId) || {
       id: userId,
-      name: "SnapVibe User",
-      language: "ru",
+      name:
+        "SnapVibe User",
       age: null,
-      gender: "other",
+      gender:
+        "other",
       country: "",
+      language:
+        "ru",
       avatar: ""
     }
   );
 }
 
+function normalizeCountry(
+  value
+) {
+  return String(
+    value || ""
+  )
+    .trim()
+    .toUpperCase();
+}
+
 function validHash(value) {
   return (
-    typeof value === "string" &&
-    /^[a-f0-9]{64}$/i.test(value)
+    typeof value ===
+      "string" &&
+    /^[a-f0-9]{64}$/i
+      .test(value)
   );
 }
 
 function validPhoto(value) {
   return (
-    typeof value === "string" &&
-    value.startsWith("data:image/") &&
+    typeof value ===
+      "string" &&
+    value.startsWith(
+      "data:image/"
+    ) &&
     Buffer.byteLength(
       value,
       "utf8"
-    ) <=
-      6 * 1024 * 1024
+    ) <= MAX_PHOTO
   );
 }
 
-function preferenceAllows(
-  preference,
-  candidateProfile
-) {
-  const wantedGender =
-    preference?.gender || "all";
-
+function validVoice(value) {
   if (
-    wantedGender !== "all" &&
-    candidateProfile.gender !== wantedGender
+    typeof value !==
+    "string"
   ) {
     return false;
   }
 
-  const minAge =
-    Number(
-      preference?.ageMin || 18
+  const validType =
+    value.startsWith(
+      "data:audio/"
+    ) ||
+    value.startsWith(
+      "data:application/octet-stream"
     );
 
-  const maxAge =
+  return (
+    validType &&
+    Buffer.byteLength(
+      value,
+      "utf8"
+    ) <= MAX_VOICE
+  );
+}
+
+function prefAllows(
+  pref,
+  candidate
+) {
+  const wantedGender =
+    pref?.gender || "all";
+
+  if (
+    wantedGender !== "all" &&
+    candidate.gender !==
+      wantedGender
+  ) {
+    return false;
+  }
+
+  const min =
     Number(
-      preference?.ageMax || 99
+      pref?.ageMin || 18
     );
 
-  const candidateAge =
+  const max =
     Number(
-      candidateProfile.age || 0
+      pref?.ageMax || 99
+    );
+
+  const age =
+    Number(
+      candidate.age || 0
     );
 
   if (
-    candidateAge &&
+    age &&
     (
-      candidateAge < minAge ||
-      candidateAge > maxAge
+      age < min ||
+      age > max
     )
   ) {
     return false;
@@ -139,18 +284,20 @@ function preferenceAllows(
 
   const wantedCountry =
     normalizeCountry(
-      preference?.country
+      pref?.country
     );
 
   const candidateCountry =
     normalizeCountry(
-      candidateProfile.country
+      candidate.country
     );
 
   if (
     wantedCountry &&
-    wantedCountry !== "all" &&
-    candidateCountry !== wantedCountry
+    wantedCountry !==
+      "ALL" &&
+    candidateCountry !==
+      wantedCountry
   ) {
     return false;
   }
@@ -159,52 +306,44 @@ function preferenceAllows(
 }
 
 function mutuallyCompatible(
-  userA,
-  userB
+  a,
+  b
 ) {
-  const profileA =
-    getProfile(
-      userA.userId
-    );
-
-  const profileB =
-    getProfile(
-      userB.userId
-    );
-
   return (
-    preferenceAllows(
-      userA.search,
-      profileB
+    prefAllows(
+      a.search,
+      profile(b.userId)
     ) &&
-    preferenceAllows(
-      userB.search,
-      profileA
+    prefAllows(
+      b.search,
+      profile(a.userId)
     ) &&
     !db.isBlockedEitherWay(
-      userA.userId,
-      userB.userId
+      a.userId,
+      b.userId
     )
   );
 }
 
-function findOpponent(currentUser) {
+function findOpponent(
+  current
+) {
   let best = null;
 
   for (
-    const [userId, waitingUser]
+    const [userId, item]
     of waitingQueue
   ) {
     if (
       userId ===
-      currentUser.userId
+      current.userId
     ) {
       continue;
     }
 
     if (
-      !waitingUser.ws ||
-      waitingUser.ws.readyState !==
+      !item.ws ||
+      item.ws.readyState !==
         WebSocket.OPEN
     ) {
       waitingQueue.delete(
@@ -215,16 +354,16 @@ function findOpponent(currentUser) {
     }
 
     if (
-      waitingUser.emotionHash !==
-      currentUser.emotionHash
+      item.emotionHash !==
+      current.emotionHash
     ) {
       continue;
     }
 
     if (
       !mutuallyCompatible(
-        currentUser,
-        waitingUser
+        current,
+        item
       )
     ) {
       continue;
@@ -232,26 +371,26 @@ function findOpponent(currentUser) {
 
     if (
       !best ||
-      waitingUser.queuedAt <
+      item.queuedAt <
         best.queuedAt
     ) {
-      best =
-        waitingUser;
+      best = item;
     }
   }
 
   return best;
 }
 
-function serializeMatchFor(
+function serializeMatch(
   userId,
   match
 ) {
-  const isUserA =
-    match.userA.userId === userId;
+  const mineIsA =
+    match.userA.userId ===
+    userId;
 
   const partner =
-    isUserA
+    mineIsA
       ? match.userB
       : match.userA;
 
@@ -272,7 +411,7 @@ function serializeMatchFor(
       partner.name,
 
     partnerProfile:
-      getProfile(
+      profile(
         partner.userId
       ),
 
@@ -292,8 +431,8 @@ function serializeMatchFor(
 }
 
 function createMatch(
-  userA,
-  userB
+  a,
+  b
 ) {
   const matchId =
     makeId("match_");
@@ -306,48 +445,41 @@ function createMatch(
     MATCH_TIME;
 
   const profileA =
-    getProfile(
-      userA.userId
-    );
+    profile(a.userId);
 
   const profileB =
-    getProfile(
-      userB.userId
-    );
+    profile(b.userId);
 
   const chat =
     db.createMatchChat(
       matchId,
-      userA.userId,
-      userB.userId
+      a.userId,
+      b.userId
     );
 
   const match = {
     matchId,
     createdAt,
     expiresAt,
-    chatId: chat.id,
+    chatId:
+      chat.id,
 
     userA: {
       userId:
-        userA.userId,
-
+        a.userId,
       name:
         profileA.name,
-
       photo:
-        userA.photo
+        a.photo
     },
 
     userB: {
       userId:
-        userB.userId,
-
+        b.userId,
       name:
         profileB.name,
-
       photo:
-        userB.photo
+        b.photo
     },
 
     keep:
@@ -363,44 +495,42 @@ function createMatch(
   );
 
   userMatches.set(
-    userA.userId,
+    a.userId,
     matchId
   );
 
   userMatches.set(
-    userB.userId,
+    b.userId,
     matchId
   );
 
   waitingQueue.delete(
-    userA.userId
+    a.userId
   );
 
   waitingQueue.delete(
-    userB.userId
+    b.userId
   );
 
   send(
-    userA.ws,
+    a.ws,
     {
       type:
         "match_found",
-
-      ...serializeMatchFor(
-        userA.userId,
+      ...serializeMatch(
+        a.userId,
         match
       )
     }
   );
 
   send(
-    userB.ws,
+    b.ws,
     {
       type:
         "match_found",
-
-      ...serializeMatchFor(
-        userB.userId,
+      ...serializeMatch(
+        b.userId,
         match
       )
     }
@@ -409,21 +539,40 @@ function createMatch(
   match.timer =
     setTimeout(
       () => {
-        expireMatch(
-          matchId
+        finishMatch(
+          matchId,
+          "expired"
         );
       },
       MATCH_TIME
     );
 }
 
-function expireMatch(matchId) {
+function finishMatch(
+  matchId,
+  reason = "ended",
+  initiator = null
+) {
   const match =
-    matches.get(
-      matchId
-    );
+    matches.get(matchId);
 
   if (!match) {
+    if (initiator) {
+      userMatches.delete(
+        initiator
+      );
+
+      sendUser(
+        initiator,
+        {
+          type:
+            "match_ended",
+          matchId,
+          reason
+        }
+      );
+    }
+
     return;
   }
 
@@ -433,28 +582,56 @@ function expireMatch(matchId) {
     );
   }
 
-  const userIds = [
+  const users = [
     match.userA.userId,
     match.userB.userId
   ];
 
-  userIds.forEach(
+  users.forEach(
     userId => {
       userMatches.delete(
         userId
       );
-
-      sendUser(
-        userId,
-        {
-          type:
-            "match_expired",
-
-          matchId
-        }
-      );
     }
   );
+
+  if (
+    reason ===
+      "next_match" ||
+    reason ===
+      "ended"
+  ) {
+    users.forEach(
+      userId => {
+        sendUser(
+          userId,
+          {
+            type:
+              userId ===
+              initiator
+                ? "match_ended"
+                : "match_ended_by_partner",
+
+            matchId,
+            reason
+          }
+        );
+      }
+    );
+  } else {
+    users.forEach(
+      userId => {
+        sendUser(
+          userId,
+          {
+            type:
+              "match_expired",
+            matchId
+          }
+        );
+      }
+    );
+  }
 
   db.deleteChat(
     match.chatId
@@ -483,7 +660,8 @@ function handleCapture(
     return send(
       ws,
       {
-        type: "error",
+        type:
+          "error",
         message:
           "Некорректная эмоция"
       }
@@ -498,7 +676,8 @@ function handleCapture(
     return send(
       ws,
       {
-        type: "error",
+        type:
+          "error",
         message:
           "Некорректное фото"
       }
@@ -513,7 +692,8 @@ function handleCapture(
     return send(
       ws,
       {
-        type: "error",
+        type:
+          "error",
         message:
           "У вас уже есть активный мэтч."
       }
@@ -524,7 +704,7 @@ function handleCapture(
     ws.userId
   );
 
-  const currentUser = {
+  const current = {
     userId:
       ws.userId,
 
@@ -574,35 +754,34 @@ function handleCapture(
         ),
 
       country:
-        String(
-          message.searchCountry ||
-          ""
+        normalizeCountry(
+          message.searchCountry
         )
     }
   };
 
   if (
-    currentUser.search.ageMin >
-    currentUser.search.ageMax
+    current.search.ageMin >
+    current.search.ageMax
   ) {
     [
-      currentUser.search.ageMin,
-      currentUser.search.ageMax
+      current.search.ageMin,
+      current.search.ageMax
     ] = [
-      currentUser.search.ageMax,
-      currentUser.search.ageMin
+      current.search.ageMax,
+      current.search.ageMin
     ];
   }
 
   const opponent =
     findOpponent(
-      currentUser
+      current
     );
 
   if (!opponent) {
     waitingQueue.set(
       ws.userId,
-      currentUser
+      current
     );
 
     return send(
@@ -616,7 +795,7 @@ function handleCapture(
 
   createMatch(
     opponent,
-    currentUser
+    current
   );
 }
 
@@ -636,7 +815,8 @@ function keepVibe(
     return send(
       ws,
       {
-        type: "error",
+        type:
+          "error",
         message:
           "Мэтч уже закончился"
       }
@@ -656,21 +836,16 @@ function keepVibe(
     return;
   }
 
-  const otherUserId =
+  const other =
     users.find(
       userId =>
         userId !==
         ws.userId
     );
 
-  const senderProfile =
-    getProfile(
+  const sender =
+    profile(
       ws.userId
-    );
-
-  const otherProfile =
-    getProfile(
-      otherUserId
     );
 
   if (
@@ -683,10 +858,8 @@ function keepVibe(
       {
         type:
           "keep_vibe_pending",
-
         matchId:
           match.matchId,
-
         already:
           true
       }
@@ -702,33 +875,24 @@ function keepVibe(
     {
       type:
         "keep_vibe_pending",
-
       matchId:
         match.matchId
     }
   );
 
   sendUser(
-    otherUserId,
+    other,
     {
       type:
         "keep_vibe_received",
-
       matchId:
         match.matchId,
-
       fromUserId:
         ws.userId,
-
       fromName:
-        senderProfile.name,
-
+        sender.name,
       fromAvatar:
-        senderProfile.avatar,
-
-      message:
-        senderProfile.name +
-        " хочет сохранить связь с тобой 💗"
+        sender.avatar
     }
   );
 
@@ -746,79 +910,179 @@ function keepVibe(
         users[1]
       );
 
-    sendUser(
-      users[0],
-      {
-        type:
-          "keep_vibe_mutual",
+    users.forEach(
+      userId => {
+        const friendId =
+          users.find(
+            id =>
+              id !== userId
+          );
 
-        matchId:
-          match.matchId,
+        sendUser(
+          userId,
+          {
+            type:
+              "keep_vibe_mutual",
+            matchId:
+              match.matchId,
+            friend:
+              profile(
+                friendId
+              ),
+            chatId:
+              permanentChat.id
+          }
+        );
 
-        friend:
-          getProfile(
-            users[1]
-          ),
-
-        chatId:
-          permanentChat.id
-      }
-    );
-
-    sendUser(
-      users[1],
-      {
-        type:
-          "keep_vibe_mutual",
-
-        matchId:
-          match.matchId,
-
-        friend:
-          getProfile(
-            users[0]
-          ),
-
-        chatId:
-          permanentChat.id
-      }
-    );
-
-    sendUser(
-      users[0],
-      {
-        type:
-          "friendship_created",
-
-        friend:
-          getProfile(
-            users[1]
-          ),
-
-        chatId:
-          permanentChat.id
-      }
-    );
-
-    sendUser(
-      users[1],
-      {
-        type:
-          "friendship_created",
-
-        friend:
-          getProfile(
-            users[0]
-          ),
-
-        chatId:
-          permanentChat.id
+        sendUser(
+          userId,
+          {
+            type:
+              "friendship_created",
+            friend:
+              profile(
+                friendId
+              ),
+            chatId:
+              permanentChat.id
+          }
+        );
       }
     );
   }
 }
+function enrichMessage(message) {
+  if (!message) {
+    return null;
+  }
 
-function handleChatMessage(
+  const sender =
+    profile(
+      message.senderId
+    );
+
+  return {
+    ...message,
+
+    senderName:
+      sender.name,
+
+    senderAvatar:
+      sender.avatar,
+
+    senderGender:
+      sender.gender || "other",
+
+    deliveredTo:
+      message.deliveredTo || [],
+
+    readBy:
+      message.readBy || []
+  };
+}
+
+
+async function sendPush(
+  userId,
+  payload
+) {
+  if (
+    !webpush ||
+    !VAPID_PUBLIC_KEY ||
+    !VAPID_PRIVATE_KEY
+  ) {
+    return;
+  }
+
+  const subscription =
+    pushSubscriptions.get(
+      userId
+    );
+
+  if (!subscription) {
+    return;
+  }
+
+  try {
+    await webpush
+      .sendNotification(
+        subscription,
+        JSON.stringify(
+          payload
+        )
+      );
+  } catch (error) {
+    console.error(
+      "Push error:",
+      error.statusCode ||
+      error.message
+    );
+
+    if (
+      error.statusCode === 404 ||
+      error.statusCode === 410
+    ) {
+      pushSubscriptions.delete(
+        userId
+      );
+    }
+  }
+}
+
+
+function sendMessageNotification(
+  chat,
+  senderId,
+  savedMessage
+) {
+  const sender =
+    profile(senderId);
+
+  chat.users
+    .filter(
+      userId =>
+        userId !== senderId
+    )
+    .forEach(
+      userId => {
+
+        sendPush(
+          userId,
+          {
+            type:
+              "chat_message",
+
+            title:
+              sender.name,
+
+            body:
+              savedMessage.type ===
+              "voice"
+                ? "🎤 Голосовое сообщение"
+                : savedMessage.text,
+
+            chatId:
+              chat.id,
+
+            senderId,
+
+            icon:
+              sender.avatar || "",
+
+            url:
+              "/preview3.html?chat=" +
+              encodeURIComponent(
+                chat.id
+              )
+          }
+        );
+
+      }
+    );
+}
+
+
+function handleTextMessage(
   ws,
   message
 ) {
@@ -839,24 +1103,27 @@ function handleChatMessage(
     return;
   }
 
+
   if (
     chat.type ===
     "match"
   ) {
-    const match =
+    const activeMatch =
       matches.get(
         chat.matchId
       );
 
     if (
-      !match ||
+      !activeMatch ||
       Date.now() >=
-        match.expiresAt
+        activeMatch.expiresAt
     ) {
       return send(
         ws,
         {
-          type: "error",
+          type:
+            "error",
+
           message:
             "Чат мэтча уже закрыт"
         }
@@ -864,11 +1131,12 @@ function handleChatMessage(
     }
   }
 
+
   if (
     chat.type ===
     "friend"
   ) {
-    const otherUserId =
+    const other =
       chat.users.find(
         userId =>
           userId !==
@@ -878,41 +1146,57 @@ function handleChatMessage(
     if (
       !db.areFriends(
         ws.userId,
-        otherUserId
+        other
       )
     ) {
       return;
     }
   }
 
-  const savedMessage =
-    db.addMessage(
-      chat.id,
-      ws.userId,
-      message.text
-    );
+
+  let savedMessage = null;
+
+
+  if (
+    typeof db.addRichMessage ===
+    "function"
+  ) {
+    savedMessage =
+      db.addRichMessage(
+        chat.id,
+        ws.userId,
+        {
+          type:
+            "text",
+
+          text:
+            message.text
+        }
+      );
+  } else {
+    savedMessage =
+      db.addMessage(
+        chat.id,
+        ws.userId,
+        message.text
+      );
+  }
+
 
   if (!savedMessage) {
     return;
   }
 
-  const senderProfile =
-    getProfile(
-      ws.userId
+
+  const fullMessage =
+    enrichMessage(
+      savedMessage
     );
 
-  const fullMessage = {
-    ...savedMessage,
-
-    senderName:
-      senderProfile.name,
-
-    senderAvatar:
-      senderProfile.avatar
-  };
 
   chat.users.forEach(
     userId => {
+
       sendUser(
         userId,
         {
@@ -926,17 +1210,558 @@ function handleChatMessage(
             fullMessage
         }
       );
+
+    }
+  );
+
+
+  sendMessageNotification(
+    chat,
+    ws.userId,
+    fullMessage
+  );
+}
+
+
+function handleVoiceMessage(
+  ws,
+  message
+) {
+  const chat =
+    db.getChat(
+      String(
+        message.chatId ||
+        ""
+      )
+    );
+
+  if (
+    !chat ||
+    !chat.users.includes(
+      ws.userId
+    )
+  ) {
+    return;
+  }
+
+
+  if (
+    !validVoice(
+      message.audio
+    )
+  ) {
+    return send(
+      ws,
+      {
+        type:
+          "error",
+
+        message:
+          "Не удалось отправить голосовое сообщение"
+      }
+    );
+  }
+
+
+  const duration =
+    Math.max(
+      1,
+      Math.min(
+        600,
+        Number(
+          message.duration
+        ) || 1
+      )
+    );
+
+
+  let savedMessage = null;
+
+
+  if (
+    typeof db.addRichMessage ===
+    "function"
+  ) {
+    savedMessage =
+      db.addRichMessage(
+        chat.id,
+        ws.userId,
+        {
+          type:
+            "voice",
+
+          audio:
+            message.audio,
+
+          duration
+        }
+      );
+  } else {
+    return send(
+      ws,
+      {
+        type:
+          "error",
+
+        message:
+          "Голосовые сообщения требуют обновления базы"
+      }
+    );
+  }
+
+
+  if (!savedMessage) {
+    return;
+  }
+
+
+  const fullMessage =
+    enrichMessage(
+      savedMessage
+    );
+
+
+  chat.users.forEach(
+    userId => {
+
+      sendUser(
+        userId,
+        {
+          type:
+            "chat_message",
+
+          chatId:
+            chat.id,
+
+          message:
+            fullMessage
+        }
+      );
+
+    }
+  );
+
+
+  sendMessageNotification(
+    chat,
+    ws.userId,
+    fullMessage
+  );
+}
+
+
+function markDelivered(
+  ws,
+  message
+) {
+  const chatId =
+    String(
+      message.chatId ||
+      ""
+    );
+
+  const messageId =
+    String(
+      message.messageId ||
+      ""
+    );
+
+
+  const chat =
+    db.getChat(
+      chatId
+    );
+
+
+  if (
+    !chat ||
+    !chat.users.includes(
+      ws.userId
+    )
+  ) {
+    return;
+  }
+
+
+  let updated = null;
+
+
+  if (
+    typeof db.markDelivered ===
+    "function"
+  ) {
+    updated =
+      db.markDelivered(
+        chatId,
+        messageId,
+        ws.userId
+      );
+  }
+
+
+  if (!updated) {
+    return;
+  }
+
+
+  chat.users.forEach(
+    userId => {
+
+      sendUser(
+        userId,
+        {
+          type:
+            "message_delivered",
+
+          chatId,
+
+          messageId,
+
+          userId:
+            ws.userId
+        }
+      );
+
     }
   );
 }
 
+
+function markRead(
+  ws,
+  message
+) {
+  const chatId =
+    String(
+      message.chatId ||
+      ""
+    );
+
+
+  const chat =
+    db.getChat(
+      chatId
+    );
+
+
+  if (
+    !chat ||
+    !chat.users.includes(
+      ws.userId
+    )
+  ) {
+    return;
+  }
+
+
+  let updatedIds = [];
+
+
+  if (
+    typeof db.markChatRead ===
+    "function"
+  ) {
+    updatedIds =
+      db.markChatRead(
+        chatId,
+        ws.userId
+      ) || [];
+  }
+
+
+  if (
+    !updatedIds.length
+  ) {
+    return;
+  }
+
+
+  chat.users.forEach(
+    userId => {
+
+      sendUser(
+        userId,
+        {
+          type:
+            "messages_read",
+
+          chatId,
+
+          messageIds:
+            updatedIds,
+
+          userId:
+            ws.userId
+        }
+      );
+
+    }
+  );
+}
+
+
+function validCallTarget(
+  fromUserId,
+  targetUserId
+) {
+  if (
+    !targetUserId ||
+    targetUserId ===
+      fromUserId
+  ) {
+    return false;
+  }
+
+
+  const matchId =
+    userMatches.get(
+      fromUserId
+    );
+
+
+  if (matchId) {
+    const match =
+      matches.get(
+        matchId
+      );
+
+    if (
+      match &&
+      [
+        match.userA.userId,
+        match.userB.userId
+      ].includes(
+        targetUserId
+      )
+    ) {
+      return true;
+    }
+  }
+
+
+  return db.areFriends(
+    fromUserId,
+    targetUserId
+  );
+}
+
+
+function handleCallInvite(
+  ws,
+  message
+) {
+  const targetUserId =
+    String(
+      message.targetUserId ||
+      ""
+    );
+
+
+  const callType =
+    message.callType ===
+    "video"
+      ? "video"
+      : "audio";
+
+
+  if (
+    !validCallTarget(
+      ws.userId,
+      targetUserId
+    )
+  ) {
+    return send(
+      ws,
+      {
+        type:
+          "call_error",
+
+        message:
+          "Звонок недоступен"
+      }
+    );
+  }
+
+
+  const caller =
+    profile(
+      ws.userId
+    );
+
+
+  const callId =
+    makeId(
+      "call_"
+    );
+
+
+  sendUser(
+    targetUserId,
+    {
+      type:
+        "incoming_call",
+
+      callId,
+
+      callType,
+
+      fromUserId:
+        ws.userId,
+
+      fromName:
+        caller.name,
+
+      fromAvatar:
+        caller.avatar
+    }
+  );
+
+
+  send(
+    ws,
+    {
+      type:
+        "call_ringing",
+
+      callId,
+
+      callType,
+
+      targetUserId
+    }
+  );
+
+
+  sendPush(
+    targetUserId,
+    {
+      type:
+        "incoming_call",
+
+      title:
+        caller.name,
+
+      body:
+        callType ===
+        "video"
+          ? "📹 Видеозвонок"
+          : "📞 Аудиозвонок",
+
+      callId,
+
+      callType,
+
+      fromUserId:
+        ws.userId,
+
+      url:
+        "/preview3.html"
+    }
+  );
+}
+
+
+function relayCallEvent(
+  ws,
+  message,
+  eventType
+) {
+  const targetUserId =
+    String(
+      message.targetUserId ||
+      ""
+    );
+
+
+  if (
+    !validCallTarget(
+      ws.userId,
+      targetUserId
+    )
+  ) {
+    return;
+  }
+
+
+  const sender =
+    profile(
+      ws.userId
+    );
+
+
+  sendUser(
+    targetUserId,
+    {
+      type:
+        eventType,
+
+      callId:
+        message.callId,
+
+      fromUserId:
+        ws.userId,
+
+      fromName:
+        sender.name,
+
+      fromAvatar:
+        sender.avatar,
+
+      callType:
+        message.callType,
+
+      sdp:
+        message.sdp,
+
+      candidate:
+        message.candidate
+    }
+  );
+}
+
+
+function savePushSubscription(
+  ws,
+  message
+) {
+  const subscription =
+    message.subscription;
+
+
+  if (
+    !subscription ||
+    typeof subscription !==
+      "object"
+  ) {
+    return;
+  }
+
+
+  pushSubscriptions.set(
+    ws.userId,
+    subscription
+  );
+
+
+  send(
+    ws,
+    {
+      type:
+        "push_subscription_saved"
+    }
+  );
+}
+
+
 wss.on(
   "connection",
   ws => {
+
     ws.userId =
       makeId(
         "session_"
       );
+
 
     send(
       ws,
@@ -949,19 +1774,24 @@ wss.on(
       }
     );
 
+
     ws.on(
       "message",
       raw => {
+
         try {
+
           const message =
             JSON.parse(
               raw.toString()
             );
 
+
           if (
             message.type ===
             "register_profile"
           ) {
+
             const userId =
               typeof message.userId ===
                 "string" &&
@@ -969,10 +1799,13 @@ wss.on(
                 10 &&
               message.userId.length <=
                 120
+
                 ? message.userId
+
                 : makeId(
                     "user_"
                   );
+
 
             if (
               connected.get(
@@ -984,15 +1817,18 @@ wss.on(
               );
             }
 
+
             ws.userId =
               userId;
+
 
             connected.set(
               userId,
               ws
             );
 
-            const savedProfile =
+
+            const saved =
               db.createOrUpdateUser({
                 id:
                   userId,
@@ -1016,17 +1852,20 @@ wss.on(
                   message.avatar
               });
 
-            const activeMatchId =
+
+            const activeId =
               userMatches.get(
                 userId
               );
 
+
             const activeMatch =
-              activeMatchId
+              activeId
                 ? matches.get(
-                    activeMatchId
+                    activeId
                   )
                 : null;
+
 
             send(
               ws,
@@ -1035,9 +1874,10 @@ wss.on(
                   "profile_saved",
 
                 profile:
-                  savedProfile
+                  saved
               }
             );
+
 
             send(
               ws,
@@ -1046,7 +1886,7 @@ wss.on(
                   "bootstrap",
 
                 profile:
-                  savedProfile,
+                  saved,
 
                 friends:
                   db.getFriends(
@@ -1055,7 +1895,7 @@ wss.on(
 
                 activeMatch:
                   activeMatch
-                    ? serializeMatchFor(
+                    ? serializeMatch(
                         userId,
                         activeMatch
                       )
@@ -1063,8 +1903,10 @@ wss.on(
               }
             );
 
+
             return;
           }
+
 
           if (
             message.type ===
@@ -1076,13 +1918,16 @@ wss.on(
             );
           }
 
+
           if (
             message.type ===
             "cancel_search"
           ) {
+
             waitingQueue.delete(
               ws.userId
             );
+
 
             return send(
               ws,
@@ -1092,6 +1937,7 @@ wss.on(
               }
             );
           }
+
 
           if (
             message.type ===
@@ -1103,62 +1949,84 @@ wss.on(
             );
           }
 
+
           if (
             message.type ===
-            "end_match"
+            "end_match" ||
+            message.type ===
+            "next_match"
           ) {
+
             const matchId =
               String(
                 message.matchId ||
+                userMatches.get(
+                  ws.userId
+                ) ||
                 ""
               );
 
-            const match =
-              matches.get(
-                matchId
-              );
 
-            if (
-              match &&
-              [
-                match.userA.userId,
-                match.userB.userId
-              ].includes(
-                ws.userId
-              )
-            ) {
-              expireMatch(
-                matchId
-              );
-            } else {
-              userMatches.delete(
-                ws.userId
-              );
-            }
-
-            return send(
-              ws,
-              {
-                type:
-                  "match_ended"
-              }
+            finishMatch(
+              matchId,
+              "next_match",
+              ws.userId
             );
+
+
+            return;
           }
+
 
           if (
             message.type ===
             "chat_message"
           ) {
-            return handleChatMessage(
+            return handleTextMessage(
               ws,
               message
             );
           }
 
+
+          if (
+            message.type ===
+            "voice_message"
+          ) {
+            return handleVoiceMessage(
+              ws,
+              message
+            );
+          }
+
+
+          if (
+            message.type ===
+            "message_delivered"
+          ) {
+            return markDelivered(
+              ws,
+              message
+            );
+          }
+
+
+          if (
+            message.type ===
+            "chat_read"
+          ) {
+            return markRead(
+              ws,
+              message
+            );
+          }
+
+
           if (
             message.type ===
             "chat_history"
           ) {
+
             const chat =
               db.getChat(
                 String(
@@ -1167,33 +2035,22 @@ wss.on(
                 )
               );
 
+
             if (
               chat &&
               chat.users.includes(
                 ws.userId
               )
             ) {
+
               const history =
                 db.getMessages(
                   chat.id
-                ).map(
-                  item => {
-                    const sender =
-                      getProfile(
-                        item.senderId
-                      );
-
-                    return {
-                      ...item,
-
-                      senderName:
-                        sender.name,
-
-                      senderAvatar:
-                        sender.avatar
-                    };
-                  }
+                )
+                .map(
+                  enrichMessage
                 );
+
 
               return send(
                 ws,
@@ -1210,8 +2067,10 @@ wss.on(
               );
             }
 
+
             return;
           }
+
 
           if (
             message.type ===
@@ -1231,15 +2090,18 @@ wss.on(
             );
           }
 
+
           if (
             message.type ===
             "friend_chat_open"
           ) {
+
             const friendId =
               String(
                 message.friendId ||
                 ""
               );
+
 
             if (
               db.areFriends(
@@ -1247,33 +2109,22 @@ wss.on(
                 friendId
               )
             ) {
+
               const chat =
                 db.createFriendChat(
                   ws.userId,
                   friendId
                 );
 
+
               const history =
                 db.getMessages(
                   chat.id
-                ).map(
-                  item => {
-                    const sender =
-                      getProfile(
-                        item.senderId
-                      );
-
-                    return {
-                      ...item,
-
-                      senderName:
-                        sender.name,
-
-                      senderAvatar:
-                        sender.avatar
-                    };
-                  }
+                )
+                .map(
+                  enrichMessage
                 );
+
 
               return send(
                 ws,
@@ -1285,7 +2136,7 @@ wss.on(
                     chat.id,
 
                   friend:
-                    getProfile(
+                    profile(
                       friendId
                     ),
 
@@ -1295,21 +2146,119 @@ wss.on(
               );
             }
 
+
             return;
           }
+
+
+          if (
+            message.type ===
+            "push_subscribe"
+          ) {
+            return savePushSubscription(
+              ws,
+              message
+            );
+          }
+
+
+          if (
+            message.type ===
+            "call_invite"
+          ) {
+            return handleCallInvite(
+              ws,
+              message
+            );
+          }
+
+
+          if (
+            message.type ===
+            "call_accept"
+          ) {
+            return relayCallEvent(
+              ws,
+              message,
+              "call_accepted"
+            );
+          }
+
+
+          if (
+            message.type ===
+            "call_reject"
+          ) {
+            return relayCallEvent(
+              ws,
+              message,
+              "call_rejected"
+            );
+          }
+
+
+          if (
+            message.type ===
+            "call_end"
+          ) {
+            return relayCallEvent(
+              ws,
+              message,
+              "call_ended"
+            );
+          }
+
+
+          if (
+            message.type ===
+            "webrtc_offer"
+          ) {
+            return relayCallEvent(
+              ws,
+              message,
+              "webrtc_offer"
+            );
+          }
+
+
+          if (
+            message.type ===
+            "webrtc_answer"
+          ) {
+            return relayCallEvent(
+              ws,
+              message,
+              "webrtc_answer"
+            );
+          }
+
+
+          if (
+            message.type ===
+            "webrtc_ice"
+          ) {
+            return relayCallEvent(
+              ws,
+              message,
+              "webrtc_ice"
+            );
+          }
+
 
           if (
             message.type ===
             "report_user"
           ) {
+
             db.reportUser(
               ws.userId,
               String(
                 message.targetUserId ||
-                ""
+                  ""
               ),
               message.reason
             );
+
 
             return send(
               ws,
@@ -1319,6 +2268,7 @@ wss.on(
               }
             );
           }
+
 
           if (
             message.type ===
@@ -1335,11 +2285,14 @@ wss.on(
               }
             );
           }
+
         } catch (error) {
+
           console.error(
-            "MESSAGE ERROR:",
+            "Message error:",
             error
           );
+
 
           send(
             ws,
@@ -1351,70 +2304,95 @@ wss.on(
                 "Ошибка запроса"
             }
           );
+
         }
+
       }
     );
+
 
     ws.on(
       "close",
       () => {
+
         waitingQueue.delete(
           ws.userId
         );
+
 
         if (
           connected.get(
             ws.userId
           ) === ws
         ) {
+
           connected.delete(
             ws.userId
           );
+
         }
+
       }
     );
+
   }
 );
 
+
 setInterval(
   () => {
+
     for (
-      const [userId, user]
+      const [userId, item]
       of waitingQueue
     ) {
+
       if (
-        !user.ws ||
-        user.ws.readyState !==
+        !item.ws ||
+        item.ws.readyState !==
           WebSocket.OPEN
       ) {
+
         waitingQueue.delete(
           userId
         );
+
       }
+
     }
 
+
     for (
-      const [matchId, match]
+      const [matchId, item]
       of matches
     ) {
+
       if (
         Date.now() >=
-        match.expiresAt
+        item.expiresAt
       ) {
-        expireMatch(
-          matchId
+
+        finishMatch(
+          matchId,
+          "expired"
         );
+
       }
+
     }
+
   },
   60000
 );
 
+
 server.listen(
   PORT,
   () => {
+
     console.log(
-      `SnapVibe 3.4 running on port ${PORT}`
+      `SnapVibe 4.0 running on port ${PORT}`
     );
+
   }
 );
