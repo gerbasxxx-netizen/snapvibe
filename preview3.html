@@ -1,230 +1,459 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#08090d">
-<title>SnapVibe 3.0</title>
+<meta name="theme-color" content="#07070b">
+<title>SnapVibe 3.0 Redesign</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:#08090d;color:#fff;font-family:Arial,sans-serif}body{min-height:100vh}.app{max-width:520px;min-height:100vh;margin:auto;padding:14px 14px 90px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.logo{font-size:24px;font-weight:900}.logo span{color:#8b5cf6}.status{font-size:11px;color:#9da3b4;border:1px solid #292d39;padding:9px 11px;border-radius:12px;background:#11131a}.status.online{color:#86efac}.screen{display:none}.screen.active{display:block}.hero{text-align:center;margin:10px 0 15px}.hero h1{font-size:30px;margin:0 0 8px}.hero p{font-size:13px;color:#9da3b4;line-height:1.5;margin:0}.camera{position:relative;width:100%;aspect-ratio:3/4;border-radius:28px;overflow:hidden;background:#12151d;border:1px solid #292d39}.camera video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#9da3b4;font-size:46px}.em-title{font-size:13px;font-weight:800;margin:15px 0 9px}.emotions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.emotion{min-height:64px;border:1px solid #292d39;border-radius:16px;background:#11131a;color:#fff}.emotion.selected{border-color:#8b5cf6;background:rgba(139,92,246,.15)}.emoji{display:block;font-size:25px}.nm{font-size:11px}.primary,.secondary,.action{width:100%;min-height:54px;border-radius:16px;font-weight:900;color:#fff}.primary{margin-top:15px;border:0;background:linear-gradient(135deg,#8b5cf6,#ec4899)}.primary:disabled{opacity:.45}.secondary{margin-top:10px;border:1px solid #292d39;background:#11131a}.search{margin-top:70px;padding:30px 20px;text-align:center;border:1px solid #292d39;border-radius:28px;background:#11131a}.search p{color:#9da3b4}.photo{position:relative;aspect-ratio:3/4;border-radius:28px;overflow:hidden;border:1px solid #292d39}.photo img{width:100%;height:100%;object-fit:cover}.timer{position:absolute;left:10px;right:10px;bottom:10px;padding:14px;text-align:center;border-radius:14px;background:rgba(0,0,0,.72)}.match-head{text-align:center}.match-head h2{margin:4px 0}.partner{font-weight:900;margin-bottom:4px}.muted{color:#9da3b4;font-size:12px;line-height:1.5}.match-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.action{border:1px solid #292d39;background:#11131a}.action.keep{background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(236,72,153,.18))}.action.active{background:linear-gradient(135deg,#8b5cf6,#ec4899)}.friends{display:grid;gap:8px}.friend{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #292d39;border-radius:16px;background:#11131a}.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8b5cf6,#ec4899);font-weight:900}.friend-main{flex:1}.friend-main span{display:block;font-size:11px;color:#9da3b4}.friend button{height:40px;border:0;border-radius:12px;background:#272a35;color:#fff}.chat{height:calc(100vh - 175px);display:flex;flex-direction:column}.chat-top{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid #292d39}.back{width:40px;height:40px;border-radius:12px;border:1px solid #292d39;background:#11131a;color:#fff}.messages{flex:1;overflow:auto;padding:10px 0;display:flex;flex-direction:column;gap:7px}.bubble{max-width:82%;padding:10px 12px;border-radius:15px;background:#171923;font-size:13px;align-self:flex-start}.bubble.me{align-self:flex-end;background:linear-gradient(135deg,#6f4ee5,#c13d87)}.composer{display:flex;gap:8px}.composer input{flex:1;min-width:0;height:48px;border:1px solid #292d39;border-radius:14px;background:#11131a;color:#fff;padding:0 12px}.composer button{width:50px;border:0;border-radius:14px;background:#8b5cf6;color:#fff}.field{margin-top:12px}.field label{display:block;font-size:11px;color:#9da3b4;margin-bottom:5px}.field input,.field select{width:100%;height:47px;border:1px solid #292d39;border-radius:13px;background:#11131a;color:#fff;padding:0 12px}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:72px;background:rgba(9,10,14,.96);border-top:1px solid #292d39;display:grid;grid-template-columns:repeat(4,1fr)}.nav button{border:0;background:transparent;color:#7d8392;font-size:10px}.nav button b{display:block;font-size:20px}.nav button.active{color:#fff}.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:#20232d;border:1px solid #3a3d49;padding:10px 13px;border-radius:12px;font-size:12px;display:none;z-index:10}.toast.show{display:block}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#07070b;--bg2:#0c0c12;--card:#111119;--card2:#171723;--line:#29283a;
+  --text:#fff;--muted:#9d9aac;--pink:#ff3ea5;--pink2:#ff6bc0;--violet:#7a5cff;
+  --green:#35d07f;--danger:#ff5b6e;--shadow:0 24px 70px rgba(0,0,0,.38)
+}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+body{min-height:100vh;overflow-x:hidden;background:
+ radial-gradient(circle at 50% -10%,rgba(122,92,255,.20),transparent 32%),
+ radial-gradient(circle at 95% 18%,rgba(255,62,165,.10),transparent 24%),
+ var(--bg)}
+button,input,select{font:inherit}button{cursor:pointer}
+.shell{width:100%;max-width:520px;min-height:100vh;margin:auto;position:relative;padding:18px 16px 96px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:9px}.brandmark{width:36px;height:36px;border-radius:13px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;box-shadow:0 8px 28px rgba(255,62,165,.22);font-size:18px}.brandname{font-size:25px;font-weight:950;letter-spacing:-1.1px}.brandname span{color:var(--pink)}
+.status{display:flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid var(--line);border-radius:999px;background:rgba(17,17,25,.8);backdrop-filter:blur(12px);font-size:11px;color:var(--muted)}.status-dot{width:7px;height:7px;border-radius:50%;background:#666}.status.online{color:#b8f7d0}.status.online .status-dot{background:var(--green);box-shadow:0 0 10px rgba(53,208,127,.75)}
 
-:root{--bg:#07070b;--card:#101018;--card2:#151521;--line:#29283a;--pink:#ff3da8;--purple:#7c4dff;--text:#fff;--muted:#a5a3b3}
-body{background:radial-gradient(circle at 50% -10%,rgba(124,77,255,.18),transparent 34%),var(--bg)}
-.app{padding:18px 16px 96px}.top{margin-bottom:18px}.logo{font-size:27px;letter-spacing:-1.2px}.logo span{color:var(--pink)}
-.status{border-color:var(--line);background:rgba(18,18,28,.82);backdrop-filter:blur(12px)}
-.hero{margin:16px 0 18px}.hero h1{font-size:34px;letter-spacing:-1.4px}.hero p{max-width:390px;margin:auto;color:var(--muted)}
-.camera{border-radius:32px;border:1px solid #302e42;box-shadow:0 22px 60px rgba(0,0,0,.35),0 0 0 1px rgba(255,61,168,.04)}
-.em-title{margin-top:18px}.emotions{gap:9px}.emotion{background:linear-gradient(180deg,#151520,#0f0f17);border-color:#29283a;min-height:70px}.emotion.selected{border-color:var(--pink);box-shadow:0 0 0 1px rgba(255,61,168,.25),0 0 24px rgba(255,61,168,.12);background:linear-gradient(180deg,rgba(255,61,168,.15),rgba(124,77,255,.10))}
-.primary{background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:0 10px 30px rgba(255,61,168,.18)}
-.secondary,.action{background:#11111a;border-color:var(--line)}
-.search{margin-top:90px;border-color:var(--line);background:linear-gradient(180deg,#14141f,#0e0e15);box-shadow:0 24px 70px rgba(0,0,0,.35)}
-.search:before{content:"◌";display:block;font-size:64px;color:var(--pink);margin-bottom:8px;animation:pulse 1.25s ease-in-out infinite}
-@keyframes pulse{50%{transform:scale(1.14);opacity:.55}}
-.match-head{padding:8px 0 14px}.match-head h2{font-size:29px}.photo{border-radius:32px;border-color:#332e43;box-shadow:0 22px 60px rgba(0,0,0,.35)}
-.timer{background:rgba(8,8,13,.78);backdrop-filter:blur(10px)}
-.action.keep{background:linear-gradient(135deg,rgba(124,77,255,.25),rgba(255,61,168,.20));border-color:#51334f}
-.friend{background:linear-gradient(180deg,#14141f,#101018);border-color:var(--line)}.avatar{background:linear-gradient(135deg,var(--purple),var(--pink))}
-.chat-top{padding:8px 0 14px}.bubble{background:#171722}.bubble.me{background:linear-gradient(135deg,var(--purple),var(--pink))}
-.composer{padding-top:10px}.composer input,.field input,.field select{background:#11111a;border-color:var(--line)}
-.nav{height:78px;background:rgba(7,7,11,.92);backdrop-filter:blur(18px);border-color:#262535}.nav button.active{color:var(--pink)}
-.onboard{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 50% 5%,rgba(255,61,168,.16),transparent 32%),#07070b;display:none;overflow:auto;padding:28px 18px}
-.onboard.show{display:block}.onboard-card{max-width:480px;margin:0 auto;padding:18px 0 36px}.onboard-logo{text-align:center;font-size:34px;font-weight:900;margin:20px 0 8px}.onboard-logo span{color:var(--pink)}.onboard-sub{text-align:center;color:var(--muted);font-size:13px;line-height:1.55;margin-bottom:26px}
-.gender-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gender-btn{min-height:48px;border-radius:14px;border:1px solid var(--line);background:#11111a;color:#fff}.gender-btn.selected{border-color:var(--pink);background:rgba(255,61,168,.12)}
+.view{display:none}.view.active{display:block;animation:fade .22s ease}@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.hero{text-align:center;padding:10px 10px 16px}.eyebrow{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:rgba(255,62,165,.08);border:1px solid rgba(255,62,165,.22);color:#ffd3ea;font-size:11px;font-weight:800;margin-bottom:11px}.hero h1{font-size:34px;line-height:1.03;letter-spacing:-1.5px;margin:0 0 10px}.hero p{max-width:390px;margin:auto;color:var(--muted);font-size:13px;line-height:1.55}
 
+.camera-card{position:relative;width:100%;aspect-ratio:3/4;border-radius:32px;overflow:hidden;background:#101018;border:1px solid #312f42;box-shadow:var(--shadow)}
+.camera-card video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+.camera-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;color:var(--muted);background:radial-gradient(circle at center,rgba(122,92,255,.08),transparent 58%)}
+.camera-placeholder .camicon{font-size:52px;margin-bottom:11px}.camera-placeholder b{color:#fff;margin-bottom:6px}
+.face-ring{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:58%;height:56%;border:2px solid rgba(255,255,255,.32);border-radius:48%;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.10)}
+.camera-chip{position:absolute;left:13px;top:13px;padding:7px 10px;border-radius:999px;background:rgba(6,6,10,.62);backdrop-filter:blur(12px);font-size:10px;font-weight:800}
+
+.section-label{margin:18px 2px 10px;font-size:12px;font-weight:850;color:#dedbea}
+.emotion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.emotion{min-height:72px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#15151f,#101017);color:#fff;transition:.16s ease}
+.emotion:active{transform:scale(.97)}.emotion.selected{border-color:var(--pink);background:linear-gradient(180deg,rgba(255,62,165,.16),rgba(122,92,255,.10));box-shadow:0 0 0 1px rgba(255,62,165,.16),0 12px 30px rgba(255,62,165,.08)}
+.emotion .emoji{display:block;font-size:26px;margin-bottom:3px}.emotion .lbl{font-size:11px;color:#ddd9e6}
+.primary{width:100%;min-height:58px;border:0;border-radius:18px;margin-top:17px;background:linear-gradient(135deg,var(--violet),var(--pink));color:#fff;font-weight:900;font-size:15px;box-shadow:0 13px 34px rgba(255,62,165,.20)}
+.primary:disabled{opacity:.4;box-shadow:none}.secondary{width:100%;min-height:52px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:#fff;font-weight:850;margin-top:10px}.danger{color:#ffb2bd;border-color:rgba(255,91,110,.35)}
+
+.search-wrap{padding-top:72px;text-align:center}.radar{width:170px;height:170px;border-radius:50%;margin:0 auto 27px;position:relative;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,62,165,.14),transparent 64%);border:1px solid rgba(122,92,255,.28)}
+.radar:before,.radar:after{content:"";position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.12)}.radar:before{inset:28px}.radar:after{inset:58px}
+.radar-pulse{width:18px;height:18px;border-radius:50%;background:var(--pink);box-shadow:0 0 26px rgba(255,62,165,.95);animation:pulse 1.15s infinite}
+@keyframes pulse{50%{transform:scale(1.65);opacity:.48}}
+.search-wrap h2{font-size:28px;margin:0 0 8px}.search-wrap p{color:var(--muted);font-size:13px;line-height:1.5;max-width:340px;margin:0 auto 17px}.search-time{font-size:12px;color:#ddd9e6}
+
+.match-head{text-align:center;padding:10px 0 15px}.match-spark{font-size:46px}.match-head h2{margin:4px 0 5px;font-size:29px}.partner-name{font-size:16px;font-weight:950}.match-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.photo-card{position:relative;width:100%;aspect-ratio:3/4;border-radius:32px;overflow:hidden;border:1px solid #312f42;background:#111119;box-shadow:var(--shadow)}
+.photo-card img{width:100%;height:100%;object-fit:cover;display:block}.timer-pill{position:absolute;left:12px;right:12px;bottom:12px;min-height:50px;border-radius:16px;background:rgba(6,6,10,.74);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:850}.timer-pill strong{color:#ffc2e3;margin-left:6px}
+.match-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.action{min-height:54px;border-radius:17px;border:1px solid var(--line);background:var(--card);color:#fff;font-weight:900}.action.keep{border-color:rgba(255,62,165,.34);background:linear-gradient(135deg,rgba(122,92,255,.20),rgba(255,62,165,.15))}.action.active{background:linear-gradient(135deg,var(--violet),var(--pink));border-color:transparent}
+.info-card{margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:17px;background:var(--card);color:var(--muted);font-size:12px;line-height:1.5}
+
+.page-title{font-size:30px;letter-spacing:-1px;margin:8px 0 15px}.friend-list{display:grid;gap:9px}.friend-card{display:flex;align-items:center;gap:11px;padding:13px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#15151f,#101018)}
+.avatar{width:50px;height:50px;border-radius:18px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-weight:950;font-size:19px}.friend-main{flex:1}.friend-main b{display:block}.friend-main span{font-size:11px;color:var(--muted)}.friend-chat{width:44px;height:44px;border:0;border-radius:14px;background:#232332;color:#fff;font-size:18px}
+.empty{padding:65px 20px;text-align:center;color:var(--muted);font-size:13px}
+
+.chat-shell{height:calc(100vh - 190px);min-height:520px;display:flex;flex-direction:column}.chat-top{display:flex;align-items:center;gap:10px;padding:4px 0 13px;border-bottom:1px solid var(--line)}.back{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:#fff}.chat-avatar{width:43px;height:43px;border-radius:16px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-weight:950}.chat-person{flex:1}.chat-person b{display:block}.chat-person span{font-size:11px;color:var(--muted)}
+.messages{flex:1;overflow:auto;padding:13px 0;display:flex;flex-direction:column;gap:8px}.bubble{max-width:82%;padding:10px 12px;border-radius:16px;background:#171722;font-size:13px;line-height:1.45;align-self:flex-start}.bubble.me{align-self:flex-end;background:linear-gradient(135deg,#6f52e8,#cc3d8d)}.composer{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--line)}.composer input{flex:1;min-width:0;height:50px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:#fff;padding:0 13px;outline:none}.send{width:52px;border:0;border-radius:16px;background:linear-gradient(135deg,var(--violet),var(--pink));color:#fff;font-size:18px}
+
+.profile-hero{padding:19px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(155deg,#161620,#101018);box-shadow:0 18px 50px rgba(0,0,0,.24)}.profile-avatar{width:78px;height:78px;border-radius:25px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-size:31px;font-weight:950;margin-bottom:12px}.profile-hero h2{margin:0 0 4px}.profile-hero p{margin:0;color:var(--muted);font-size:11px}
+.field{margin-top:13px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;height:49px;border-radius:14px;border:1px solid var(--line);background:#0f0f17;color:#fff;padding:0 12px}
+
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);height:78px;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(7,7,11,.92);backdrop-filter:blur(18px);border-top:1px solid #252434;z-index:40}.nav button{border:0;background:transparent;color:#7e7a8e;font-size:10px;font-weight:800}.nav button b{display:block;font-size:21px;margin-bottom:3px}.nav button.active{color:var(--pink)}
+
+.onboard{position:fixed;inset:0;z-index:100;display:none;overflow:auto;padding:28px 18px;background:radial-gradient(circle at 50% 0%,rgba(255,62,165,.18),transparent 32%),radial-gradient(circle at 100% 30%,rgba(122,92,255,.12),transparent 28%),#07070b}
+.onboard.show{display:block}.on-card{max-width:480px;margin:auto;min-height:calc(100vh - 56px);display:flex;flex-direction:column;justify-content:center}.on-logo{text-align:center;font-size:37px;font-weight:950;letter-spacing:-1.6px;margin-bottom:6px}.on-logo span{color:var(--pink)}.on-sub{text-align:center;color:var(--muted);font-size:13px;line-height:1.55;margin-bottom:22px}.on-icon{width:120px;height:120px;border-radius:38px;margin:0 auto 22px;display:grid;place-items:center;font-size:46px;background:radial-gradient(circle,rgba(255,62,165,.25),rgba(122,92,255,.15) 55%,transparent 70%);border:1px solid rgba(255,255,255,.08)}
+.gender-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gender-btn{min-height:49px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:#fff}.gender-btn.selected{border-color:var(--pink);background:rgba(255,62,165,.13)}
+
+.lang-sheet{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.62);display:none;align-items:flex-end;padding:10px}.lang-sheet.show{display:flex}.sheet{width:100%;max-width:520px;margin:auto;background:#111119;border:1px solid var(--line);border-radius:24px;padding:15px}.sheet h3{margin:0 0 12px}.lang-list{display:grid;gap:8px}.lang-item{min-height:49px;border:1px solid var(--line);border-radius:14px;background:#171723;color:#fff;text-align:left;padding:0 13px;font-weight:850}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(12px);z-index:150;max-width:90%;padding:10px 13px;border-radius:13px;background:#20202b;border:1px solid #373646;color:#fff;font-size:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
 <div class="onboard" id="onboard">
-  <div class="onboard-card">
-    <div class="onboard-logo">Snap<span>Vibe</span></div>
-    <div class="onboard-sub">Один момент. Создай профиль — и можно ловить эмоции.</div>
-    <div class="field"><label>Имя</label><input id="onName" maxlength="30" placeholder="Твоё имя"></div>
-    <div class="field"><label>Возраст</label><input id="onAge" type="number" min="18" max="99" placeholder="18+"></div>
-    <div class="field"><label>Пол</label><div class="gender-grid">
-      <button class="gender-btn selected" data-gender="male">Мужчина</button>
-      <button class="gender-btn" data-gender="female">Женщина</button>
-      <button class="gender-btn" data-gender="other">Другое</button>
-    </div></div>
-    <div class="field"><label>Страна</label><input id="onCountry" maxlength="40" placeholder="Estonia"></div>
-    <div class="field"><label>Язык</label><select id="onLanguage">
-      <option value="ru">🇷🇺 Русский</option><option value="en">🇬🇧 English</option><option value="uk">🇺🇦 Українська</option><option value="et">🇪🇪 Eesti</option><option value="de">🇩🇪 Deutsch</option><option value="es">🇪🇸 Español</option>
-    </select></div>
-    <button class="primary" id="finishOnboard">Начать</button>
+  <div class="on-card">
+    <div class="on-icon">✨</div>
+    <div class="on-logo">Snap<span>Vibe</span></div>
+    <div class="on-sub" data-i18n="onSub">Покажи, что ты чувствуешь прямо сейчас — и найди человека на той же волне.</div>
+
+    <div class="field"><label data-i18n="name">Имя</label><input id="onName" maxlength="30"></div>
+    <div class="field"><label data-i18n="age">Возраст</label><input id="onAge" type="number" min="18" max="99"></div>
+    <div class="field"><label data-i18n="gender">Пол</label>
+      <div class="gender-grid">
+        <button class="gender-btn selected" data-gender="male" data-i18n="male">Мужчина</button>
+        <button class="gender-btn" data-gender="female" data-i18n="female">Женщина</button>
+        <button class="gender-btn" data-gender="other" data-i18n="other">Другое</button>
+      </div>
+    </div>
+    <div class="field"><label data-i18n="country">Страна</label><input id="onCountry" maxlength="40"></div>
+    <div class="field"><label data-i18n="language">Язык</label>
+      <select id="onLanguage">
+        <option value="ru">🇷🇺 Русский</option><option value="en">🇬🇧 English</option><option value="uk">🇺🇦 Українська</option><option value="et">🇪🇪 Eesti</option><option value="de">🇩🇪 Deutsch</option><option value="es">🇪🇸 Español</option>
+      </select>
+    </div>
+    <button class="primary" id="finishOnboard" data-i18n="start">Начать</button>
   </div>
 </div>
 
-<div class="app">
-  <div class="top"><div class="logo">Snap<span>Vibe</span></div><div class="status" id="status">...</div></div>
-
-  <section class="screen active" id="vibeScreen">
-    <div class="hero"><h1 data-i18n="heroTitle"></h1><p data-i18n="heroText"></p></div>
-    <div class="camera"><video id="video" autoplay playsinline muted></video><div class="placeholder" id="placeholder">📸</div></div>
-    <div class="em-title" data-i18n="emotionQ"></div>
-    <div class="emotions">
-      <button class="emotion selected" data-emotion="happy"><span class="emoji">😄</span><span class="nm" data-i18n="happy"></span></button>
-      <button class="emotion" data-emotion="sad"><span class="emoji">😢</span><span class="nm" data-i18n="sad"></span></button>
-      <button class="emotion" data-emotion="excited"><span class="emoji">🤩</span><span class="nm" data-i18n="excited"></span></button>
-      <button class="emotion" data-emotion="calm"><span class="emoji">😌</span><span class="nm" data-i18n="calm"></span></button>
-      <button class="emotion" data-emotion="angry"><span class="emoji">😤</span><span class="nm" data-i18n="angry"></span></button>
-      <button class="emotion" data-emotion="surprised"><span class="emoji">😲</span><span class="nm" data-i18n="surprised"></span></button>
+<div class="lang-sheet" id="langSheet">
+  <div class="sheet">
+    <h3 data-i18n="language">Язык</h3>
+    <div class="lang-list">
+      <button class="lang-item" data-lang="ru">🇷🇺 Русский</button>
+      <button class="lang-item" data-lang="en">🇬🇧 English</button>
+      <button class="lang-item" data-lang="uk">🇺🇦 Українська</button>
+      <button class="lang-item" data-lang="et">🇪🇪 Eesti</button>
+      <button class="lang-item" data-lang="de">🇩🇪 Deutsch</button>
+      <button class="lang-item" data-lang="es">🇪🇸 Español</button>
     </div>
-    <button class="primary" id="capture" disabled data-i18n="capture"></button>
-  </section>
+  </div>
+</div>
 
-  <section class="screen" id="searchScreen">
-    <div class="search"><h2 data-i18n="searchTitle"></h2><p data-i18n="searchText"></p><strong id="searchSeconds">0 s</strong><button class="secondary" id="cancelSearch" data-i18n="cancel"></button></div>
-  </section>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand"><div class="brandmark">✦</div><div class="brandname">Snap<span>Vibe</span></div></div>
+    <div style="display:flex;gap:7px">
+      <button id="langBtn" style="height:37px;min-width:42px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:#fff">🌐</button>
+      <div class="status" id="status"><span class="status-dot"></span><span id="statusText">...</span></div>
+    </div>
+  </header>
 
-  <section class="screen" id="matchScreen">
-    <div class="match-head"><div style="font-size:42px">✨</div><h2 data-i18n="matchTitle"></h2><div class="partner" id="matchPartnerName"></div><div class="muted" data-i18n="matchSub"></div></div>
-    <div class="photo"><img id="matchPhoto" alt="Match"><div class="timer"><span data-i18n="available"></span> <strong id="countdown">24:00:00</strong></div></div>
-    <div class="match-actions"><button class="action keep" id="keepVibe">❤️ <span data-i18n="keepVibe"></span></button><button class="action" id="openMatchChat">💬 <span data-i18n="chat"></span></button></div>
-    <div class="muted" style="padding:12px" id="keepStatus" data-i18n="keepHint"></div>
-    <button class="secondary" id="newMatch" data-i18n="newMatch"></button>
-  </section>
+  <main>
+    <section class="view active" id="vibeView">
+      <div class="hero">
+        <div class="eyebrow">✨ <span data-i18n="eyebrow">Твой вайб. Прямо сейчас.</span></div>
+        <h1 data-i18n="heroTitle">Поймай свою эмоцию</h1>
+        <p data-i18n="heroText">Сделай фото и найди человека, который сейчас чувствует то же самое.</p>
+      </div>
 
-  <section class="screen" id="friendsScreen"><h1 data-i18n="friends"></h1><div class="friends" id="friendList"></div></section>
+      <div class="camera-card">
+        <video id="video" autoplay playsinline muted></video>
+        <div class="camera-placeholder" id="cameraPlaceholder"><div class="camicon">📸</div><b data-i18n="cameraNeed">Нужен доступ к камере</b><span data-i18n="cameraText">Разреши браузеру использовать фронтальную камеру.</span></div>
+        <div class="face-ring"></div>
+        <div class="camera-chip" data-i18n="frontCamera">Фронтальная камера</div>
+      </div>
 
-  <section class="screen" id="chatScreen">
-    <div class="chat"><div class="chat-top"><button class="back" id="chatBack">←</button><div><b id="chatName">SnapVibe</b><div class="muted" id="chatMeta"></div></div></div><div class="messages" id="messages"></div><div class="composer"><input id="messageInput" maxlength="1000"><button id="sendMessage">➤</button></div></div>
-  </section>
+      <div class="section-label" data-i18n="emotionQ">Что ты сейчас чувствуешь?</div>
+      <div class="emotion-grid">
+        <button class="emotion selected" data-emotion="happy"><span class="emoji">😄</span><span class="lbl" data-i18n="happy">Радость</span></button>
+        <button class="emotion" data-emotion="sad"><span class="emoji">😢</span><span class="lbl" data-i18n="sad">Грусть</span></button>
+        <button class="emotion" data-emotion="excited"><span class="emoji">🤩</span><span class="lbl" data-i18n="excited">Восторг</span></button>
+        <button class="emotion" data-emotion="calm"><span class="emoji">😌</span><span class="lbl" data-i18n="calm">Спокойствие</span></button>
+        <button class="emotion" data-emotion="angry"><span class="emoji">😤</span><span class="lbl" data-i18n="angry">Злость</span></button>
+        <button class="emotion" data-emotion="surprised"><span class="emoji">😲</span><span class="lbl" data-i18n="surprised">Удивление</span></button>
+      </div>
 
-  <section class="screen" id="profileScreen">
-    <h1 data-i18n="profile"></h1>
-    <div class="field"><label data-i18n="name"></label><input id="profileName" maxlength="30"></div>
-    <div class="field"><label data-i18n="age"></label><input id="profileAge" type="number" min="18" max="99"></div>
-    <div class="field"><label data-i18n="country"></label><input id="profileCountry" maxlength="40"></div>
-    <div class="field"><label data-i18n="language"></label><select id="profileLanguage"><option value="en">🇬🇧 English</option><option value="ru">🇷🇺 Русский</option><option value="uk">🇺🇦 Українська</option><option value="et">🇪🇪 Eesti</option><option value="de">🇩🇪 Deutsch</option><option value="es">🇪🇸 Español</option></select></div>
-    <button class="primary" id="saveProfile" data-i18n="save"></button>
-  </section>
+      <button class="primary" id="capture" disabled data-i18n="capture">Поймать эмоцию</button>
+    </section>
+
+    <section class="view" id="searchView">
+      <div class="search-wrap">
+        <div class="radar"><div class="radar-pulse"></div></div>
+        <h2 data-i18n="searchTitle">Ищем совпадение...</h2>
+        <p data-i18n="searchText">Ищем человека, который сейчас чувствует то же самое.</p>
+        <div class="search-time"><span data-i18n="searchTime">Время поиска:</span> <strong id="searchSeconds">0 сек</strong></div>
+        <button class="secondary" id="cancelSearch" data-i18n="cancel">Отменить поиск</button>
+      </div>
+    </section>
+
+    <section class="view" id="matchView">
+      <div class="match-head">
+        <div class="match-spark">✨</div>
+        <h2 data-i18n="matchTitle">Эмоция совпала!</h2>
+        <div class="partner-name" id="matchPartnerName">SnapVibe User</div>
+        <div class="match-sub" data-i18n="matchSub">Вы оба почувствовали одно и то же.</div>
+      </div>
+
+      <div class="photo-card">
+        <img id="matchPhoto" alt="Match">
+        <div class="timer-pill"><span data-i18n="available">Доступно ещё</span><strong id="countdown">24:00:00</strong></div>
+      </div>
+
+      <div class="match-actions">
+        <button class="action keep" id="keepVibe">❤️ <span data-i18n="keepVibe">Сохранить связь</span></button>
+        <button class="action" id="openMatchChat">💬 <span data-i18n="chat">Чат</span></button>
+      </div>
+
+      <div class="info-card" id="keepStatus" data-i18n="keepHint">Если вы оба нажмёте «Сохранить связь», вы станете друзьями и сможете продолжить общение после 24 часов.</div>
+      <button class="secondary" id="newMatch" data-i18n="newMatch">Найти новый мэтч</button>
+      <button class="secondary danger" id="reportMatch" data-i18n="report">Пожаловаться</button>
+    </section>
+
+    <section class="view" id="friendsView">
+      <h1 class="page-title" data-i18n="friends">Друзья</h1>
+      <div class="friend-list" id="friendList"></div>
+    </section>
+
+    <section class="view" id="chatView">
+      <div class="chat-shell">
+        <div class="chat-top">
+          <button class="back" id="chatBack">←</button>
+          <div class="chat-avatar" id="chatAvatar">S</div>
+          <div class="chat-person"><b id="chatName">SnapVibe</b><span id="chatMeta"></span></div>
+        </div>
+        <div class="messages" id="messages"></div>
+        <div class="composer">
+          <input id="messageInput" maxlength="1000" data-i18n-placeholder="messagePlaceholder" placeholder="Сообщение...">
+          <button class="send" id="sendMessage">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="profileView">
+      <h1 class="page-title" data-i18n="profile">Профиль</h1>
+      <div class="profile-hero">
+        <div class="profile-avatar" id="profileAvatar">S</div>
+        <h2 id="profileTitle">SnapVibe User</h2>
+        <p id="profileId"></p>
+
+        <div class="field"><label data-i18n="name">Имя</label><input id="profileName" maxlength="30"></div>
+        <div class="field"><label data-i18n="age">Возраст</label><input id="profileAge" type="number" min="18" max="99"></div>
+        <div class="field"><label data-i18n="gender">Пол</label>
+          <select id="profileGender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+        </div>
+        <div class="field"><label data-i18n="country">Страна</label><input id="profileCountry" maxlength="40"></div>
+        <button class="primary" id="saveProfile" data-i18n="save">Сохранить</button>
+      </div>
+    </section>
+  </main>
 </div>
 
 <nav class="nav">
-  <button class="navBtn active" data-screen="vibeScreen"><b>📸</b>Vibe</button>
-  <button class="navBtn" data-screen="friendsScreen"><b>💬</b><span data-i18n="chats"></span></button>
-  <button class="navBtn" data-screen="friendsScreen"><b>👥</b><span data-i18n="friends"></span></button>
-  <button class="navBtn" data-screen="profileScreen"><b>👤</b><span data-i18n="profile"></span></button>
+  <button class="navBtn active" data-view="vibeView"><b>📸</b><span>Vibe</span></button>
+  <button class="navBtn" data-view="friendsView"><b>💬</b><span data-i18n="chats">Чаты</span></button>
+  <button class="navBtn" data-view="friendsView"><b>👥</b><span data-i18n="friends">Друзья</span></button>
+  <button class="navBtn" data-view="profileView"><b>👤</b><span data-i18n="profile">Профиль</span></button>
 </nav>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const T={
-ru:{keepVibe:"Сохранить связь",heroTitle:"Поймай свою эмоцию",heroText:"Сделай фото и найди человека, который сейчас чувствует то же самое.",emotionQ:"Что ты сейчас чувствуешь?",happy:"Радость",sad:"Грусть",excited:"Восторг",calm:"Спокойствие",angry:"Злость",surprised:"Удивление",capture:"Поймать эмоцию",searchTitle:"Ищем мэтч...",searchText:"Ищем человека с такой же эмоцией.",cancel:"Отменить поиск",matchTitle:"Эмоция совпала!",matchSub:"Вы оба чувствовали одно и то же.",available:"Доступно ещё",chat:"Чат",keepHint:"Если вы оба нажмёте «Сохранить связь», вы станете друзьями и сможете общаться без таймера.",newMatch:"Найти новый мэтч",friends:"Друзья",chats:"Чаты",profile:"Профиль",name:"Имя",age:"Возраст",country:"Страна",language:"Язык",save:"Сохранить",online:"Онлайн",offline:"Офлайн",noFriends:"Пока друзей нет.",friendNow:"Вы теперь друзья ❤️",matchChat:"Чат мэтча · исчезнет через 24 часа",friendChat:"Постоянный чат"},
-en:{keepVibe:"Keep the Vibe",heroTitle:"Catch your emotion",heroText:"Take a photo and find someone who feels the same right now.",emotionQ:"How do you feel right now?",happy:"Happy",sad:"Sad",excited:"Excited",calm:"Calm",angry:"Angry",surprised:"Surprised",capture:"Catch the emotion",searchTitle:"Finding a match...",searchText:"Looking for someone with the same emotion.",cancel:"Cancel search",matchTitle:"Emotion matched!",matchSub:"You both felt the same thing.",available:"Available for",chat:"Chat",keepHint:"If you both tap Keep the Vibe, you become friends and can chat without a timer.",newMatch:"Find another match",friends:"Friends",chats:"Chats",profile:"Profile",name:"Name",age:"Age",country:"Country",language:"Language",save:"Save",online:"Online",offline:"Offline",noFriends:"No friends yet.",friendNow:"You are friends now ❤️",matchChat:"Match chat · disappears after 24 hours",friendChat:"Permanent chat"},
-uk:{keepVibe:"Зберегти зв’язок",heroTitle:"Спіймай свою емоцію",heroText:"Зроби фото та знайди людину, яка зараз відчуває те саме.",emotionQ:"Що ти зараз відчуваєш?",happy:"Радість",sad:"Сум",excited:"Захват",calm:"Спокій",angry:"Злість",surprised:"Здивування",capture:"Спіймати емоцію",searchTitle:"Шукаємо метч...",searchText:"Шукаємо людину з такою самою емоцією.",cancel:"Скасувати пошук",matchTitle:"Емоція збіглася!",matchSub:"Ви обоє відчували те саме.",available:"Доступно ще",chat:"Чат",keepHint:"Якщо ви обоє натиснете «Зберегти зв’язок», ви станете друзями.",newMatch:"Знайти новий метч",friends:"Друзі",chats:"Чати",profile:"Профіль",name:"Ім'я",age:"Вік",country:"Країна",language:"Мова",save:"Зберегти",online:"Онлайн",offline:"Офлайн",noFriends:"Поки друзів немає.",friendNow:"Тепер ви друзі ❤️",matchChat:"Чат метчу · зникне через 24 години",friendChat:"Постійний чат"},
-et:{keepVibe:"Hoia ühendust",heroTitle:"Püüa oma emotsioon",heroText:"Tee foto ja leia keegi, kes tunneb praegu sama.",emotionQ:"Mida sa praegu tunned?",happy:"Rõõm",sad:"Kurbus",excited:"Elevus",calm:"Rahu",angry:"Viha",surprised:"Üllatus",capture:"Püüa emotsioon",searchTitle:"Otsime vastet...",searchText:"Otsime sama emotsiooniga inimest.",cancel:"Tühista otsing",matchTitle:"Emotsioon sobis!",matchSub:"Te mõlemad tundsite sama.",available:"Saadaval veel",chat:"Vestlus",keepHint:"Kui te mõlemad vajutate «Hoia ühendust», saate sõpradeks.",newMatch:"Leia uus vaste",friends:"Sõbrad",chats:"Vestlused",profile:"Profiil",name:"Nimi",age:"Vanus",country:"Riik",language:"Keel",save:"Salvesta",online:"Võrgus",offline:"Võrguta",noFriends:"Sõpru veel pole.",friendNow:"Olete nüüd sõbrad ❤️",matchChat:"Vaste vestlus · kaob 24 tunni pärast",friendChat:"Püsiv vestlus"},
-de:{keepVibe:"Verbindung behalten",heroTitle:"Fang deine Emotion ein",heroText:"Mach ein Foto und finde jemanden, der sich gerade genauso fühlt.",emotionQ:"Wie fühlst du dich gerade?",happy:"Freude",sad:"Traurig",excited:"Begeistert",calm:"Ruhig",angry:"Wütend",surprised:"Überrascht",capture:"Emotion einfangen",searchTitle:"Match wird gesucht...",searchText:"Wir suchen jemanden mit derselben Emotion.",cancel:"Suche abbrechen",matchTitle:"Emotion passt!",matchSub:"Ihr habt beide dasselbe gefühlt.",available:"Verfügbar für",chat:"Chat",keepHint:"Wenn ihr beide «Verbindung behalten» tippt, werdet ihr Freunde.",newMatch:"Neues Match finden",friends:"Freunde",chats:"Chats",profile:"Profil",name:"Name",age:"Alter",country:"Land",language:"Sprache",save:"Speichern",online:"Online",offline:"Offline",noFriends:"Noch keine Freunde.",friendNow:"Ihr seid jetzt Freunde ❤️",matchChat:"Match-Chat · verschwindet nach 24 Stunden",friendChat:"Dauerhafter Chat"},
-es:{keepVibe:"Mantener conexión",heroTitle:"Captura tu emoción",heroText:"Haz una foto y encuentra a alguien que sienta lo mismo ahora.",emotionQ:"¿Cómo te sientes ahora?",happy:"Alegría",sad:"Tristeza",excited:"Emoción",calm:"Calma",angry:"Enfado",surprised:"Sorpresa",capture:"Capturar emoción",searchTitle:"Buscando match...",searchText:"Buscamos a alguien con la misma emoción.",cancel:"Cancelar búsqueda",matchTitle:"¡Emoción coincidente!",matchSub:"Los dos sentíais lo mismo.",available:"Disponible por",chat:"Chat",keepHint:"Si ambos pulsáis «Mantener conexión», seréis amigos.",newMatch:"Buscar otro match",friends:"Amigos",chats:"Chats",profile:"Perfil",name:"Nombre",age:"Edad",country:"País",language:"Idioma",save:"Guardar",online:"En línea",offline:"Sin conexión",noFriends:"Todavía no tienes amigos.",friendNow:"Ahora sois amigos ❤️",matchChat:"Chat del match · desaparece en 24 horas",friendChat:"Chat permanente"}
+"use strict";
+
+const I18N={
+ru:{onSub:"Покажи, что ты чувствуешь прямо сейчас — и найди человека на той же волне.",start:"Начать",male:"Мужчина",female:"Женщина",other:"Другое",eyebrow:"Твой вайб. Прямо сейчас.",heroTitle:"Поймай свою эмоцию",heroText:"Сделай фото и найди человека, который сейчас чувствует то же самое.",cameraNeed:"Нужен доступ к камере",cameraText:"Разреши браузеру использовать фронтальную камеру.",frontCamera:"Фронтальная камера",emotionQ:"Что ты сейчас чувствуешь?",happy:"Радость",sad:"Грусть",excited:"Восторг",calm:"Спокойствие",angry:"Злость",surprised:"Удивление",capture:"Поймать эмоцию",searchTitle:"Ищем совпадение...",searchText:"Ищем человека, который сейчас чувствует то же самое.",searchTime:"Время поиска:",seconds:"сек",cancel:"Отменить поиск",matchTitle:"Эмоция совпала!",matchSub:"Вы оба почувствовали одно и то же.",available:"Доступно ещё",keepVibe:"Сохранить связь",chat:"Чат",keepHint:"Если вы оба нажмёте «Сохранить связь», вы станете друзьями и сможете продолжить общение после 24 часов.",newMatch:"Найти новый мэтч",report:"Пожаловаться",friends:"Друзья",chats:"Чаты",profile:"Профиль",name:"Имя",age:"Возраст",gender:"Пол",country:"Страна",language:"Язык",save:"Сохранить",online:"Онлайн",offline:"Офлайн",messagePlaceholder:"Сообщение...",noFriends:"Пока друзей нет. Найди мэтч и взаимно сохраните связь.",friendNow:"Вы теперь друзья ❤️",keepSent:"Связь сохранена ❤️",matchChat:"Чат мэтча · исчезнет через 24 часа",friendChat:"Постоянный чат",profileSaved:"Профиль сохранён",cameraError:"Не удалось открыть камеру"},
+en:{onSub:"Show how you feel right now and find someone on the same wavelength.",start:"Start",male:"Male",female:"Female",other:"Other",eyebrow:"Your vibe. Right now.",heroTitle:"Catch your emotion",heroText:"Take a photo and find someone who feels the same right now.",cameraNeed:"Camera access needed",cameraText:"Allow the browser to use your front camera.",frontCamera:"Front camera",emotionQ:"How do you feel right now?",happy:"Happy",sad:"Sad",excited:"Excited",calm:"Calm",angry:"Angry",surprised:"Surprised",capture:"Catch the emotion",searchTitle:"Finding a match...",searchText:"Looking for someone who feels the same right now.",searchTime:"Search time:",seconds:"sec",cancel:"Cancel search",matchTitle:"Emotion matched!",matchSub:"You both felt the same thing.",available:"Available for",keepVibe:"Keep the Vibe",chat:"Chat",keepHint:"If you both tap Keep the Vibe, you become friends and can keep chatting after 24 hours.",newMatch:"Find another match",report:"Report",friends:"Friends",chats:"Chats",profile:"Profile",name:"Name",age:"Age",gender:"Gender",country:"Country",language:"Language",save:"Save",online:"Online",offline:"Offline",messagePlaceholder:"Message...",noFriends:"No friends yet. Find a match and mutually keep the vibe.",friendNow:"You are friends now ❤️",keepSent:"Vibe saved ❤️",matchChat:"Match chat · disappears after 24 hours",friendChat:"Permanent chat",profileSaved:"Profile saved",cameraError:"Could not open camera"},
+uk:{onSub:"Покажи, що ти відчуваєш зараз — і знайди людину на тій самій хвилі.",start:"Почати",male:"Чоловік",female:"Жінка",other:"Інше",eyebrow:"Твій вайб. Просто зараз.",heroTitle:"Спіймай свою емоцію",heroText:"Зроби фото та знайди людину, яка зараз відчуває те саме.",cameraNeed:"Потрібен доступ до камери",cameraText:"Дозволь браузеру використовувати фронтальну камеру.",frontCamera:"Фронтальна камера",emotionQ:"Що ти зараз відчуваєш?",happy:"Радість",sad:"Сум",excited:"Захват",calm:"Спокій",angry:"Злість",surprised:"Здивування",capture:"Спіймати емоцію",searchTitle:"Шукаємо збіг...",searchText:"Шукаємо людину, яка зараз відчуває те саме.",searchTime:"Час пошуку:",seconds:"с",cancel:"Скасувати пошук",matchTitle:"Емоція збіглася!",matchSub:"Ви обоє відчули те саме.",available:"Доступно ще",keepVibe:"Зберегти зв’язок",chat:"Чат",keepHint:"Якщо ви обоє збережете зв’язок, ви станете друзями.",newMatch:"Знайти новий метч",report:"Поскаржитися",friends:"Друзі",chats:"Чати",profile:"Профіль",name:"Ім'я",age:"Вік",gender:"Стать",country:"Країна",language:"Мова",save:"Зберегти",online:"Онлайн",offline:"Офлайн",messagePlaceholder:"Повідомлення...",noFriends:"Поки друзів немає.",friendNow:"Тепер ви друзі ❤️",keepSent:"Зв’язок збережено ❤️",matchChat:"Чат метчу · зникне через 24 години",friendChat:"Постійний чат",profileSaved:"Профіль збережено",cameraError:"Не вдалося відкрити камеру"},
+et:{onSub:"Näita, mida sa praegu tunned, ja leia keegi samal lainepikkusel.",start:"Alusta",male:"Mees",female:"Naine",other:"Muu",eyebrow:"Sinu vibe. Praegu.",heroTitle:"Püüa oma emotsioon",heroText:"Tee foto ja leia keegi, kes tunneb praegu sama.",cameraNeed:"Kaamera luba on vajalik",cameraText:"Luba brauseril kasutada esikaamerat.",frontCamera:"Esikaamera",emotionQ:"Mida sa praegu tunned?",happy:"Rõõm",sad:"Kurbus",excited:"Elevus",calm:"Rahu",angry:"Viha",surprised:"Üllatus",capture:"Püüa emotsioon",searchTitle:"Otsime vastet...",searchText:"Otsime inimest, kes tunneb praegu sama.",searchTime:"Otsingu aeg:",seconds:"s",cancel:"Tühista otsing",matchTitle:"Emotsioon sobis!",matchSub:"Te mõlemad tundsite sama.",available:"Saadaval veel",keepVibe:"Hoia ühendust",chat:"Vestlus",keepHint:"Kui te mõlemad hoiate ühendust, saate sõpradeks.",newMatch:"Leia uus vaste",report:"Teata",friends:"Sõbrad",chats:"Vestlused",profile:"Profiil",name:"Nimi",age:"Vanus",gender:"Sugu",country:"Riik",language:"Keel",save:"Salvesta",online:"Võrgus",offline:"Võrguta",messagePlaceholder:"Sõnum...",noFriends:"Sõpru veel pole.",friendNow:"Olete nüüd sõbrad ❤️",keepSent:"Ühendus salvestatud ❤️",matchChat:"Vaste vestlus · kaob 24 tunni pärast",friendChat:"Püsiv vestlus",profileSaved:"Profiil salvestatud",cameraError:"Kaamerat ei saanud avada"},
+de:{onSub:"Zeig, wie du dich gerade fühlst, und finde jemanden auf deiner Wellenlänge.",start:"Starten",male:"Mann",female:"Frau",other:"Andere",eyebrow:"Dein Vibe. Genau jetzt.",heroTitle:"Fang deine Emotion ein",heroText:"Mach ein Foto und finde jemanden, der sich gerade genauso fühlt.",cameraNeed:"Kamerazugriff erforderlich",cameraText:"Erlaube dem Browser die Frontkamera zu verwenden.",frontCamera:"Frontkamera",emotionQ:"Wie fühlst du dich gerade?",happy:"Freude",sad:"Traurig",excited:"Begeistert",calm:"Ruhig",angry:"Wütend",surprised:"Überrascht",capture:"Emotion einfangen",searchTitle:"Match wird gesucht...",searchText:"Wir suchen jemanden, der sich gerade genauso fühlt.",searchTime:"Suchzeit:",seconds:"Sek.",cancel:"Suche abbrechen",matchTitle:"Emotion passt!",matchSub:"Ihr habt beide dasselbe gefühlt.",available:"Verfügbar für",keepVibe:"Verbindung behalten",chat:"Chat",keepHint:"Wenn ihr beide die Verbindung behaltet, werdet ihr Freunde.",newMatch:"Neues Match finden",report:"Melden",friends:"Freunde",chats:"Chats",profile:"Profil",name:"Name",age:"Alter",gender:"Geschlecht",country:"Land",language:"Sprache",save:"Speichern",online:"Online",offline:"Offline",messagePlaceholder:"Nachricht...",noFriends:"Noch keine Freunde.",friendNow:"Ihr seid jetzt Freunde ❤️",keepSent:"Verbindung gespeichert ❤️",matchChat:"Match-Chat · verschwindet nach 24 Stunden",friendChat:"Dauerhafter Chat",profileSaved:"Profil gespeichert",cameraError:"Kamera konnte nicht geöffnet werden"},
+es:{onSub:"Muestra cómo te sientes ahora y encuentra a alguien en tu misma onda.",start:"Empezar",male:"Hombre",female:"Mujer",other:"Otro",eyebrow:"Tu vibe. Ahora mismo.",heroTitle:"Captura tu emoción",heroText:"Haz una foto y encuentra a alguien que sienta lo mismo ahora.",cameraNeed:"Se necesita acceso a la cámara",cameraText:"Permite que el navegador use la cámara frontal.",frontCamera:"Cámara frontal",emotionQ:"¿Cómo te sientes ahora?",happy:"Alegría",sad:"Tristeza",excited:"Emoción",calm:"Calma",angry:"Enfado",surprised:"Sorpresa",capture:"Capturar emoción",searchTitle:"Buscando match...",searchText:"Buscamos a alguien que sienta lo mismo ahora.",searchTime:"Tiempo de búsqueda:",seconds:"s",cancel:"Cancelar búsqueda",matchTitle:"¡Emoción coincidente!",matchSub:"Los dos sentisteis lo mismo.",available:"Disponible por",keepVibe:"Mantener conexión",chat:"Chat",keepHint:"Si ambos mantenéis la conexión, seréis amigos.",newMatch:"Buscar otro match",report:"Reportar",friends:"Amigos",chats:"Chats",profile:"Perfil",name:"Nombre",age:"Edad",gender:"Género",country:"País",language:"Idioma",save:"Guardar",online:"En línea",offline:"Sin conexión",messagePlaceholder:"Mensaje...",noFriends:"Todavía no tienes amigos.",friendNow:"Ahora sois amigos ❤️",keepSent:"Conexión guardada ❤️",matchChat:"Chat del match · desaparece en 24 horas",friendChat:"Chat permanente",profileSaved:"Perfil guardado",cameraError:"No se pudo abrir la cámara"}
 };
 
-const langs=["en","ru","uk","et","de","es"];
-let lang=localStorage.getItem("snapvibe_language")||(navigator.language||"en").split("-")[0];
-if(!langs.includes(lang))lang="en";
+const supported=["ru","en","uk","et","de","es"];
+let lang=localStorage.getItem("snapvibe_language")||(navigator.language||"ru").split("-")[0];
+if(!supported.includes(lang))lang="en";
+
 const $=id=>document.getElementById(id);
-const tr=k=>T[lang]?.[k]||T.en[k]||k;
+const t=k=>I18N[lang]?.[k]||I18N.en[k]||k;
 
 let userId=localStorage.getItem("snapvibe_user_id");
 if(!userId){userId="user_"+crypto.randomUUID();localStorage.setItem("snapvibe_user_id",userId)}
-let profile={id:userId,name:localStorage.getItem("snapvibe_user_name")||"",language:lang,age:Number(localStorage.getItem("snapvibe_age"))||null,country:localStorage.getItem("snapvibe_country")||"",gender:localStorage.getItem("snapvibe_gender")||"male"};
 
-let socket=null,stream=null,emotion="happy",friends=[],match=null,searchAt=0,searchTimer=null,countTimer=null,activeChat={id:null,type:null,name:null};
+let profile={
+  id:userId,
+  name:localStorage.getItem("snapvibe_user_name")||"",
+  age:Number(localStorage.getItem("snapvibe_age"))||null,
+  gender:localStorage.getItem("snapvibe_gender")||"male",
+  country:localStorage.getItem("snapvibe_country")||"",
+  language:lang
+};
 
-function applyLang(){document.querySelectorAll("[data-i18n]").forEach(e=>e.textContent=tr(e.dataset.i18n));$("status").textContent=socket?.readyState===1?tr("online"):tr("offline");$("profileLanguage").value=lang}
-function show(id){["vibeScreen","searchScreen","matchScreen","friendsScreen","chatScreen","profileScreen"].forEach(s=>$(s).classList.toggle("active",s===id));
-let onboardingGender=profile.gender||"male";
-function setupOnboarding(){
-  if(profile.name)return;
-  $("onboard").classList.add("show");
-  $("onLanguage").value=lang;
-  document.querySelectorAll(".gender-btn").forEach(b=>b.onclick=()=>{
-    document.querySelectorAll(".gender-btn").forEach(x=>x.classList.remove("selected"));
-    b.classList.add("selected"); onboardingGender=b.dataset.gender;
-  });
-  $("finishOnboard").onclick=()=>{
-    const name=$("onName").value.trim().slice(0,30);
-    const age=Number($("onAge").value);
-    if(!name){toast("Введите имя");return}
-    if(!age||age<18||age>99){toast("Возраст — от 18 лет");return}
-    profile.name=name; profile.age=age; profile.country=$("onCountry").value.trim().slice(0,40);
-    profile.gender=onboardingGender; lang=$("onLanguage").value; profile.language=lang;
-    localStorage.setItem("snapvibe_user_name",profile.name);
-    localStorage.setItem("snapvibe_age",String(profile.age));
-    localStorage.setItem("snapvibe_country",profile.country);
-    localStorage.setItem("snapvibe_gender",profile.gender);
-    localStorage.setItem("snapvibe_language",lang);
-    $("onboard").classList.remove("show"); applyLang(); fillProfile();
-    send({type:"register_profile",...profile});
-  };
+let socket=null,stream=null,selectedEmotion="happy",friends=[],currentMatch=null;
+let searchStarted=0,searchTimer=null,countTimer=null;
+let activeChat={id:null,type:null,name:null,friendId:null};
+let previousView="vibeView";
+
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
+  $("statusText").textContent=socket?.readyState===WebSocket.OPEN?t("online"):t("offline");
+  renderFriends();
 }
 
-document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.screen===id));if(id==="friendsScreen")send({type:"friends_list"});if(id==="profileScreen")fillProfile()}
-function toast(x){$("toast").textContent=x;$("toast").classList.add("show");clearTimeout($("toast").t);$("toast").t=setTimeout(()=>$("toast").classList.remove("show"),2000)}
-function send(x){if(socket?.readyState===1){socket.send(JSON.stringify(x));return true}return false}
+function showView(id){
+  ["vibeView","searchView","matchView","friendsView","chatView","profileView"].forEach(v=>$(v).classList.toggle("active",v===id));
+  document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
+  if(id!=="chatView")previousView=id;
+  if(id==="friendsView")send({type:"friends_list"});
+  if(id==="profileView")fillProfile();
+}
+
+function toast(text){
+  $("toast").textContent=text;$("toast").classList.add("show");
+  clearTimeout($("toast")._t);$("toast")._t=setTimeout(()=>$("toast").classList.remove("show"),2200);
+}
+
+function send(data){
+  if(socket?.readyState===WebSocket.OPEN){socket.send(JSON.stringify(data));return true}
+  return false;
+}
 
 function connect(){
+  if(socket&&(socket.readyState===WebSocket.OPEN||socket.readyState===WebSocket.CONNECTING))return;
   const proto=location.protocol==="https:"?"wss:":"ws:";
   socket=new WebSocket(proto+"//"+location.host);
-  socket.onopen=()=>{$("status").classList.add("online");$("status").textContent=tr("online");$("capture").disabled=false;send({type:"register_profile",...profile,language:lang})};
-  socket.onclose=()=>{$("status").classList.remove("online");$("status").textContent=tr("offline");$("capture").disabled=true;setTimeout(connect,2500)};
-  socket.onmessage=e=>{try{handle(JSON.parse(e.data))}catch(err){console.error(err)}};
+
+  socket.onopen=()=>{
+    $("status").classList.add("online");$("statusText").textContent=t("online");$("capture").disabled=false;
+    if(profile.name)registerProfile();
+  };
+
+  socket.onclose=()=>{
+    $("status").classList.remove("online");$("statusText").textContent=t("offline");$("capture").disabled=true;
+    setTimeout(connect,2500);
+  };
+
+  socket.onmessage=e=>{try{handleServer(JSON.parse(e.data))}catch(err){console.error(err)}};
 }
 
-function handle(d){
-  if(d.type==="bootstrap"){if(d.profile)profile={...profile,...d.profile};friends=d.friends||[];renderFriends()}
-  else if(d.type==="searching"){startSearch()}
-  else if(d.type==="search_cancelled"){clearInterval(searchTimer);show("vibeScreen")}
-  else if(d.type==="match_found"){showMatch(d)}
-  else if(d.type==="match_expired"){expireMatch()}
-  else if(d.type==="match_ended"){}
-  else if(d.type==="keep_vibe_pending"){$("keepVibe").classList.add("active");toast("❤️")}
-  else if(d.type==="keep_vibe_received"){toast("❤️")}
-  else if(d.type==="friendship_created"){friends=[d.friend,...friends.filter(f=>f.id!==d.friend.id)];renderFriends();$("keepStatus").textContent=tr("friendNow");toast(tr("friendNow"))}
-  else if(d.type==="friends_list"){friends=d.friends||[];renderFriends()}
-  else if(d.type==="friend_chat_ready"){openChat(d.chatId,d.friend?.name||"SnapVibe","friend",d.messages||[])}
-  else if(d.type==="chat_history"){if(activeChat.id===d.chatId)renderMessages(d.messages||[])}
-  else if(d.type==="chat_message"){if(activeChat.id===d.chatId)appendMessage(d.message)}
-  else if(d.type==="error"){toast(d.message||"Error")}
+function registerProfile(){send({type:"register_profile",...profile,language:lang})}
+
+function handleServer(d){
+  if(d.type==="profile_saved"){profile={...profile,...d.profile};fillProfile();return}
+  if(d.type==="bootstrap"){if(d.profile)profile={...profile,...d.profile};friends=d.friends||[];renderFriends();return}
+  if(d.type==="searching"){startSearchTimer();return}
+  if(d.type==="search_cancelled"){stopSearchTimer();showView("vibeView");return}
+  if(d.type==="match_found"){showMatch(d);return}
+  if(d.type==="match_expired"){expireMatch();return}
+  if(d.type==="match_ended"){return}
+  if(d.type==="keep_vibe_pending"){$("keepVibe").classList.add("active");toast(t("keepSent"));return}
+  if(d.type==="keep_vibe_received"){toast("❤️ "+t("keepVibe"));return}
+  if(d.type==="friendship_created"){
+    friends=[d.friend,...friends.filter(f=>f.id!==d.friend.id)];renderFriends();$("keepStatus").textContent=t("friendNow");toast(t("friendNow"));return
+  }
+  if(d.type==="friends_list"){friends=d.friends||[];renderFriends();return}
+  if(d.type==="friend_chat_ready"){openChat(d.chatId,d.friend?.name||"SnapVibe","friend",d.friend?.id||null,d.messages||[]);return}
+  if(d.type==="chat_history"){if(activeChat.id===d.chatId)renderMessages(d.messages||[]);return}
+  if(d.type==="chat_message"){if(activeChat.id===d.chatId)appendMessage(d.message);return}
+  if(d.type==="report_received"){toast("✓");return}
+  if(d.type==="error"){toast(d.message||"Error");return}
 }
 
-async function camera(){
-  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"user"},width:{ideal:1280}},audio:false});$("video").srcObject=stream;$("placeholder").style.display="none"}
-  catch{toast("Camera error")}
+async function startCamera(){
+  if(!navigator.mediaDevices?.getUserMedia)return;
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"user"},width:{ideal:1280},height:{ideal:1280}},audio:false});
+    $("video").srcObject=stream;$("cameraPlaceholder").style.display="none";
+  }catch(e){toast(t("cameraError"))}
 }
 
-async function hashEmotion(v){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("snapvibe:"+v));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
-function takePhoto(){const v=$("video");if(!stream||!v.videoWidth)return null;const w=Math.min(720,v.videoWidth),h=Math.round(v.videoHeight*(w/v.videoWidth)),c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(v,0,0,w,h);return c.toDataURL("image/jpeg",.82)}
+function takePhoto(){
+  const v=$("video");if(!stream||!v.videoWidth)return null;
+  const max=720,scale=Math.min(1,max/v.videoWidth),w=Math.round(v.videoWidth*scale),h=Math.round(v.videoHeight*scale);
+  const c=document.createElement("canvas");c.width=w;c.height=h;
+  const ctx=c.getContext("2d");ctx.translate(w,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,w,h);
+  return c.toDataURL("image/jpeg",.82);
+}
 
-document.querySelectorAll(".emotion").forEach(b=>b.onclick=()=>{document.querySelectorAll(".emotion").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");emotion=b.dataset.emotion});
+async function hashEmotion(emotion){
+  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("snapvibe:"+emotion));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
 
-$("capture").onclick=async()=>{const p=takePhoto();if(!p){toast("Camera error");return}const h=await hashEmotion(emotion);if(send({type:"capture",emotionHash:h,photo:p})){show("searchScreen");startSearch()}};
-function startSearch(){clearInterval(searchTimer);searchAt=Date.now();$("searchSeconds").textContent="0 s";searchTimer=setInterval(()=>$("searchSeconds").textContent=Math.floor((Date.now()-searchAt)/1000)+" s",1000)}
-$("cancelSearch").onclick=()=>{send({type:"cancel_search"});clearInterval(searchTimer);show("vibeScreen")};
+document.querySelectorAll(".emotion").forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll(".emotion").forEach(x=>x.classList.remove("selected"));
+  btn.classList.add("selected");selectedEmotion=btn.dataset.emotion;
+});
 
-function showMatch(d){clearInterval(searchTimer);clearInterval(countTimer);match={id:d.matchId,chatId:d.matchChatId,expiresAt:Number(d.expiresAt),partnerId:d.partnerUserId,partnerName:d.partnerName||"SnapVibe User"};$("matchPartnerName").textContent=match.partnerName;$("matchPhoto").src=d.partnerPhoto;$("keepVibe").classList.remove("active");$("keepStatus").textContent=tr("keepHint");show("matchScreen");countTimer=setInterval(countdown,1000);countdown()}
-function countdown(){if(!match)return;const r=Math.max(0,match.expiresAt-Date.now()),s=Math.floor(r/1000);$("countdown").textContent=String(Math.floor(s/3600)).padStart(2,"0")+":"+String(Math.floor((s%3600)/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");if(r<=0)expireMatch()}
-function expireMatch(){clearInterval(countTimer);match=null;$("matchPhoto").removeAttribute("src");show("vibeScreen")}
+$("capture").onclick=async()=>{
+  const photo=takePhoto();if(!photo){toast(t("cameraError"));return}
+  const emotionHash=await hashEmotion(selectedEmotion);
+  if(send({type:"capture",emotionHash,photo})){showView("searchView");startSearchTimer()}
+};
 
-$("keepVibe").onclick=()=>{if(match)send({type:"keep_vibe",matchId:match.id})};
-$("openMatchChat").onclick=()=>{if(match){openChat(match.chatId,match.partnerName,"match",[]);send({type:"chat_history",chatId:match.chatId})}};
-$("newMatch").onclick=()=>{if(match)send({type:"end_match",matchId:match.id});clearInterval(countTimer);match=null;$("matchPhoto").removeAttribute("src");show("vibeScreen")};
+function startSearchTimer(){
+  stopSearchTimer();searchStarted=Date.now();updateSearchTime();searchTimer=setInterval(updateSearchTime,1000);
+}
+function updateSearchTime(){$("searchSeconds").textContent=Math.floor((Date.now()-searchStarted)/1000)+" "+t("seconds")}
+function stopSearchTimer(){if(searchTimer)clearInterval(searchTimer);searchTimer=null}
 
-function openChat(id,name,type,msgs){activeChat={id,name,type};$("chatName").textContent=name;$("chatMeta").textContent=type==="match"?tr("matchChat"):tr("friendChat");renderMessages(msgs);show("chatScreen")}
-function renderMessages(list){$("messages").innerHTML="";list.forEach(appendMessage)}
-function appendMessage(m){const d=document.createElement("div");d.className="bubble"+(m.senderId===userId?" me":"");d.textContent=m.text;$("messages").appendChild(d);$("messages").scrollTop=$("messages").scrollHeight}
-function sendMsg(){const i=$("messageInput"),x=i.value.trim();if(x&&activeChat.id){send({type:"chat_message",chatId:activeChat.id,text:x});i.value=""}}
-$("sendMessage").onclick=sendMsg;
-$("messageInput").onkeydown=e=>{if(e.key==="Enter")sendMsg()};
-$("chatBack").onclick=()=>show(activeChat.type==="match"&&match?"matchScreen":"friendsScreen");
+$("cancelSearch").onclick=()=>{send({type:"cancel_search"});stopSearchTimer();showView("vibeView")};
 
-function renderFriends(){const box=$("friendList");box.innerHTML="";if(!friends.length){box.innerHTML='<div class="muted">'+tr("noFriends")+'</div>';return}friends.forEach(f=>{const d=document.createElement("div");d.className="friend";d.innerHTML='<div class="avatar">'+(f.name||"S")[0].toUpperCase()+'</div><div class="friend-main"><b></b><span></span></div>';d.querySelector("b").textContent=f.name||"SnapVibe User";d.querySelector("span").textContent=[f.age,f.country].filter(Boolean).join(" · ");const b=document.createElement("button");b.textContent="💬";b.onclick=()=>send({type:"friend_chat_open",friendId:f.id});d.appendChild(b);box.appendChild(d)})}
+function showMatch(d){
+  stopSearchTimer();clearInterval(countTimer);
+  currentMatch={id:d.matchId,chatId:d.matchChatId,expiresAt:Number(d.expiresAt),partnerId:d.partnerUserId,partnerName:d.partnerName||"SnapVibe User"};
+  $("matchPartnerName").textContent=currentMatch.partnerName;$("matchPhoto").src=d.partnerPhoto;$("keepVibe").classList.remove("active");$("keepStatus").textContent=t("keepHint");
+  showView("matchView");startCountdown();
+}
 
-function fillProfile(){$("profileName").value=profile.name||"";$("profileAge").value=profile.age||"";$("profileCountry").value=profile.country||"";$("profileLanguage").value=lang}
-$("saveProfile").onclick=()=>{profile.name=$("profileName").value.trim().slice(0,30)||"SnapVibe User";profile.age=Number($("profileAge").value)||null;profile.country=$("profileCountry").value.trim().slice(0,40);lang=$("profileLanguage").value;profile.language=lang;localStorage.setItem("snapvibe_user_name",profile.name);localStorage.setItem("snapvibe_age",profile.age||"");localStorage.setItem("snapvibe_country",profile.country);localStorage.setItem("snapvibe_language",lang);applyLang();send({type:"register_profile",...profile});toast("✓")};
+function startCountdown(){clearInterval(countTimer);updateCountdown();countTimer=setInterval(updateCountdown,1000)}
+function updateCountdown(){
+  if(!currentMatch)return;const r=Math.max(0,currentMatch.expiresAt-Date.now()),s=Math.floor(r/1000);
+  $("countdown").textContent=String(Math.floor(s/3600)).padStart(2,"0")+":"+String(Math.floor((s%3600)/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+  if(r<=0)expireMatch();
+}
+function expireMatch(){clearInterval(countTimer);currentMatch=null;$("matchPhoto").removeAttribute("src");showView("vibeView")}
 
-document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>show(b.dataset.screen));
+$("keepVibe").onclick=()=>{if(currentMatch)send({type:"keep_vibe",matchId:currentMatch.id})};
+$("openMatchChat").onclick=()=>{if(currentMatch){openChat(currentMatch.chatId,currentMatch.partnerName,"match",currentMatch.partnerId,[]);send({type:"chat_history",chatId:currentMatch.chatId})}};
+$("newMatch").onclick=()=>{if(currentMatch)send({type:"end_match",matchId:currentMatch.id});clearInterval(countTimer);currentMatch=null;$("matchPhoto").removeAttribute("src");showView("vibeView")};
+$("reportMatch").onclick=()=>{if(currentMatch)send({type:"report_user",targetUserId:currentMatch.partnerId,reason:"match_report"});toast("✓")};
+
+function openChat(id,name,type,friendId,msgs){
+  activeChat={id,name,type,friendId};$("chatName").textContent=name;$("chatAvatar").textContent=(name||"S")[0].toUpperCase();$("chatMeta").textContent=type==="match"?t("matchChat"):t("friendChat");
+  renderMessages(msgs);showView("chatView");
+}
+function renderMessages(list){$("messages").innerHTML="";list.forEach(appendMessage);$("messages").scrollTop=$("messages").scrollHeight}
+function appendMessage(m){
+  const div=document.createElement("div");div.className="bubble"+(m.senderId===userId?" me":"");div.textContent=m.text;$("messages").appendChild(div);$("messages").scrollTop=$("messages").scrollHeight;
+}
+function sendMessage(){
+  const input=$("messageInput"),text=input.value.trim();if(!text||!activeChat.id)return;send({type:"chat_message",chatId:activeChat.id,text});input.value="";
+}
+$("sendMessage").onclick=sendMessage;$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+$("chatBack").onclick=()=>showView(activeChat.type==="match"&&currentMatch?"matchView":"friendsView");
+
+function renderFriends(){
+  const box=$("friendList");if(!box)return;box.innerHTML="";
+  if(!friends.length){box.innerHTML='<div class="empty">'+t("noFriends")+'</div>';return}
+  friends.forEach(f=>{
+    const card=document.createElement("div");card.className="friend-card";
+    const av=document.createElement("div");av.className="avatar";av.textContent=(f.name||"S")[0].toUpperCase();
+    const main=document.createElement("div");main.className="friend-main";const b=document.createElement("b");b.textContent=f.name||"SnapVibe User";const s=document.createElement("span");s.textContent=[f.age,f.country].filter(Boolean).join(" · ")||t("friendChat");main.append(b,s);
+    const btn=document.createElement("button");btn.className="friend-chat";btn.textContent="💬";btn.onclick=()=>send({type:"friend_chat_open",friendId:f.id});
+    card.append(av,main,btn);box.appendChild(card);
+  });
+}
+
+function fillProfile(){
+  $("profileTitle").textContent=profile.name||"SnapVibe User";$("profileAvatar").textContent=(profile.name||"S")[0].toUpperCase();$("profileId").textContent=profile.id;
+  $("profileName").value=profile.name||"";$("profileAge").value=profile.age||"";$("profileGender").value=profile.gender||"male";$("profileCountry").value=profile.country||"";
+}
+
+$("saveProfile").onclick=()=>{
+  profile.name=$("profileName").value.trim().slice(0,30)||"SnapVibe User";profile.age=Number($("profileAge").value)||null;profile.gender=$("profileGender").value;profile.country=$("profileCountry").value.trim().slice(0,40);profile.language=lang;
+  localStorage.setItem("snapvibe_user_name",profile.name);localStorage.setItem("snapvibe_age",profile.age||"");localStorage.setItem("snapvibe_gender",profile.gender);localStorage.setItem("snapvibe_country",profile.country);
+  registerProfile();fillProfile();toast(t("profileSaved"));
+};
+
+let onboardGender=profile.gender||"male";
+document.querySelectorAll(".gender-btn").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".gender-btn").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");onboardGender=btn.dataset.gender});
+
+function showOnboarding(){
+  if(profile.name)return;$("onboard").classList.add("show");$("onLanguage").value=lang;
+}
+$("finishOnboard").onclick=()=>{
+  const name=$("onName").value.trim().slice(0,30),age=Number($("onAge").value);
+  if(!name){toast(t("name"));return}if(!age||age<18||age>99){toast("18+");return}
+  profile.name=name;profile.age=age;profile.gender=onboardGender;profile.country=$("onCountry").value.trim().slice(0,40);lang=$("onLanguage").value;profile.language=lang;
+  localStorage.setItem("snapvibe_user_name",profile.name);localStorage.setItem("snapvibe_age",profile.age);localStorage.setItem("snapvibe_gender",profile.gender);localStorage.setItem("snapvibe_country",profile.country);localStorage.setItem("snapvibe_language",lang);
+  $("onboard").classList.remove("show");applyLang();fillProfile();registerProfile();
+};
+
+$("langBtn").onclick=()=>$("langSheet").classList.add("show");
+$("langSheet").onclick=e=>{if(e.target===$("langSheet"))$("langSheet").classList.remove("show")};
+document.querySelectorAll(".lang-item").forEach(btn=>btn.onclick=()=>{lang=btn.dataset.lang;profile.language=lang;localStorage.setItem("snapvibe_language",lang);applyLang();registerProfile();$("langSheet").classList.remove("show")});
+
+document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showView(btn.dataset.view));
 setInterval(()=>send({type:"ping"}),25000);
-applyLang();fillProfile();connect();camera();
+
+applyLang();fillProfile();showOnboarding();connect();startCamera();
 </script>
 </body>
 </html>
