@@ -9,7 +9,6 @@ const MATCH_TIME = 24 * 60 * 60 * 1000;
 
 const app = express();
 const server = http.createServer(app);
-
 const wss = new WebSocket.Server({
   server,
   maxPayload: 8 * 1024 * 1024
@@ -25,7 +24,7 @@ app.use(express.static(__dirname));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    service: "SnapVibe 2.1",
+    service: "SnapVibe 3.3",
     waiting: waitingQueue.size,
     matches: matches.size,
     connected: connected.size,
@@ -34,15 +33,16 @@ app.get("/health", (req, res) => {
   });
 });
 
-const id = (prefix) => prefix + crypto.randomUUID();
+const id = (prefix) =>
+  prefix + crypto.randomUUID();
 
 function send(ws, data) {
   if (ws?.readyState === WebSocket.OPEN) {
     try {
       ws.send(JSON.stringify(data));
       return true;
-    } catch (error) {
-      console.error("Send error:", error);
+    } catch (e) {
+      console.error("send", e);
     }
   }
 
@@ -50,7 +50,10 @@ function send(ws, data) {
 }
 
 function sendUser(userId, data) {
-  return send(connected.get(userId), data);
+  return send(
+    connected.get(userId),
+    data
+  );
 }
 
 function profile(userId) {
@@ -58,7 +61,11 @@ function profile(userId) {
     db.publicUser(userId) || {
       id: userId,
       name: "SnapVibe User",
-      language: "en"
+      language: "en",
+      age: null,
+      gender: "other",
+      country: "",
+      avatar: ""
     }
   );
 }
@@ -74,649 +81,93 @@ function validPhoto(value) {
   return (
     typeof value === "string" &&
     value.startsWith("data:image/") &&
-    Buffer.byteLength(value, "utf8") <= 6 * 1024 * 1024
+    Buffer.byteLength(
+      value,
+      "utf8"
+    ) <=
+      6 * 1024 * 1024
   );
 }
 
-function findOpponent(hash, currentId) {
+function prefAllows(
+  pref,
+  candidateProfile
+) {
+  const want =
+    pref?.gender || "all";
+
+  if (
+    want !== "all" &&
+    candidateProfile.gender !== want
+  ) {
+    return false;
+  }
+
+  const min =
+    Number(pref?.ageMin || 18);
+
+  const max =
+    Number(pref?.ageMax || 99);
+
+  const age =
+    Number(
+      candidateProfile.age || 0
+    );
+
+  if (
+    age &&
+    (
+      age < min ||
+      age > max
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function mutuallyCompatible(
+  a,
+  b
+) {
+  const pa =
+    profile(a.userId);
+
+  const pb =
+    profile(b.userId);
+
+  return (
+    prefAllows(
+      a.search,
+      pb
+    ) &&
+    prefAllows(
+      b.search,
+      pa
+    ) &&
+    !db.isBlockedEitherWay(
+      a.userId,
+      b.userId
+    )
+  );
+}
+
+function findOpponent(
+  current
+) {
   let best = null;
 
-  for (const [userId, user] of waitingQueue) {
-    if (userId === currentId) {
-      continue;
-    }
-
-    if (!user.ws || user.ws.readyState !== WebSocket.OPEN) {
-      waitingQueue.delete(userId);
-      continue;
-    }
-
-    if (user.emotionHash !== hash) {
-      continue;
-    }
-
-    if (db.isBlockedEitherWay(userId, currentId)) {
-      continue;
-    }
-
-    if (!best || user.queuedAt < best.queuedAt) {
-      best = user;
-    }
-  }
-
-  return best;
-}
-
-function createMatch(userA, userB) {
-  const matchId = id("match_");
-  const createdAt = Date.now();
-  const expiresAt = createdAt + MATCH_TIME;
-
-  const profileA = profile(userA.userId);
-  const profileB = profile(userB.userId);
-
-  const chat = db.createMatchChat(
-    matchId,
-    userA.userId,
-    userB.userId
-  );
-
-  const match = {
-    matchId,
-    createdAt,
-    expiresAt,
-    chatId: chat.id,
-
-    userA: {
-      userId: userA.userId,
-      name: profileA.name,
-      photo: userA.photo
-    },
-
-    userB: {
-      userId: userB.userId,
-      name: profileB.name,
-      photo: userB.photo
-    },
-
-    keep: new Set(),
-    timer: null
-  };
-
-  matches.set(matchId, match);
-
-  userMatches.set(userA.userId, matchId);
-  userMatches.set(userB.userId, matchId);
-
-  waitingQueue.delete(userA.userId);
-  waitingQueue.delete(userB.userId);
-
-  send(userA.ws, {
-    type: "match_found",
-    matchId,
-    matchChatId: chat.id,
-    expiresAt,
-
-    partnerUserId: userB.userId,
-    partnerName: profileB.name,
-    partnerProfile: profileB,
-    partnerPhoto: userB.photo
-  });
-
-  send(userB.ws, {
-    type: "match_found",
-    matchId,
-    matchChatId: chat.id,
-    expiresAt,
-
-    partnerUserId: userA.userId,
-    partnerName: profileA.name,
-    partnerProfile: profileA,
-    partnerPhoto: userA.photo
-  });
-
-  match.timer = setTimeout(() => {
-    expireMatch(matchId);
-  }, MATCH_TIME);
-}
-
-function expireMatch(matchId) {
-  const match = matches.get(matchId);
-
-  if (!match) {
-    return;
-  }
-
-  if (match.timer) {
-    clearTimeout(match.timer);
-  }
-
-  const users = [
-    match.userA.userId,
-    match.userB.userId
-  ];
-
-  for (const userId of users) {
-    userMatches.delete(userId);
-
-    sendUser(userId, {
-      type: "match_expired",
-      matchId
-    });
-  }
-
-  match.userA.photo = null;
-  match.userB.photo = null;
-
-  db.deleteChat(match.chatId);
-
-  matches.delete(matchId);
-}
-
-function handleCapture(ws, message) {
-  if (!validHash(message.emotionHash)) {
-    return send(ws, {
-      type: "error",
-      message: "Invalid emotion hash"
-    });
-  }
-
-  if (!validPhoto(message.photo)) {
-    return send(ws, {
-      type: "error",
-      message: "Invalid photo"
-    });
-  }
-
-  if (userMatches.has(ws.userId)) {
-    return send(ws, {
-      type: "error",
-      message:
-        "У вас уже есть активный мэтч. Нажмите «Найти новый мэтч», чтобы завершить его."
-    });
-  }
-
-  waitingQueue.delete(ws.userId);
-
-  const currentProfile = profile(ws.userId);
-
-  const user = {
-    userId: ws.userId,
-    name: currentProfile.name,
-    ws,
-    emotionHash: message.emotionHash,
-    photo: message.photo,
-    queuedAt: Date.now()
-  };
-
-  const opponent = findOpponent(
-    user.emotionHash,
-    user.userId
-  );
-
-  if (!opponent) {
-    waitingQueue.set(user.userId, user);
-
-    send(ws, {
-      type: "searching"
-    });
-
-    return;
-  }
-
-  createMatch(opponent, user);
-}
-
-function keepVibe(ws, message) {
-  const match = matches.get(message.matchId);
-
-  if (!match) {
-    return send(ws, {
-      type: "error",
-      message: "Match expired"
-    });
-  }
-
-  const users = [
-    match.userA.userId,
-    match.userB.userId
-  ];
-
-  if (!users.includes(ws.userId)) {
-    return;
-  }
-
-  const otherUserId =
-    users.find((userId) => userId !== ws.userId);
-
-  match.keep.add(ws.userId);
-
-  send(ws, {
-    type: "keep_vibe_pending",
-    matchId: match.matchId
-  });
-
-  sendUser(otherUserId, {
-    type: "keep_vibe_received",
-    matchId: match.matchId
-  });
-
-  if (match.keep.size === 2) {
-    db.makeFriends(
-      users[0],
-      users[1]
-    );
-
-    const chat = db.createFriendChat(
-      users[0],
-      users[1]
-    );
-
-    sendUser(users[0], {
-      type: "friendship_created",
-      friend: profile(users[1]),
-      chatId: chat.id
-    });
-
-    sendUser(users[1], {
-      type: "friendship_created",
-      friend: profile(users[0]),
-      chatId: chat.id
-    });
-  }
-}
-
-function chatMessage(ws, message) {
-  const chat = db.getChat(
-    String(message.chatId || "")
-  );
-
-  if (!chat) {
-    return;
-  }
-
-  if (!chat.users.includes(ws.userId)) {
-    return;
-  }
-
-  if (chat.type === "match") {
-    const match = matches.get(chat.matchId);
-
-    if (
-      !match ||
-      Date.now() >= match.expiresAt
-    ) {
-      return send(ws, {
-        type: "error",
-        message: "Match chat expired"
-      });
-    }
-  }
-
-  if (chat.type === "friend") {
-    const otherUserId =
-      chat.users.find(
-        (userId) => userId !== ws.userId
-      );
-
-    if (
-      !db.areFriends(
-        ws.userId,
-        otherUserId
-      )
-    ) {
-      return;
-    }
-  }
-
-  const newMessage = db.addMessage(
-    chat.id,
-    ws.userId,
-    message.text
-  );
-
-  if (!newMessage) {
-    return;
-  }
-
-  chat.users.forEach((userId) => {
-    sendUser(userId, {
-      type: "chat_message",
-      chatId: chat.id,
-      message: newMessage
-    });
-  });
-}
-
-wss.on("connection", (ws) => {
-  ws.userId = id("session_");
-
-  send(ws, {
-    type: "connected",
-    sessionId: ws.userId
-  });
-
-  ws.on("message", (raw) => {
-    try {
-      const message =
-        JSON.parse(raw.toString());
-
-      if (
-        message.type ===
-        "register_profile"
-      ) {
-        const userId =
-          typeof message.userId === "string" &&
-          message.userId.length >= 10 &&
-          message.userId.length <= 120
-            ? message.userId
-            : id("user_");
-
-        if (
-          connected.get(ws.userId) === ws
-        ) {
-          connected.delete(ws.userId);
-        }
-
-        ws.userId = userId;
-
-        connected.set(
-          userId,
-          ws
-        );
-
-        const savedProfile =
-          db.createOrUpdateUser({
-            id: userId,
-            name: message.name,
-            language: message.language,
-            age: message.age,
-            gender: message.gender,
-            country: message.country
-          });
-
-        send(ws, {
-          type: "profile_saved",
-          profile: savedProfile
-        });
-
-        send(ws, {
-          type: "bootstrap",
-          profile: savedProfile,
-          friends:
-            db.getFriends(userId)
-        });
-
-        return;
-      }
-
-      if (
-        message.type === "capture"
-      ) {
-        return handleCapture(
-          ws,
-          message
-        );
-      }
-
-      if (
-        message.type ===
-        "cancel_search"
-      ) {
-        waitingQueue.delete(
-          ws.userId
-        );
-
-        return send(ws, {
-          type: "search_cancelled"
-        });
-      }
-
-      if (
-        message.type ===
-        "keep_vibe"
-      ) {
-        return keepVibe(
-          ws,
-          message
-        );
-      }
-
-      if (
-        message.type ===
-        "end_match"
-      ) {
-        const matchId =
-          String(
-            message.matchId || ""
-          );
-
-        const match =
-          matches.get(matchId);
-
-        if (
-          match &&
-          (
-            match.userA.userId ===
-              ws.userId ||
-            match.userB.userId ===
-              ws.userId
-          )
-        ) {
-          expireMatch(matchId);
-        } else {
-          userMatches.delete(
-            ws.userId
-          );
-        }
-
-        return send(ws, {
-          type: "match_ended"
-        });
-      }
-
-      if (
-        message.type ===
-        "chat_message"
-      ) {
-        return chatMessage(
-          ws,
-          message
-        );
-      }
-
-      if (
-        message.type ===
-        "chat_history"
-      ) {
-        const chat =
-          db.getChat(
-            String(
-              message.chatId || ""
-            )
-          );
-
-        if (
-          chat &&
-          chat.users.includes(
-            ws.userId
-          )
-        ) {
-          send(ws, {
-            type: "chat_history",
-            chatId: chat.id,
-            messages:
-              db.getMessages(
-                chat.id
-              )
-          });
-        }
-
-        return;
-      }
-
-      if (
-        message.type ===
-        "friends_list"
-      ) {
-        return send(ws, {
-          type: "friends_list",
-          friends:
-            db.getFriends(
-              ws.userId
-            )
-        });
-      }
-
-      if (
-        message.type ===
-        "friend_chat_open"
-      ) {
-        const friendId =
-          String(
-            message.friendId || ""
-          );
-
-        if (
-          db.areFriends(
-            ws.userId,
-            friendId
-          )
-        ) {
-          const chat =
-            db.createFriendChat(
-              ws.userId,
-              friendId
-            );
-
-          send(ws, {
-            type:
-              "friend_chat_ready",
-            chatId: chat.id,
-            friend:
-              profile(friendId),
-            messages:
-              db.getMessages(
-                chat.id
-              )
-          });
-        }
-
-        return;
-      }
-
-      if (
-        message.type ===
-        "remove_friend"
-      ) {
-        const friendId =
-          String(
-            message.friendId || ""
-          );
-
-        db.removeFriend(
-          ws.userId,
-          friendId
-        );
-
-        send(ws, {
-          type: "friends_list",
-          friends:
-            db.getFriends(
-              ws.userId
-            )
-        });
-
-        sendUser(friendId, {
-          type: "friends_list",
-          friends:
-            db.getFriends(
-              friendId
-            )
-        });
-
-        return;
-      }
-
-      if (
-        message.type ===
-        "block_user"
-      ) {
-        db.blockUser(
-          ws.userId,
-          String(
-            message.targetUserId ||
-              ""
-          )
-        );
-
-        return send(ws, {
-          type: "user_blocked"
-        });
-      }
-
-      if (
-        message.type ===
-        "report_user"
-      ) {
-        db.reportUser(
-          ws.userId,
-          String(
-            message.targetUserId ||
-              ""
-          ),
-          message.reason
-        );
-
-        return send(ws, {
-          type: "report_received"
-        });
-      }
-
-      if (
-        message.type === "ping"
-      ) {
-        return send(ws, {
-          type: "pong",
-          time: Date.now()
-        });
-      }
-
-      send(ws, {
-        type: "error",
-        message:
-          "Unknown command"
-      });
-    } catch (error) {
-      console.error(error);
-
-      send(ws, {
-        type: "error",
-        message: "Bad request"
-      });
-    }
-  });
-
-  ws.on("close", () => {
-    waitingQueue.delete(
-      ws.userId
-    );
-
-    if (
-      connected.get(ws.userId) === ws
-    ) {
-      connected.delete(
-        ws.userId
-      );
-    }
-  });
-});
-
-setInterval(() => {
   for (
     const [userId, user]
     of waitingQueue
   ) {
+    if (
+      userId === current.userId
+    ) {
+      continue;
+    }
+
     if (
       !user.ws ||
       user.ws.readyState !==
@@ -725,63 +176,1045 @@ setInterval(() => {
       waitingQueue.delete(
         userId
       );
-    }
-  }
 
-  for (
-    const [matchId, match]
-    of matches
-  ) {
+      continue;
+    }
+
     if (
-      Date.now() >=
-      match.expiresAt
+      user.emotionHash !==
+      current.emotionHash
     ) {
-      expireMatch(
-        matchId
-      );
-    }
-  }
-}, 60000);
-
-function shutdown() {
-  for (
-    const match
-    of matches.values()
-  ) {
-    if (match.timer) {
-      clearTimeout(
-        match.timer
-      );
+      continue;
     }
 
-    match.userA.photo = null;
-    match.userB.photo = null;
+    if (
+      !mutuallyCompatible(
+        current,
+        user
+      )
+    ) {
+      continue;
+    }
+
+    if (
+      !best ||
+      user.queuedAt <
+        best.queuedAt
+    ) {
+      best = user;
+    }
   }
 
-  server.close(() => {
-    process.exit(0);
-  });
-
-  setTimeout(() => {
-    process.exit(0);
-  }, 3000).unref();
+  return best;
 }
 
-process.on(
-  "SIGINT",
-  shutdown
+function serializeMatchFor(
+  userId,
+  match
+) {
+  const isA =
+    match.userA.userId ===
+    userId;
+
+  const partner =
+    isA
+      ? match.userB
+      : match.userA;
+
+  return {
+    matchId:
+      match.matchId,
+
+    matchChatId:
+      match.chatId,
+
+    expiresAt:
+      match.expiresAt,
+
+    partnerUserId:
+      partner.userId,
+
+    partnerName:
+      partner.name,
+
+    partnerProfile:
+      profile(
+        partner.userId
+      ),
+
+    partnerPhoto:
+      partner.photo,
+
+    keepMine:
+      match.keep.has(
+        userId
+      ),
+
+    keepPartner:
+      match.keep.has(
+        partner.userId
+      )
+  };
+}
+
+function createMatch(
+  userA,
+  userB
+) {
+  const matchId =
+    id("match_");
+
+  const createdAt =
+    Date.now();
+
+  const expiresAt =
+    createdAt +
+    MATCH_TIME;
+
+  const pa =
+    profile(
+      userA.userId
+    );
+
+  const pb =
+    profile(
+      userB.userId
+    );
+
+  const chat =
+    db.createMatchChat(
+      matchId,
+      userA.userId,
+      userB.userId
+    );
+
+  const match = {
+    matchId,
+    createdAt,
+    expiresAt,
+    chatId:
+      chat.id,
+
+    userA: {
+      userId:
+        userA.userId,
+      name:
+        pa.name,
+      photo:
+        userA.photo
+    },
+
+    userB: {
+      userId:
+        userB.userId,
+      name:
+        pb.name,
+      photo:
+        userB.photo
+    },
+
+    keep:
+      new Set(),
+
+    timer:
+      null
+  };
+
+  matches.set(
+    matchId,
+    match
+  );
+
+  userMatches.set(
+    userA.userId,
+    matchId
+  );
+
+  userMatches.set(
+    userB.userId,
+    matchId
+  );
+
+  waitingQueue.delete(
+    userA.userId
+  );
+
+  waitingQueue.delete(
+    userB.userId
+  );
+
+  send(
+    userA.ws,
+    {
+      type:
+        "match_found",
+
+      ...serializeMatchFor(
+        userA.userId,
+        match
+      )
+    }
+  );
+
+  send(
+    userB.ws,
+    {
+      type:
+        "match_found",
+
+      ...serializeMatchFor(
+        userB.userId,
+        match
+      )
+    }
+  );
+
+  match.timer =
+    setTimeout(
+      () =>
+        expireMatch(
+          matchId
+        ),
+      MATCH_TIME
+    );
+}
+
+function expireMatch(
+  matchId
+) {
+  const match =
+    matches.get(
+      matchId
+    );
+
+  if (!match) {
+    return;
+  }
+
+  if (match.timer) {
+    clearTimeout(
+      match.timer
+    );
+  }
+
+  for (
+    const uid
+    of [
+      match.userA.userId,
+      match.userB.userId
+    ]
+  ) {
+    userMatches.delete(
+      uid
+    );
+
+    sendUser(
+      uid,
+      {
+        type:
+          "match_expired",
+
+        matchId
+      }
+    );
+  }
+
+  db.deleteChat(
+    match.chatId
+  );
+
+  match.userA.photo =
+    null;
+
+  match.userB.photo =
+    null;
+
+  matches.delete(
+    matchId
+  );
+}
+
+function handleCapture(
+  ws,
+  m
+) {
+  if (
+    !validHash(
+      m.emotionHash
+    )
+  ) {
+    return send(
+      ws,
+      {
+        type: "error",
+        message:
+          "Invalid emotion"
+      }
+    );
+  }
+
+  if (
+    !validPhoto(
+      m.photo
+    )
+  ) {
+    return send(
+      ws,
+      {
+        type: "error",
+        message:
+          "Invalid photo"
+      }
+    );
+  }
+
+  if (
+    userMatches.has(
+      ws.userId
+    )
+  ) {
+    return send(
+      ws,
+      {
+        type: "error",
+        message:
+          "У вас уже есть активный мэтч."
+      }
+    );
+  }
+
+  waitingQueue.delete(
+    ws.userId
+  );
+
+  const current = {
+    userId:
+      ws.userId,
+
+    ws,
+
+    emotionHash:
+      m.emotionHash,
+
+    photo:
+      m.photo,
+
+    queuedAt:
+      Date.now(),
+
+    search: {
+      gender:
+        [
+          "male",
+          "female",
+          "all"
+        ].includes(
+          m.searchGender
+        )
+          ? m.searchGender
+          : "all",
+
+      ageMin:
+        Math.max(
+          18,
+          Math.min(
+            99,
+            Number(
+              m.ageMin
+            ) || 18
+          )
+        ),
+
+      ageMax:
+        Math.max(
+          18,
+          Math.min(
+            99,
+            Number(
+              m.ageMax
+            ) || 99
+          )
+        )
+    }
+  };
+
+  if (
+    current.search.ageMin >
+    current.search.ageMax
+  ) {
+    [
+      current.search.ageMin,
+      current.search.ageMax
+    ] = [
+      current.search.ageMax,
+      current.search.ageMin
+    ];
+  }
+
+  const opponent =
+    findOpponent(
+      current
+    );
+
+  if (!opponent) {
+    waitingQueue.set(
+      ws.userId,
+      current
+    );
+
+    return send(
+      ws,
+      {
+        type:
+          "searching"
+      }
+    );
+  }
+
+  createMatch(
+    opponent,
+    current
+  );
+}
+
+function keepVibe(
+  ws,
+  m
+) {
+  const match =
+    matches.get(
+      String(
+        m.matchId || ""
+      )
+    );
+
+  if (!match) {
+    return send(
+      ws,
+      {
+        type: "error",
+        message:
+          "Match expired"
+      }
+    );
+  }
+
+  const users = [
+    match.userA.userId,
+    match.userB.userId
+  ];
+
+  if (
+    !users.includes(
+      ws.userId
+    )
+  ) {
+    return;
+  }
+
+  const other =
+    users.find(
+      x =>
+        x !== ws.userId
+    );
+
+  match.keep.add(
+    ws.userId
+  );
+
+  send(
+    ws,
+    {
+      type:
+        "keep_vibe_pending",
+
+      matchId:
+        match.matchId
+    }
+  );
+
+  sendUser(
+    other,
+    {
+      type:
+        "keep_vibe_received",
+
+      matchId:
+        match.matchId
+    }
+  );
+
+  if (
+    match.keep.size === 2
+  ) {
+    db.makeFriends(
+      users[0],
+      users[1]
+    );
+
+    const chat =
+      db.createFriendChat(
+        users[0],
+        users[1]
+      );
+
+    sendUser(
+      users[0],
+      {
+        type:
+          "friendship_created",
+
+        friend:
+          profile(
+            users[1]
+          ),
+
+        chatId:
+          chat.id
+      }
+    );
+
+    sendUser(
+      users[1],
+      {
+        type:
+          "friendship_created",
+
+        friend:
+          profile(
+            users[0]
+          ),
+
+        chatId:
+          chat.id
+      }
+    );
+  }
+}
+
+function chatMessage(
+  ws,
+  m
+) {
+  const chat =
+    db.getChat(
+      String(
+        m.chatId || ""
+      )
+    );
+
+  if (
+    !chat ||
+    !chat.users.includes(
+      ws.userId
+    )
+  ) {
+    return;
+  }
+
+  if (
+    chat.type ===
+    "match"
+  ) {
+    const match =
+      matches.get(
+        chat.matchId
+      );
+
+    if (
+      !match ||
+      Date.now() >=
+        match.expiresAt
+    ) {
+      return send(
+        ws,
+        {
+          type: "error",
+          message:
+            "Match chat expired"
+        }
+      );
+    }
+  }
+
+  if (
+    chat.type ===
+    "friend"
+  ) {
+    const other =
+      chat.users.find(
+        x =>
+          x !== ws.userId
+      );
+
+    if (
+      !db.areFriends(
+        ws.userId,
+        other
+      )
+    ) {
+      return;
+    }
+  }
+
+  const msg =
+    db.addMessage(
+      chat.id,
+      ws.userId,
+      m.text
+    );
+
+  if (!msg) {
+    return;
+  }
+
+  chat.users.forEach(
+    uid =>
+      sendUser(
+        uid,
+        {
+          type:
+            "chat_message",
+
+          chatId:
+            chat.id,
+
+          message:
+            msg
+        }
+      )
+  );
+}
+
+wss.on(
+  "connection",
+  ws => {
+    ws.userId =
+      id("session_");
+
+    send(
+      ws,
+      {
+        type:
+          "connected",
+
+        sessionId:
+          ws.userId
+      }
+    );
+
+    ws.on(
+      "message",
+      raw => {
+        try {
+          const m =
+            JSON.parse(
+              raw.toString()
+            );
+
+          if (
+            m.type ===
+            "register_profile"
+          ) {
+            const uid =
+              typeof m.userId ===
+                "string" &&
+              m.userId.length >=
+                10 &&
+              m.userId.length <=
+                120
+                ? m.userId
+                : id(
+                    "user_"
+                  );
+
+            if (
+              connected.get(
+                ws.userId
+              ) === ws
+            ) {
+              connected.delete(
+                ws.userId
+              );
+            }
+
+            ws.userId =
+              uid;
+
+            connected.set(
+              uid,
+              ws
+            );
+
+            const saved =
+              db.createOrUpdateUser({
+                id: uid,
+                name: m.name,
+                language:
+                  m.language,
+                age: m.age,
+                gender:
+                  m.gender,
+                country:
+                  m.country,
+                avatar:
+                  m.avatar
+              });
+
+            const activeId =
+              userMatches.get(
+                uid
+              );
+
+            const active =
+              activeId
+                ? matches.get(
+                    activeId
+                  )
+                : null;
+
+            send(
+              ws,
+              {
+                type:
+                  "profile_saved",
+
+                profile:
+                  saved
+              }
+            );
+
+            send(
+              ws,
+              {
+                type:
+                  "bootstrap",
+
+                profile:
+                  saved,
+
+                friends:
+                  db.getFriends(
+                    uid
+                  ),
+
+                activeMatch:
+                  active
+                    ? serializeMatchFor(
+                        uid,
+                        active
+                      )
+                    : null
+              }
+            );
+
+            return;
+          }
+
+          if (
+            m.type ===
+            "capture"
+          ) {
+            return handleCapture(
+              ws,
+              m
+            );
+          }
+
+          if (
+            m.type ===
+            "cancel_search"
+          ) {
+            waitingQueue.delete(
+              ws.userId
+            );
+
+            return send(
+              ws,
+              {
+                type:
+                  "search_cancelled"
+              }
+            );
+          }
+
+          if (
+            m.type ===
+            "keep_vibe"
+          ) {
+            return keepVibe(
+              ws,
+              m
+            );
+          }
+
+          if (
+            m.type ===
+            "end_match"
+          ) {
+            const mid =
+              String(
+                m.matchId || ""
+              );
+
+            const mt =
+              matches.get(
+                mid
+              );
+
+            if (
+              mt &&
+              [
+                mt.userA.userId,
+                mt.userB.userId
+              ].includes(
+                ws.userId
+              )
+            ) {
+              expireMatch(
+                mid
+              );
+            } else {
+              userMatches.delete(
+                ws.userId
+              );
+            }
+
+            return send(
+              ws,
+              {
+                type:
+                  "match_ended"
+              }
+            );
+          }
+
+          if (
+            m.type ===
+            "chat_message"
+          ) {
+            return chatMessage(
+              ws,
+              m
+            );
+          }
+
+          if (
+            m.type ===
+            "chat_history"
+          ) {
+            const chat =
+              db.getChat(
+                String(
+                  m.chatId || ""
+                )
+              );
+
+            if (
+              chat &&
+              chat.users.includes(
+                ws.userId
+              )
+            ) {
+              return send(
+                ws,
+                {
+                  type:
+                    "chat_history",
+
+                  chatId:
+                    chat.id,
+
+                  messages:
+                    db.getMessages(
+                      chat.id
+                    )
+                }
+              );
+            }
+
+            return;
+          }
+
+          if (
+            m.type ===
+            "friends_list"
+          ) {
+            return send(
+              ws,
+              {
+                type:
+                  "friends_list",
+
+                friends:
+                  db.getFriends(
+                    ws.userId
+                  )
+              }
+            );
+          }
+
+          if (
+            m.type ===
+            "friend_chat_open"
+          ) {
+            const fid =
+              String(
+                m.friendId || ""
+              );
+
+            if (
+              db.areFriends(
+                ws.userId,
+                fid
+              )
+            ) {
+              const chat =
+                db.createFriendChat(
+                  ws.userId,
+                  fid
+                );
+
+              return send(
+                ws,
+                {
+                  type:
+                    "friend_chat_ready",
+
+                  chatId:
+                    chat.id,
+
+                  friend:
+                    profile(
+                      fid
+                    ),
+
+                  messages:
+                    db.getMessages(
+                      chat.id
+                    )
+                }
+              );
+            }
+
+            return;
+          }
+
+          if (
+            m.type ===
+            "report_user"
+          ) {
+            db.reportUser(
+              ws.userId,
+              String(
+                m.targetUserId ||
+                  ""
+              ),
+              m.reason
+            );
+
+            return send(
+              ws,
+              {
+                type:
+                  "report_received"
+              }
+            );
+          }
+
+          if (
+            m.type ===
+            "ping"
+          ) {
+            return send(
+              ws,
+              {
+                type:
+                  "pong",
+
+                time:
+                  Date.now()
+              }
+            );
+          }
+        } catch (e) {
+          console.error(
+            e
+          );
+
+          send(
+            ws,
+            {
+              type:
+                "error",
+
+              message:
+                "Bad request"
+            }
+          );
+        }
+      }
+    );
+
+    ws.on(
+      "close",
+      () => {
+        waitingQueue.delete(
+          ws.userId
+        );
+
+        if (
+          connected.get(
+            ws.userId
+          ) === ws
+        ) {
+          connected.delete(
+            ws.userId
+          );
+        }
+      }
+    );
+  }
 );
 
-process.on(
-  "SIGTERM",
-  shutdown
+setInterval(
+  () => {
+    for (
+      const [uid, u]
+      of waitingQueue
+    ) {
+      if (
+        !u.ws ||
+        u.ws.readyState !==
+          WebSocket.OPEN
+      ) {
+        waitingQueue.delete(
+          uid
+        );
+      }
+    }
+
+    for (
+      const [mid, m]
+      of matches
+    ) {
+      if (
+        Date.now() >=
+        m.expiresAt
+      ) {
+        expireMatch(
+          mid
+        );
+      }
+    }
+  },
+  60000
 );
 
 server.listen(
   PORT,
-  () => {
+  () =>
     console.log(
-      `SnapVibe 2.1 running on port ${PORT}`
-    );
-  }
+      `SnapVibe 3.3 running on port ${PORT}`
+    )
 );
