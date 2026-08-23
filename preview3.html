@@ -15,13 +15,17 @@
 :root{
   --bg:#06070b;
   --card:#10131d;
+  --card2:#151925;
   --line:#252a38;
-  --text:#fff;
+  --text:#ffffff;
   --muted:#9299aa;
   --pink:#ff3f9f;
+  --pink2:#d82d7d;
   --violet:#8b5cf6;
   --blue:#2477ff;
+  --blue2:#1563d9;
   --green:#30d17d;
+  --danger:#ff6678;
 }
 
 html,body{
@@ -52,8 +56,8 @@ button{
 
 .app{
   max-width:520px;
-  margin:auto;
   min-height:100vh;
+  margin:auto;
   padding:14px 14px 88px
 }
 
@@ -152,6 +156,8 @@ button{
   gap:9px
 }
 
+/* REGISTER */
+
 .register{
   text-align:center;
   padding:14px 0
@@ -192,7 +198,8 @@ button{
 .avatarRing img,
 .profileAvatar img,
 .chatAvatar img,
-.friendAvatar img{
+.friendAvatar img,
+.miniAvatar img{
   width:100%;
   height:100%;
   object-fit:cover
@@ -299,7 +306,7 @@ button{
 .previewTitle{
   text-align:center;
   font-size:27px;
-  margin:8px 0 8px
+  margin:8px 0
 }
 
 .previewSub{
@@ -313,8 +320,8 @@ button{
   max-height:64vh;
   object-fit:cover;
   border-radius:22px;
-  background:#10131d;
-  display:block
+  display:block;
+  background:#10131d
 }
 
 .previewActions{
@@ -452,11 +459,7 @@ button{
   gap:8px
 }
 
-.keep{
-  border-color:#693455
-}
-
-/* CHATS */
+/* CHAT LIST */
 
 .pageTitle{
   text-align:center;
@@ -466,14 +469,14 @@ button{
 
 .chatEmpty{
   text-align:center;
-  padding:70px 20px;
-  color:var(--muted)
+  color:var(--muted);
+  padding:70px 20px
 }
 
 .chatListCard{
   display:flex;
-  gap:12px;
   align-items:center;
+  gap:12px;
   padding:12px;
   border:1px solid var(--line);
   border-radius:17px;
@@ -510,14 +513,14 @@ button{
 .chatTop{
   display:flex;
   align-items:center;
-  gap:9px;
+  gap:8px;
   border-bottom:1px solid var(--line);
   padding-bottom:10px
 }
 
 .back{
-  width:38px;
-  height:38px;
+  width:36px;
+  height:36px;
   border:0;
   background:transparent;
   color:#fff;
@@ -539,6 +542,33 @@ button{
   overflow:hidden;
   font-weight:900;
   flex:0 0 auto
+}
+
+.chatPerson{
+  flex:1;
+  min-width:0
+}
+
+.chatPerson b{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+
+.chatPerson small{
+  color:#6cdf97
+}
+
+.callBtn{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:#111520;
+  color:#fff;
+  display:grid;
+  place-items:center
 }
 
 .messages{
@@ -577,27 +607,20 @@ button{
   flex:0 0 auto
 }
 
-.miniAvatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover
+.bubbleWrap{
+  max-width:78%
 }
 
 .bubble{
-  max-width:76%;
   padding:10px 12px;
   border-radius:16px;
-  background:linear-gradient(
-    135deg,
-    #ff3f9f,
-    #d82d7d
-  );
   color:#fff;
   font-size:14px;
-  line-height:1.4
+  line-height:1.4;
+  background:#6f49aa
 }
 
-.msgRow.me .bubble{
+.bubble.male{
   background:linear-gradient(
     135deg,
     #2f83ff,
@@ -605,13 +628,107 @@ button{
   )
 }
 
+.bubble.female{
+  background:linear-gradient(
+    135deg,
+    #ff3f9f,
+    #d82d7d
+  )
+}
+
+.bubble.other{
+  background:linear-gradient(
+    135deg,
+    #8b5cf6,
+    #6846c7
+  )
+}
+
+.msgMeta{
+  display:flex;
+  justify-content:flex-end;
+  gap:5px;
+  align-items:center;
+  font-size:10px;
+  color:#9ea5b7;
+  margin-top:3px;
+  padding:0 4px
+}
+
+.msgTicks{
+  font-weight:900
+}
+
+.msgTicks.read{
+  color:#49a6ff
+}
+
+.voiceBubble{
+  min-width:190px
+}
+
+.voiceLine{
+  display:flex;
+  align-items:center;
+  gap:9px
+}
+
+.voicePlay{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.18);
+  color:#fff
+}
+
+.voiceProgress{
+  flex:1;
+  height:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,.25)
+}
+
+.voiceDuration{
+  font-size:11px;
+  opacity:.9
+}
+
+/* EMOJI PANEL */
+
+.emojiPanel{
+  display:none;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+  padding:9px;
+  margin-bottom:8px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#10131d
+}
+
+.emojiPanel.show{
+  display:grid
+}
+
+.emojiPanel button{
+  border:0;
+  background:transparent;
+  font-size:24px;
+  min-height:38px
+}
+
+/* COMPOSER */
+
 .composer{
   display:flex;
-  gap:7px
+  align-items:center;
+  gap:6px
 }
 
 .composer input{
   flex:1;
+  min-width:0;
   height:48px;
   border-radius:13px;
   border:1px solid var(--line);
@@ -620,12 +737,76 @@ button{
   padding:0 11px
 }
 
+.iconComposer{
+  width:43px;
+  height:43px;
+  border:0;
+  border-radius:50%;
+  background:#151925;
+  color:#fff;
+  flex:0 0 auto
+}
+
 .send{
-  width:48px;
+  width:45px;
+  height:45px;
   border:0;
   border-radius:50%;
   background:var(--pink);
+  color:#fff;
+  flex:0 0 auto
+}
+
+/* RECORDING BAR */
+
+.recordBar{
+  display:none;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid #67314e;
+  border-radius:14px;
+  background:#1a1018;
+  margin-bottom:8px
+}
+
+.recordBar.show{
+  display:flex
+}
+
+.recordDot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ff4c6b;
+  animation:recordPulse 1s infinite
+}
+
+@keyframes recordPulse{
+  50%{opacity:.35}
+}
+
+.recordTime{
+  flex:1;
+  font-weight:900
+}
+
+.recordCancel,
+.recordSend{
+  min-height:38px;
+  border-radius:10px;
+  padding:0 10px;
   color:#fff
+}
+
+.recordCancel{
+  border:1px solid var(--line);
+  background:#171b26
+}
+
+.recordSend{
+  border:0;
+  background:var(--pink)
 }
 
 /* FRIENDS */
@@ -730,10 +911,6 @@ button{
   margin:18px 0 4px
 }
 
-.danger{
-  color:#ff687b
-}
-
 .toggle{
   width:48px;
   height:27px;
@@ -767,7 +944,11 @@ button{
   left:24px
 }
 
-/* NAV - 5 BUTTONS */
+.danger{
+  color:var(--danger)
+}
+
+/* BOTTOM NAV */
 
 .nav{
   position:fixed;
@@ -808,23 +989,16 @@ button{
   color:#ff5eac !important
 }
 
-.matchNav.available b{
-  filter:drop-shadow(
-    0 0 9px
-    rgba(255,63,159,.65)
-  )
-}
-
 .matchDot{
   display:none;
   position:absolute;
   right:22%;
-  top:10px;
+  top:9px;
   width:8px;
   height:8px;
-  background:#ff3f9f;
+  background:var(--pink);
   border-radius:50%;
-  box-shadow:0 0 10px #ff3f9f
+  box-shadow:0 0 10px var(--pink)
 }
 
 .matchNav.available .matchDot{
@@ -837,7 +1011,7 @@ button{
   position:fixed;
   inset:0;
   z-index:100;
-  background:rgba(0,0,0,.7);
+  background:rgba(0,0,0,.72);
   display:none;
   align-items:flex-end;
   padding:12px
@@ -882,13 +1056,18 @@ button{
   color:#fff
 }
 
+.modalBtns .dangerBtn{
+  border:0;
+  background:#8e2738
+}
+
 /* HEART */
 
 .heartOverlay{
   position:fixed;
   inset:0;
   z-index:150;
-  background:rgba(4,4,9,.82);
+  background:rgba(4,4,9,.84);
   display:none;
   align-items:center;
   justify-content:center;
@@ -968,6 +1147,125 @@ button{
   }
 }
 
+/* CALL SCREEN */
+
+.callOverlay{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:#05070b;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px
+}
+
+.callOverlay.show{
+  display:flex
+}
+
+.callName{
+  font-size:28px;
+  font-weight:950;
+  margin-top:14px
+}
+
+.callStatus{
+  color:var(--muted);
+  margin-top:5px
+}
+
+.callAvatar{
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  overflow:hidden;
+  background:linear-gradient(
+    135deg,
+    var(--violet),
+    var(--pink)
+  );
+  display:grid;
+  place-items:center;
+  font-size:44px;
+  font-weight:900
+}
+
+.callAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.callActions{
+  display:flex;
+  gap:18px;
+  margin-top:34px
+}
+
+.callCircle{
+  width:62px;
+  height:62px;
+  border:0;
+  border-radius:50%;
+  color:#fff;
+  font-size:24px
+}
+
+.callAccept{
+  background:#20b768
+}
+
+.callReject{
+  background:#df4258
+}
+
+.callMute{
+  background:#252a38
+}
+
+.videoStage{
+  position:absolute;
+  inset:0;
+  background:#05070b;
+  display:none
+}
+
+.videoStage.show{
+  display:block
+}
+
+.remoteVideo{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.localVideo{
+  position:absolute;
+  right:14px;
+  top:14px;
+  width:105px;
+  height:145px;
+  object-fit:cover;
+  border-radius:16px;
+  border:2px solid rgba(255,255,255,.35);
+  background:#111
+}
+
+.videoControls{
+  position:absolute;
+  bottom:28px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:18px
+}
+
+/* TOAST */
+
 .toast{
   position:fixed;
   left:50%;
@@ -979,7 +1277,7 @@ button{
   border-radius:12px;
   opacity:0;
   transition:.2s;
-  z-index:170
+  z-index:250
 }
 
 .toast.show{
@@ -998,14 +1296,21 @@ button{
     Snap<span>Vibe</span> ♡
   </div>
 
-  <div class="status" id="statusText">
+  <div
+    class="status"
+    id="statusText"
+    data-i18n="online"
+  >
     Онлайн
   </div>
 
 </header>
 
 
-<section class="view" id="registerView">
+<section
+  class="view"
+  id="registerView"
+>
 
   <div class="register">
 
@@ -1013,7 +1318,7 @@ button{
       Snap<span>Vibe</span>
     </h1>
 
-    <p>
+    <p data-i18n="registerSubtitle">
       Создай профиль, чтобы находить людей на твоей волне.
     </p>
 
@@ -1024,15 +1329,23 @@ button{
   </div>
 
   <div class="field">
-    <label>Имя</label>
-    <input id="regName" maxlength="30">
+    <label data-i18n="name">
+      Имя
+    </label>
+
+    <input
+      id="regName"
+      maxlength="30"
+    >
   </div>
 
   <div class="grid2">
 
     <div class="field">
 
-      <label>Возраст</label>
+      <label data-i18n="age">
+        Возраст
+      </label>
 
       <input
         id="regAge"
@@ -1045,19 +1358,30 @@ button{
 
     <div class="field">
 
-      <label>Пол</label>
+      <label data-i18n="gender">
+        Пол
+      </label>
 
       <select id="regGender">
 
-        <option value="male">
+        <option
+          value="male"
+          data-i18n="male"
+        >
           Мужской
         </option>
 
-        <option value="female">
+        <option
+          value="female"
+          data-i18n="female"
+        >
           Женский
         </option>
 
-        <option value="other">
+        <option
+          value="other"
+          data-i18n="other"
+        >
           Другой
         </option>
 
@@ -1069,7 +1393,9 @@ button{
 
   <div class="field">
 
-    <label>Страна</label>
+    <label data-i18n="country">
+      Страна
+    </label>
 
     <select id="regCountry"></select>
 
@@ -1079,6 +1405,7 @@ button{
     class="primary"
     id="finishRegister"
     style="margin-top:18px"
+    data-i18n="continue"
   >
     Продолжить
   </button>
@@ -1086,7 +1413,10 @@ button{
 </section>
 
 
-<section class="view" id="cameraView">
+<section
+  class="view"
+  id="cameraView"
+>
 
   <div class="camera">
 
@@ -1106,7 +1436,7 @@ button{
 
     <div class="panel">
 
-      <h3>
+      <h3 data-i18n="showEmotion">
         Покажи свою эмоцию
       </h3>
 
@@ -1117,7 +1447,7 @@ button{
           data-emotion="happy"
         >
           <span class="circle">😊</span>
-          <small>Радость</small>
+          <small data-i18n="happy">Радость</small>
         </button>
 
         <button
@@ -1125,7 +1455,7 @@ button{
           data-emotion="angry"
         >
           <span class="circle">😠</span>
-          <small>Злость</small>
+          <small data-i18n="angry">Злость</small>
         </button>
 
         <button
@@ -1133,7 +1463,7 @@ button{
           data-emotion="sad"
         >
           <span class="circle">😢</span>
-          <small>Грусть</small>
+          <small data-i18n="sad">Грусть</small>
         </button>
 
         <button
@@ -1141,7 +1471,7 @@ button{
           data-emotion="fun"
         >
           <span class="circle">🤩</span>
-          <small>Веселье</small>
+          <small data-i18n="fun">Веселье</small>
         </button>
 
         <button
@@ -1149,7 +1479,7 @@ button{
           data-emotion="calm"
         >
           <span class="circle">😌</span>
-          <small>Спокойствие</small>
+          <small data-i18n="calm">Спокойствие</small>
         </button>
 
       </div>
@@ -1166,20 +1496,29 @@ button{
 </section>
 
 
-<section class="view" id="photoPreviewView">
+<section
+  class="view"
+  id="photoPreviewView"
+>
 
-  <h1 class="previewTitle">
+  <h1
+    class="previewTitle"
+    data-i18n="likePhoto"
+  >
     Нравится фото?
   </h1>
 
-  <p class="previewSub">
+  <p
+    class="previewSub"
+    data-i18n="retakeHint"
+  >
     Ты можешь переснять его перед поиском.
   </p>
 
   <img
     class="previewPhoto"
     id="previewPhoto"
-    alt="Предпросмотр"
+    alt=""
   >
 
   <div class="previewActions">
@@ -1187,6 +1526,7 @@ button{
     <button
       class="secondary"
       id="retakePhoto"
+      data-i18n="retake"
     >
       ↻ Переснять
     </button>
@@ -1194,6 +1534,7 @@ button{
     <button
       class="primary"
       id="usePhoto"
+      data-i18n="usePhoto"
     >
       Использовать фото
     </button>
@@ -1203,27 +1544,27 @@ button{
 </section>
 
 
-<section class="view" id="searchView">
+<section
+  class="view"
+  id="searchView"
+>
 
   <div class="search">
 
-    <h2>
+    <h2 data-i18n="searchingMatch">
       Ищем того, кто чувствует то же самое...
     </h2>
 
     <div class="radar">
-
       <div class="sweep"></div>
-
-      <div class="heart">
-        💗
-      </div>
-
+      <div class="heart">💗</div>
     </div>
 
     <div>
 
-      Время поиска:
+      <span data-i18n="searchTime">
+        Время поиска:
+      </span>
 
       <strong id="searchSeconds">
         0 сек
@@ -1235,6 +1576,7 @@ button{
       class="secondary"
       id="cancelSearch"
       style="margin-top:18px"
+      data-i18n="cancel"
     >
       Отмена
     </button>
@@ -1244,15 +1586,18 @@ button{
 </section>
 
 
-<section class="view" id="matchView">
+<section
+  class="view"
+  id="matchView"
+>
 
   <div class="matchHead">
 
-    <h2>
-      It's a Match! 💕
+    <h2 data-i18n="matchTitle">
+      Это мэтч! 💕
     </h2>
 
-    <p>
+    <p data-i18n="sameEmotion">
       Вы поймали одинаковую эмоцию
     </p>
 
@@ -1274,7 +1619,9 @@ button{
 
   <div class="timer">
 
-    Время общения:
+    <span data-i18n="chatTime">
+      Время общения:
+    </span>
 
     <strong id="countdown">
       24:00:00
@@ -1287,13 +1634,15 @@ button{
     <button
       class="primary"
       id="openMatchChat"
+      data-i18n="openChat"
     >
       Открыть чат
     </button>
 
     <button
-      class="action keep"
+      class="action"
       id="keepVibe"
+      data-i18n="keepConnection"
     >
       Сохранить связь 💗
     </button>
@@ -1301,6 +1650,7 @@ button{
     <button
       class="secondary"
       id="newMatch"
+      data-i18n="nextMatch"
     >
       Следующий мэтч ↻
     </button>
@@ -1310,9 +1660,15 @@ button{
 </section>
 
 
-<section class="view" id="chatsView">
+<section
+  class="view"
+  id="chatsView"
+>
 
-  <h1 class="pageTitle">
+  <h1
+    class="pageTitle"
+    data-i18n="chats"
+  >
     Чаты
   </h1>
 
@@ -1321,7 +1677,10 @@ button{
 </section>
 
 
-<section class="view" id="chatView">
+<section
+  class="view"
+  id="chatView"
+>
 
   <div class="chat">
 
@@ -1341,32 +1700,104 @@ button{
         S
       </div>
 
-      <div>
+      <div class="chatPerson">
 
         <b id="chatName">
           SnapVibe
         </b>
 
-        <div>
-          <small>Онлайн</small>
-        </div>
+        <small data-i18n="online">
+          Онлайн
+        </small>
 
       </div>
 
+      <button
+        class="callBtn"
+        id="audioCallBtn"
+        title="Audio"
+      >
+        📞
+      </button>
+
+      <button
+        class="callBtn"
+        id="videoCallBtn"
+        title="Video"
+      >
+        📹
+      </button>
+
     </div>
+
 
     <div
       class="messages"
       id="messages"
     ></div>
 
+
+    <div
+      class="recordBar"
+      id="recordBar"
+    >
+
+      <span class="recordDot"></span>
+
+      <span
+        class="recordTime"
+        id="recordTime"
+      >
+        0:00
+      </span>
+
+      <button
+        class="recordCancel"
+        id="recordCancel"
+        data-i18n="cancel"
+      >
+        Отмена
+      </button>
+
+      <button
+        class="recordSend"
+        id="recordSend"
+        data-i18n="send"
+      >
+        Отправить
+      </button>
+
+    </div>
+
+
+    <div
+      class="emojiPanel"
+      id="emojiPanel"
+    ></div>
+
+
     <div class="composer">
+
+      <button
+        class="iconComposer"
+        id="emojiBtn"
+      >
+        😊
+      </button>
 
       <input
         id="messageInput"
         maxlength="1000"
+        data-i18n-placeholder="messagePlaceholder"
         placeholder="Напиши сообщение..."
       >
+
+      <button
+        class="iconComposer"
+        id="voiceBtn"
+      >
+        🎤
+      </button>
 
       <button
         class="send"
@@ -1378,21 +1809,26 @@ button{
     </div>
 
     <button
-      class="action keep"
+      class="action"
       id="keepVibeChat"
       style="margin-top:8px"
+      data-i18n="keepConnection"
     >
       Сохранить связь 💗
     </button>
 
   </div>
 
-</section>
+  </section>
+  <section
+  class="view"
+  id="friendsView"
+>
 
-
-<section class="view" id="friendsView">
-
-  <h1 class="pageTitle">
+  <h1
+    class="pageTitle"
+    data-i18n="friends"
+  >
     Друзья
   </h1>
 
@@ -1401,7 +1837,10 @@ button{
 </section>
 
 
-<section class="view" id="profileView">
+<section
+  class="view"
+  id="profileView"
+>
 
   <div class="profile">
 
@@ -1418,21 +1857,32 @@ button{
 
   </div>
 
+
   <div class="photoBtns">
 
-    <button id="takeAvatar">
-      📷 Сфоткаться
+    <button
+      id="takeAvatar"
+      data-i18n="addPhoto"
+    >
+      📷 Добавить фото
     </button>
 
-    <button id="chooseAvatar">
+    <button
+      id="chooseAvatar"
+      data-i18n="gallery"
+    >
       🖼 Галерея
     </button>
 
-    <button id="removeAvatar">
+    <button
+      id="removeAvatar"
+      data-i18n="remove"
+    >
       ✕ Удалить
     </button>
 
   </div>
+
 
   <input
     type="file"
@@ -1449,9 +1899,12 @@ button{
     hidden
   >
 
+
   <div class="field">
 
-    <label>Имя</label>
+    <label data-i18n="name">
+      Имя
+    </label>
 
     <input
       id="editName"
@@ -1460,11 +1913,14 @@ button{
 
   </div>
 
+
   <div class="grid2">
 
     <div class="field">
 
-      <label>Возраст</label>
+      <label data-i18n="age">
+        Возраст
+      </label>
 
       <input
         id="editAge"
@@ -1477,19 +1933,30 @@ button{
 
     <div class="field">
 
-      <label>Пол</label>
+      <label data-i18n="gender">
+        Пол
+      </label>
 
       <select id="editGender">
 
-        <option value="male">
+        <option
+          value="male"
+          data-i18n="male"
+        >
           Мужской
         </option>
 
-        <option value="female">
+        <option
+          value="female"
+          data-i18n="female"
+        >
           Женский
         </option>
 
-        <option value="other">
+        <option
+          value="other"
+          data-i18n="other"
+        >
           Другой
         </option>
 
@@ -1499,20 +1966,26 @@ button{
 
   </div>
 
+
   <div class="field">
 
-    <label>Страна</label>
+    <label data-i18n="country">
+      Страна
+    </label>
 
     <select id="editCountry"></select>
 
   </div>
 
+
   <button
     class="primary"
     id="saveProfile"
+    data-i18n="saveProfile"
   >
     Сохранить профиль
   </button>
+
 
   <div class="menu">
 
@@ -1521,7 +1994,7 @@ button{
       id="searchSettings"
     >
 
-      <span>
+      <span data-i18n="searchSettings">
         ⚙ Настройки поиска
       </span>
 
@@ -1529,12 +2002,13 @@ button{
 
     </div>
 
+
     <div
       class="row"
       id="languageSettings"
     >
 
-      <span>
+      <span data-i18n="language">
         🌐 Язык
       </span>
 
@@ -1544,12 +2018,13 @@ button{
 
     </div>
 
+
     <div
       class="row"
       id="profileSafety"
     >
 
-      <span>
+      <span data-i18n="security">
         ◇ Безопасность
       </span>
 
@@ -1562,7 +2037,10 @@ button{
 </section>
 
 
-<section class="view" id="settingsView">
+<section
+  class="view"
+  id="settingsView"
+>
 
   <div class="settingsHead">
 
@@ -1573,22 +2051,32 @@ button{
       ‹
     </button>
 
-    <h1 class="pageTitle">
+    <h1
+      class="pageTitle"
+      data-i18n="settings"
+    >
       Настройки
     </h1>
 
   </div>
 
-  <div class="settingsSectionTitle">
+
+  <div
+    class="settingsSectionTitle"
+    data-i18n="whoToShow"
+  >
     Кого показывать
   </div>
+
 
   <div
     class="row"
     id="setGender"
   >
 
-    <span>Пол</span>
+    <span data-i18n="gender">
+      Пол
+    </span>
 
     <small id="genderLabel">
       Девушек ›
@@ -1596,12 +2084,15 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="setAge"
   >
 
-    <span>Возраст</span>
+    <span data-i18n="age">
+      Возраст
+    </span>
 
     <small id="ageLabel">
       18 — 35 ›
@@ -1609,12 +2100,15 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="setCountry"
   >
 
-    <span>Страна</span>
+    <span data-i18n="country">
+      Страна
+    </span>
 
     <small id="countryLabel">
       Все страны ›
@@ -1622,16 +2116,23 @@ button{
 
   </div>
 
-  <div class="settingsSectionTitle">
+
+  <div
+    class="settingsSectionTitle"
+    data-i18n="appSettings"
+  >
     Приложение
   </div>
+
 
   <div
     class="row"
     id="notificationsRow"
   >
 
-    <span>Уведомления</span>
+    <span data-i18n="notifications">
+      Уведомления
+    </span>
 
     <div
       class="toggle"
@@ -1640,12 +2141,13 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="privacyRow"
   >
 
-    <span>
+    <span data-i18n="privacy">
       Конфиденциальность
     </span>
 
@@ -1653,12 +2155,13 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="blockedRow"
   >
 
-    <span>
+    <span data-i18n="blocked">
       Заблокированные
     </span>
 
@@ -1666,12 +2169,13 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="securityRow"
   >
 
-    <span>
+    <span data-i18n="security">
       Безопасность
     </span>
 
@@ -1679,12 +2183,13 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="rulesRow"
   >
 
-    <span>
+    <span data-i18n="rules">
       Правила сообщества
     </span>
 
@@ -1692,12 +2197,13 @@ button{
 
   </div>
 
+
   <div
     class="row"
     id="policyRow"
   >
 
-    <span>
+    <span data-i18n="policy">
       Политика конфиденциальности
     </span>
 
@@ -1705,12 +2211,13 @@ button{
 
   </div>
 
+
   <div
     class="row danger"
     id="deleteRow"
   >
 
-    <span>
+    <span data-i18n="deleteAccount">
       Удалить аккаунт
     </span>
 
@@ -1733,8 +2240,11 @@ button{
     data-view="cameraView"
   >
     <b>📷</b>
-    Vibe
+    <span data-i18n="vibe">
+      Vibe
+    </span>
   </button>
+
 
   <button
     class="matchNav"
@@ -1744,32 +2254,47 @@ button{
     <span class="matchDot"></span>
 
     <b>💞</b>
-    Мэтч
+
+    <span data-i18n="match">
+      Мэтч
+    </span>
 
   </button>
+
 
   <button
     class="navBtn"
     data-view="chatsView"
   >
     <b>💬</b>
-    Чаты
+
+    <span data-i18n="chats">
+      Чаты
+    </span>
   </button>
+
 
   <button
     class="navBtn"
     data-view="friendsView"
   >
     <b>👥</b>
-    Друзья
+
+    <span data-i18n="friends">
+      Друзья
+    </span>
   </button>
+
 
   <button
     class="navBtn"
     data-view="profileView"
   >
     <b>👤</b>
-    Профиль
+
+    <span data-i18n="profile">
+      Профиль
+    </span>
   </button>
 
 </nav>
@@ -1788,11 +2313,17 @@ button{
 
     <div class="modalBtns">
 
-      <button id="modalCancel">
+      <button
+        id="modalCancel"
+        data-i18n="close"
+      >
         Закрыть
       </button>
 
-      <button id="modalSave">
+      <button
+        id="modalSave"
+        data-i18n="save"
+      >
         Сохранить
       </button>
 
@@ -1835,9 +2366,137 @@ button{
 
 
 <div
+  class="callOverlay"
+  id="callOverlay"
+>
+
+  <div
+    class="callAvatar"
+    id="callAvatar"
+  >
+    S
+  </div>
+
+  <div
+    class="callName"
+    id="callName"
+  >
+    SnapVibe
+  </div>
+
+  <div
+    class="callStatus"
+    id="callStatus"
+  >
+    Звонок...
+  </div>
+
+
+  <div
+    class="callActions"
+    id="incomingCallActions"
+  >
+
+    <button
+      class="callCircle callAccept"
+      id="acceptCall"
+    >
+      ✓
+    </button>
+
+    <button
+      class="callCircle callReject"
+      id="rejectCall"
+    >
+      ✕
+    </button>
+
+  </div>
+
+
+  <div
+    class="callActions"
+    id="activeCallActions"
+    style="display:none"
+  >
+
+    <button
+      class="callCircle callMute"
+      id="muteCall"
+    >
+      🎙
+    </button>
+
+    <button
+      class="callCircle callReject"
+      id="endCall"
+    >
+      ☎
+    </button>
+
+  </div>
+
+</div>
+
+
+<div
+  class="videoStage"
+  id="videoStage"
+>
+
+  <video
+    id="remoteVideo"
+    class="remoteVideo"
+    autoplay
+    playsinline
+  ></video>
+
+  <video
+    id="localVideo"
+    class="localVideo"
+    autoplay
+    muted
+    playsinline
+  ></video>
+
+  <div class="videoControls">
+
+    <button
+      class="callCircle callMute"
+      id="videoMute"
+    >
+      🎙
+    </button>
+
+    <button
+      class="callCircle callMute"
+      id="switchCamera"
+    >
+      🔄
+    </button>
+
+    <button
+      class="callCircle callReject"
+      id="videoEnd"
+    >
+      ☎
+    </button>
+
+  </div>
+
+</div>
+
+
+<div
   class="toast"
   id="toast"
 ></div>
+
+
+<audio
+  id="remoteAudio"
+  autoplay
+></audio>
 
 
 <script>
@@ -1848,62 +2507,409 @@ const $ =
     document.getElementById(id);
 
 
-const COUNTRIES = [
+/* LANGUAGES */
 
-  ["","Все страны"],
+const I18N = {
 
-  ["EE","Эстония"],
-  ["LV","Латвия"],
-  ["LT","Литва"],
-  ["FI","Финляндия"],
-  ["SE","Швеция"],
-  ["NO","Норвегия"],
-  ["DK","Дания"],
-  ["IS","Исландия"],
+  ru:{
+    online:"Онлайн",
+    registerSubtitle:"Создай профиль, чтобы находить людей на твоей волне.",
+    name:"Имя",
+    age:"Возраст",
+    gender:"Пол",
+    male:"Мужской",
+    female:"Женский",
+    other:"Другой",
+    country:"Страна",
+    continue:"Продолжить",
+    showEmotion:"Покажи свою эмоцию",
+    happy:"Радость",
+    angry:"Злость",
+    sad:"Грусть",
+    fun:"Веселье",
+    calm:"Спокойствие",
+    likePhoto:"Нравится фото?",
+    retakeHint:"Ты можешь переснять его перед поиском.",
+    retake:"↻ Переснять",
+    usePhoto:"Использовать фото",
+    searchingMatch:"Ищем того, кто чувствует то же самое...",
+    searchTime:"Время поиска:",
+    cancel:"Отмена",
+    matchTitle:"Это мэтч! 💕",
+    sameEmotion:"Вы поймали одинаковую эмоцию",
+    chatTime:"Время общения:",
+    openChat:"Открыть чат",
+    keepConnection:"Сохранить связь 💗",
+    nextMatch:"Следующий мэтч ↻",
+    chats:"Чаты",
+    friends:"Друзья",
+    profile:"Профиль",
+    messagePlaceholder:"Напиши сообщение...",
+    send:"Отправить",
+    addPhoto:"📷 Добавить фото",
+    gallery:"🖼 Галерея",
+    remove:"✕ Удалить",
+    saveProfile:"Сохранить профиль",
+    searchSettings:"⚙ Настройки поиска",
+    language:"🌐 Язык",
+    security:"◇ Безопасность",
+    settings:"Настройки",
+    whoToShow:"Кого показывать",
+    appSettings:"Приложение",
+    notifications:"Уведомления",
+    privacy:"Конфиденциальность",
+    blocked:"Заблокированные",
+    rules:"Правила сообщества",
+    policy:"Политика конфиденциальности",
+    deleteAccount:"Удалить аккаунт",
+    vibe:"Vibe",
+    match:"Мэтч",
+    close:"Закрыть",
+    save:"Сохранить"
+  },
 
-  ["DE","Германия"],
-  ["FR","Франция"],
-  ["ES","Испания"],
-  ["PT","Португалия"],
-  ["IT","Италия"],
-  ["NL","Нидерланды"],
-  ["BE","Бельгия"],
-  ["LU","Люксембург"],
-  ["IE","Ирландия"],
-  ["GB","Великобритания"],
+  en:{
+    online:"Online",
+    registerSubtitle:"Create a profile to find people on your wavelength.",
+    name:"Name",
+    age:"Age",
+    gender:"Gender",
+    male:"Male",
+    female:"Female",
+    other:"Other",
+    country:"Country",
+    continue:"Continue",
+    showEmotion:"Show your emotion",
+    happy:"Happy",
+    angry:"Angry",
+    sad:"Sad",
+    fun:"Fun",
+    calm:"Calm",
+    likePhoto:"Like the photo?",
+    retakeHint:"You can retake it before searching.",
+    retake:"↻ Retake",
+    usePhoto:"Use photo",
+    searchingMatch:"Looking for someone who feels the same...",
+    searchTime:"Search time:",
+    cancel:"Cancel",
+    matchTitle:"It's a Match! 💕",
+    sameEmotion:"You caught the same emotion",
+    chatTime:"Chat time:",
+    openChat:"Open chat",
+    keepConnection:"Keep the Vibe 💗",
+    nextMatch:"Next match ↻",
+    chats:"Chats",
+    friends:"Friends",
+    profile:"Profile",
+    messagePlaceholder:"Write a message...",
+    send:"Send",
+    addPhoto:"📷 Add photo",
+    gallery:"🖼 Gallery",
+    remove:"✕ Remove",
+    saveProfile:"Save profile",
+    searchSettings:"⚙ Search settings",
+    language:"🌐 Language",
+    security:"◇ Safety",
+    settings:"Settings",
+    whoToShow:"Who to show",
+    appSettings:"Application",
+    notifications:"Notifications",
+    privacy:"Privacy",
+    blocked:"Blocked",
+    rules:"Community rules",
+    policy:"Privacy policy",
+    deleteAccount:"Delete account",
+    vibe:"Vibe",
+    match:"Match",
+    close:"Close",
+    save:"Save"
+  },
 
-  ["PL","Польша"],
-  ["CZ","Чехия"],
-  ["SK","Словакия"],
-  ["AT","Австрия"],
-  ["CH","Швейцария"],
-  ["HU","Венгрия"],
-  ["RO","Румыния"],
-  ["BG","Болгария"],
-  ["GR","Греция"],
-  ["HR","Хорватия"],
+  et:{
+    online:"Võrgus",
+    registerSubtitle:"Loo profiil, et leida inimesi samal lainel.",
+    name:"Nimi",
+    age:"Vanus",
+    gender:"Sugu",
+    male:"Mees",
+    female:"Naine",
+    other:"Muu",
+    country:"Riik",
+    continue:"Jätka",
+    showEmotion:"Näita oma emotsiooni",
+    happy:"Rõõm",
+    angry:"Viha",
+    sad:"Kurbus",
+    fun:"Lõbu",
+    calm:"Rahu",
+    likePhoto:"Kas foto meeldib?",
+    retakeHint:"Enne otsimist saad foto uuesti teha.",
+    retake:"↻ Tee uuesti",
+    usePhoto:"Kasuta fotot",
+    searchingMatch:"Otsime kedagi, kes tunneb sama...",
+    searchTime:"Otsingu aeg:",
+    cancel:"Tühista",
+    matchTitle:"See on vaste! 💕",
+    sameEmotion:"Te tabasite sama emotsiooni",
+    chatTime:"Vestluse aeg:",
+    openChat:"Ava vestlus",
+    keepConnection:"Hoia ühendust 💗",
+    nextMatch:"Järgmine vaste ↻",
+    chats:"Vestlused",
+    friends:"Sõbrad",
+    profile:"Profiil",
+    messagePlaceholder:"Kirjuta sõnum...",
+    send:"Saada",
+    addPhoto:"📷 Lisa foto",
+    gallery:"🖼 Galerii",
+    remove:"✕ Eemalda",
+    saveProfile:"Salvesta profiil",
+    searchSettings:"⚙ Otsingu seaded",
+    language:"🌐 Keel",
+    security:"◇ Turvalisus",
+    settings:"Seaded",
+    whoToShow:"Keda näidata",
+    appSettings:"Rakendus",
+    notifications:"Teavitused",
+    privacy:"Privaatsus",
+    blocked:"Blokeeritud",
+    rules:"Kogukonna reeglid",
+    policy:"Privaatsuspoliitika",
+    deleteAccount:"Kustuta konto",
+    vibe:"Vibe",
+    match:"Vaste",
+    close:"Sulge",
+    save:"Salvesta"
+  },
 
-  ["SI","Словения"],
-  ["RS","Сербия"],
-  ["BA","Босния и Герцеговина"],
-  ["ME","Черногория"],
-  ["MK","Северная Македония"],
-  ["AL","Албания"],
-  ["MD","Молдова"],
-  ["UA","Украина"],
-  ["TR","Турция"],
+  uk:{
+    online:"Онлайн",
+    registerSubtitle:"Створи профіль, щоб знаходити людей на своїй хвилі.",
+    name:"Ім’я",
+    age:"Вік",
+    gender:"Стать",
+    male:"Чоловіча",
+    female:"Жіноча",
+    other:"Інша",
+    country:"Країна",
+    continue:"Продовжити",
+    showEmotion:"Покажи свою емоцію",
+    happy:"Радість",
+    angry:"Злість",
+    sad:"Сум",
+    fun:"Веселощі",
+    calm:"Спокій",
+    likePhoto:"Подобається фото?",
+    retakeHint:"Можеш перезняти його перед пошуком.",
+    retake:"↻ Перезняти",
+    usePhoto:"Використати фото",
+    searchingMatch:"Шукаємо того, хто відчуває те саме...",
+    searchTime:"Час пошуку:",
+    cancel:"Скасувати",
+    matchTitle:"Це метч! 💕",
+    sameEmotion:"Ви зловили однакову емоцію",
+    chatTime:"Час спілкування:",
+    openChat:"Відкрити чат",
+    keepConnection:"Зберегти зв’язок 💗",
+    nextMatch:"Наступний метч ↻",
+    chats:"Чати",
+    friends:"Друзі",
+    profile:"Профіль",
+    messagePlaceholder:"Напиши повідомлення...",
+    send:"Надіслати",
+    addPhoto:"📷 Додати фото",
+    gallery:"🖼 Галерея",
+    remove:"✕ Видалити",
+    saveProfile:"Зберегти профіль",
+    searchSettings:"⚙ Налаштування пошуку",
+    language:"🌐 Мова",
+    security:"◇ Безпека",
+    settings:"Налаштування",
+    whoToShow:"Кого показувати",
+    appSettings:"Застосунок",
+    notifications:"Сповіщення",
+    privacy:"Конфіденційність",
+    blocked:"Заблоковані",
+    rules:"Правила спільноти",
+    policy:"Політика конфіденційності",
+    deleteAccount:"Видалити акаунт",
+    vibe:"Vibe",
+    match:"Метч",
+    close:"Закрити",
+    save:"Зберегти"
+  },
 
-  ["US","США"],
-  ["CA","Канада"],
-  ["AU","Австралия"],
-  ["NZ","Новая Зеландия"],
-  ["JP","Япония"],
-  ["KR","Южная Корея"]
+  de:{
+    online:"Online",
+    registerSubtitle:"Erstelle ein Profil, um Menschen auf deiner Wellenlänge zu finden.",
+    name:"Name",
+    age:"Alter",
+    gender:"Geschlecht",
+    male:"Männlich",
+    female:"Weiblich",
+    other:"Andere",
+    country:"Land",
+    continue:"Weiter",
+    showEmotion:"Zeige deine Emotion",
+    happy:"Freude",
+    angry:"Wut",
+    sad:"Traurig",
+    fun:"Spaß",
+    calm:"Ruhe",
+    likePhoto:"Gefällt dir das Foto?",
+    retakeHint:"Du kannst es vor der Suche neu aufnehmen.",
+    retake:"↻ Neu aufnehmen",
+    usePhoto:"Foto verwenden",
+    searchingMatch:"Wir suchen jemanden, der dasselbe fühlt...",
+    searchTime:"Suchzeit:",
+    cancel:"Abbrechen",
+    matchTitle:"Es ist ein Match! 💕",
+    sameEmotion:"Ihr habt dieselbe Emotion",
+    chatTime:"Chat-Zeit:",
+    openChat:"Chat öffnen",
+    keepConnection:"Verbindung behalten 💗",
+    nextMatch:"Nächstes Match ↻",
+    chats:"Chats",
+    friends:"Freunde",
+    profile:"Profil",
+    messagePlaceholder:"Nachricht schreiben...",
+    send:"Senden",
+    addPhoto:"📷 Foto hinzufügen",
+    gallery:"🖼 Galerie",
+    remove:"✕ Entfernen",
+    saveProfile:"Profil speichern",
+    searchSettings:"⚙ Sucheinstellungen",
+    language:"🌐 Sprache",
+    security:"◇ Sicherheit",
+    settings:"Einstellungen",
+    whoToShow:"Wen anzeigen",
+    appSettings:"Anwendung",
+    notifications:"Benachrichtigungen",
+    privacy:"Datenschutz",
+    blocked:"Blockiert",
+    rules:"Community-Regeln",
+    policy:"Datenschutzrichtlinie",
+    deleteAccount:"Konto löschen",
+    vibe:"Vibe",
+    match:"Match",
+    close:"Schließen",
+    save:"Speichern"
+  },
 
-];
+  es:{
+    online:"En línea",
+    registerSubtitle:"Crea un perfil para encontrar personas en tu misma onda.",
+    name:"Nombre",
+    age:"Edad",
+    gender:"Género",
+    male:"Hombre",
+    female:"Mujer",
+    other:"Otro",
+    country:"País",
+    continue:"Continuar",
+    showEmotion:"Muestra tu emoción",
+    happy:"Alegría",
+    angry:"Enojo",
+    sad:"Tristeza",
+    fun:"Diversión",
+    calm:"Calma",
+    likePhoto:"¿Te gusta la foto?",
+    retakeHint:"Puedes repetirla antes de buscar.",
+    retake:"↻ Repetir",
+    usePhoto:"Usar foto",
+    searchingMatch:"Buscando a alguien que sienta lo mismo...",
+    searchTime:"Tiempo de búsqueda:",
+    cancel:"Cancelar",
+    matchTitle:"¡Es un Match! 💕",
+    sameEmotion:"Habéis captado la misma emoción",
+    chatTime:"Tiempo de chat:",
+    openChat:"Abrir chat",
+    keepConnection:"Mantener conexión 💗",
+    nextMatch:"Siguiente match ↻",
+    chats:"Chats",
+    friends:"Amigos",
+    profile:"Perfil",
+    messagePlaceholder:"Escribe un mensaje...",
+    send:"Enviar",
+    addPhoto:"📷 Añadir foto",
+    gallery:"🖼 Galería",
+    remove:"✕ Eliminar",
+    saveProfile:"Guardar perfil",
+    searchSettings:"⚙ Ajustes de búsqueda",
+    language:"🌐 Idioma",
+    security:"◇ Seguridad",
+    settings:"Ajustes",
+    whoToShow:"A quién mostrar",
+    appSettings:"Aplicación",
+    notifications:"Notificaciones",
+    privacy:"Privacidad",
+    blocked:"Bloqueados",
+    rules:"Normas de la comunidad",
+    policy:"Política de privacidad",
+    deleteAccount:"Eliminar cuenta",
+    vibe:"Vibe",
+    match:"Match",
+    close:"Cerrar",
+    save:"Guardar"
+  }
+
+};
 
 
-const LANGS = {
+const COUNTRY_NAMES = {
+  EE:"Эстония",
+  LV:"Латвия",
+  LT:"Литва",
+  FI:"Финляндия",
+  SE:"Швеция",
+  NO:"Норвегия",
+  DK:"Дания",
+  IS:"Исландия",
+  DE:"Германия",
+  FR:"Франция",
+  ES:"Испания",
+  PT:"Португалия",
+  IT:"Италия",
+  NL:"Нидерланды",
+  BE:"Бельгия",
+  LU:"Люксембург",
+  IE:"Ирландия",
+  GB:"Великобритания",
+  PL:"Польша",
+  CZ:"Чехия",
+  SK:"Словакия",
+  AT:"Австрия",
+  CH:"Швейцария",
+  HU:"Венгрия",
+  RO:"Румыния",
+  BG:"Болгария",
+  GR:"Греция",
+  HR:"Хорватия",
+  SI:"Словения",
+  RS:"Сербия",
+  BA:"Босния и Герцеговина",
+  ME:"Черногория",
+  MK:"Северная Македония",
+  AL:"Албания",
+  MD:"Молдова",
+  UA:"Украина",
+  TR:"Турция",
+  US:"США",
+  CA:"Канада",
+  AU:"Австралия",
+  NZ:"Новая Зеландия",
+  JP:"Япония",
+  KR:"Южная Корея"
+};
+
+
+const COUNTRIES =
+  Object.entries(
+    COUNTRY_NAMES
+  );
+
+
+const LANG_NAMES = {
   ru:"Русский",
   en:"English",
   et:"Eesti",
@@ -1919,17 +2925,87 @@ let lang =
   ) || "ru";
 
 
+if (
+  !I18N[lang]
+){
+  lang = "ru";
+}
+
+
+function t(key){
+
+  return (
+    I18N[lang]?.[key] ||
+    I18N.ru[key] ||
+    key
+  );
+
+}
+
+
+function applyLanguage(){
+
+  document
+    .querySelectorAll(
+      "[data-i18n]"
+    )
+    .forEach(
+      element => {
+
+        const key =
+          element.dataset.i18n;
+
+        element.textContent =
+          t(key);
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-i18n-placeholder]"
+    )
+    .forEach(
+      element => {
+
+        const key =
+          element.dataset
+            .i18nPlaceholder;
+
+        element.placeholder =
+          t(key);
+
+      }
+    );
+
+
+  $("languageLabel").textContent =
+    (
+      LANG_NAMES[lang] ||
+      "Русский"
+    ) +
+    " ›";
+
+}
+
+
+/* ID */
+
 let userId =
   localStorage.getItem(
     "snapvibe_user_id"
   );
 
 
-if (!userId){
+if (
+  !userId
+){
 
   userId =
     "user_" +
     crypto.randomUUID();
+
 
   localStorage.setItem(
     "snapvibe_user_id",
@@ -2018,11 +3094,14 @@ let socket = null;
 
 let stream = null;
 
-let emotion = "happy";
+let emotion =
+  "happy";
 
-let pendingPhoto = null;
+let pendingPhoto =
+  null;
 
-let pendingEmotionHash = null;
+let pendingEmotionHash =
+  null;
 
 let friends = [];
 
@@ -2041,20 +3120,64 @@ let searchAt = 0;
 let countTimer = null;
 
 
-/* COUNTRIES */
+/* VOICE */
 
-function countryName(code){
+let mediaRecorder = null;
 
-  return (
-    COUNTRIES.find(
-      item =>
-        item[0] === code
-    )?.[1]
-    ||
-    code
-    ||
-    "Все страны"
-  );
+let recordedChunks = [];
+
+let recordingStartedAt = 0;
+
+let recordingTimer = null;
+
+let recordedBlob = null;
+
+let recordedDuration = 0;
+
+
+/* CALL */
+
+let peerConnection = null;
+
+let callStream = null;
+
+let currentCall = null;
+
+let muted = false;
+
+let usingFrontCamera = true;
+  /* COUNTRY HELPERS */
+
+function localizedCountryName(code){
+
+  if (!code) {
+    return t("allCountries") || "Все страны";
+  }
+
+  try {
+
+    const names =
+      new Intl.DisplayNames(
+        [lang],
+        {
+          type:"region"
+        }
+      );
+
+    return (
+      names.of(code) ||
+      COUNTRY_NAMES[code] ||
+      code
+    );
+
+  } catch (error) {
+
+    return (
+      COUNTRY_NAMES[code] ||
+      code
+    );
+
+  }
 
 }
 
@@ -2066,14 +3189,54 @@ function fillCountrySelect(
 
   element.innerHTML = "";
 
+
+  if (allowAll) {
+
+    const allOption =
+      document.createElement(
+        "option"
+      );
+
+    allOption.value = "";
+
+    allOption.textContent =
+      lang === "ru"
+        ? "Все страны"
+        : lang === "et"
+          ? "Kõik riigid"
+          : lang === "uk"
+            ? "Усі країни"
+            : lang === "de"
+              ? "Alle Länder"
+              : lang === "es"
+                ? "Todos los países"
+                : "All countries";
+
+    element.appendChild(
+      allOption
+    );
+
+  }
+
+
   COUNTRIES
-    .filter(
-      item =>
-        allowAll ||
-        item[0]
+    .map(
+      ([code]) => [
+        code,
+        localizedCountryName(
+          code
+        )
+      ]
+    )
+    .sort(
+      (a,b) =>
+        a[1].localeCompare(
+          b[1],
+          lang
+        )
     )
     .forEach(
-      ([value,name]) => {
+      ([code,name]) => {
 
         const option =
           document.createElement(
@@ -2081,7 +3244,7 @@ function fillCountrySelect(
           );
 
         option.value =
-          value;
+          code;
 
         option.textContent =
           name;
@@ -2113,11 +3276,14 @@ function toast(text){
 
   $("toast").timer =
     setTimeout(
-      () =>
+      () => {
+
         $("toast")
           .classList
-          .remove("show"),
-      1800
+          .remove("show");
+
+      },
+      1900
     );
 
 }
@@ -2140,13 +3306,13 @@ function show(id){
     "settingsView"
   ]
   .forEach(
-    view => {
+    viewId => {
 
-      $(view)
+      $(viewId)
         .classList
         .toggle(
           "active",
-          view === id
+          viewId === id
         );
 
     }
@@ -2184,7 +3350,7 @@ function show(id){
   if (
     id === "friendsView" ||
     id === "chatsView"
-  ){
+  ) {
 
     send({
       type:"friends_list"
@@ -2194,8 +3360,17 @@ function show(id){
 
 
   if (
+    id === "friendsView"
+  ) {
+
+    renderFriends();
+
+  }
+
+
+  if (
     id === "chatsView"
-  ){
+  ) {
 
     renderChats();
 
@@ -2204,9 +3379,19 @@ function show(id){
 
   if (
     id === "profileView"
-  ){
+  ) {
 
     fillProfile();
+
+  }
+
+
+  if (
+    id === "chatView" &&
+    activeChat.id
+  ) {
+
+    markCurrentChatRead();
 
   }
 
@@ -2234,10 +3419,12 @@ function send(data){
   if (
     socket?.readyState ===
     WebSocket.OPEN
-  ){
+  ) {
 
     socket.send(
-      JSON.stringify(data)
+      JSON.stringify(
+        data
+      )
     );
 
     return true;
@@ -2302,11 +3489,16 @@ function connect(){
 
       if (
         profile.name
-      ){
+      ) {
 
         registerProfile();
 
       }
+
+      setTimeout(
+        subscribePush,
+        1000
+      );
 
     };
 
@@ -2325,15 +3517,15 @@ function connect(){
   socket.onmessage =
     event => {
 
-      try{
+      try {
 
-        handle(
+        handleServerEvent(
           JSON.parse(
             event.data
           )
         );
 
-      }catch(error){
+      } catch (error) {
 
         console.error(
           error
@@ -2348,21 +3540,22 @@ function connect(){
 
 /* SERVER EVENTS */
 
-function handle(data){
+function handleServerEvent(data){
 
   if (
     data.type ===
     "bootstrap"
-  ){
+  ) {
 
     if (
       data.profile
-    ){
+    ) {
 
       profile = {
         ...profile,
         ...data.profile
       };
+
 
       avatar =
         data.profile.avatar ||
@@ -2377,13 +3570,13 @@ function handle(data){
 
     if (
       data.activeMatch
-    ){
+    ) {
 
       loadMatch(
         data.activeMatch
       );
 
-    }else{
+    } else {
 
       match =
         null;
@@ -2403,7 +3596,7 @@ function handle(data){
   else if (
     data.type ===
     "searching"
-  ){
+  ) {
 
     startSearch();
 
@@ -2413,7 +3606,7 @@ function handle(data){
   else if (
     data.type ===
     "search_cancelled"
-  ){
+  ) {
 
     clearInterval(
       searchTimer
@@ -2429,13 +3622,15 @@ function handle(data){
   else if (
     data.type ===
     "match_found"
-  ){
+  ) {
 
     clearInterval(
       searchTimer
     );
 
-    loadMatch(data);
+    loadMatch(
+      data
+    );
 
     show(
       "matchView"
@@ -2446,8 +3641,10 @@ function handle(data){
 
   else if (
     data.type ===
-    "match_expired"
-  ){
+    "match_ended" ||
+    data.type ===
+    "match_ended_by_partner"
+  ) {
 
     match =
       null;
@@ -2458,7 +3655,41 @@ function handle(data){
 
     updateMatchNav();
 
-    renderChats();
+
+    if (
+      data.type ===
+      "match_ended_by_partner"
+    ) {
+
+      toast(
+        lang === "ru"
+          ? "Собеседник перешёл к следующему мэтчу"
+          : "Match ended"
+      );
+
+    }
+
+
+    show(
+      "cameraView"
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "match_expired"
+  ) {
+
+    match =
+      null;
+
+    clearInterval(
+      countTimer
+    );
+
+    updateMatchNav();
 
     show(
       "cameraView"
@@ -2470,10 +3701,12 @@ function handle(data){
   else if (
     data.type ===
     "keep_vibe_pending"
-  ){
+  ) {
 
     toast(
-      "💗 Связь сохранена. Ждём ответ"
+      lang === "ru"
+        ? "💗 Ждём ответ второго человека"
+        : "💗 Waiting for the other person"
     );
 
   }
@@ -2482,7 +3715,7 @@ function handle(data){
   else if (
     data.type ===
     "keep_vibe_received"
-  ){
+  ) {
 
     showIncomingHeart(
       data
@@ -2494,20 +3727,28 @@ function handle(data){
   else if (
     data.type ===
     "keep_vibe_mutual"
-  ){
+  ) {
 
     mutualHeart(
       data
     );
 
-    friends = [
-      data.friend,
-      ...friends.filter(
-        friend =>
-          friend.id !==
-          data.friend.id
-      )
-    ];
+
+    if (
+      data.friend
+    ) {
+
+      friends = [
+        data.friend,
+        ...friends.filter(
+          item =>
+            item.id !==
+            data.friend.id
+        )
+      ];
+
+    }
+
 
     renderFriends();
 
@@ -2519,16 +3760,23 @@ function handle(data){
   else if (
     data.type ===
     "friendship_created"
-  ){
+  ) {
 
-    friends = [
-      data.friend,
-      ...friends.filter(
-        friend =>
-          friend.id !==
-          data.friend.id
-      )
-    ];
+    if (
+      data.friend
+    ) {
+
+      friends = [
+        data.friend,
+        ...friends.filter(
+          item =>
+            item.id !==
+            data.friend.id
+        )
+      ];
+
+    }
+
 
     renderFriends();
 
@@ -2540,7 +3788,7 @@ function handle(data){
   else if (
     data.type ===
     "friends_list"
-  ){
+  ) {
 
     friends =
       data.friends || [];
@@ -2555,7 +3803,7 @@ function handle(data){
   else if (
     data.type ===
     "friend_chat_ready"
-  ){
+  ) {
 
     openChat(
 
@@ -2578,16 +3826,18 @@ function handle(data){
   else if (
     data.type ===
     "chat_history"
-  ){
+  ) {
 
     if (
       activeChat.id ===
       data.chatId
-    ){
+    ) {
 
       renderMessages(
         data.messages || []
       );
+
+      markCurrentChatRead();
 
     }
 
@@ -2597,14 +3847,51 @@ function handle(data){
   else if (
     data.type ===
     "chat_message"
-  ){
+  ) {
 
     if (
       activeChat.id ===
       data.chatId
-    ){
+    ) {
 
       appendMessage(
+        data.message
+      );
+
+
+      if (
+        data.message.senderId !==
+        userId
+      ) {
+
+        send({
+
+          type:
+            "message_delivered",
+
+          chatId:
+            data.chatId,
+
+          messageId:
+            data.message.id
+
+        });
+
+
+        if (
+          document.visibilityState ===
+          "visible"
+        ) {
+
+          markCurrentChatRead();
+
+        }
+
+      }
+
+    } else {
+
+      showLocalNotification(
         data.message
       );
 
@@ -2615,8 +3902,165 @@ function handle(data){
 
   else if (
     data.type ===
+    "message_delivered"
+  ) {
+
+    updateMessageStatus(
+      data.messageId,
+      "delivered"
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "messages_read"
+  ) {
+
+    (
+      data.messageIds ||
+      []
+    )
+    .forEach(
+      messageId => {
+
+        updateMessageStatus(
+          messageId,
+          "read"
+        );
+
+      }
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "incoming_call"
+  ) {
+
+    showIncomingCall(
+      data
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "call_ringing"
+  ) {
+
+    currentCall = {
+      ...currentCall,
+      callId:
+        data.callId
+    };
+
+
+    $("callStatus").textContent =
+      lang === "ru"
+        ? "Вызов..."
+        : "Calling...";
+
+  }
+
+
+  else if (
+    data.type ===
+    "call_accepted"
+  ) {
+
+    handleCallAccepted(
+      data
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "call_rejected"
+  ) {
+
+    toast(
+      lang === "ru"
+        ? "Звонок отклонён"
+        : "Call rejected"
+    );
+
+    cleanupCall();
+
+  }
+
+
+  else if (
+    data.type ===
+    "call_ended"
+  ) {
+
+    cleanupCall();
+
+  }
+
+
+  else if (
+    data.type ===
+    "webrtc_offer"
+  ) {
+
+    handleWebRTCOffer(
+      data
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "webrtc_answer"
+  ) {
+
+    handleWebRTCAnswer(
+      data
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "webrtc_ice"
+  ) {
+
+    handleWebRTCIce(
+      data
+    );
+
+  }
+
+
+  else if (
+    data.type ===
+    "call_error"
+  ) {
+
+    toast(
+      data.message ||
+      "Call error"
+    );
+
+    cleanupCall();
+
+  }
+
+
+  else if (
+    data.type ===
     "error"
-  ){
+  ) {
 
     toast(
       data.message ||
@@ -2628,13 +4072,13 @@ function handle(data){
 }
 
 
-/* HEART SOUND */
+/* HEART */
 
 function playChime(
   mutual = false
 ){
 
-  try{
+  try {
 
     const AudioClass =
       window.AudioContext ||
@@ -2661,6 +4105,7 @@ function playChime(
         const oscillator =
           context.createOscillator();
 
+
         const gain =
           context.createGain();
 
@@ -2669,36 +4114,36 @@ function playChime(
           frequency;
 
 
-        oscillator.type =
-          "sine";
+        gain.gain
+          .setValueAtTime(
+            .0001,
+            now +
+            index * .11
+          );
 
 
-        gain.gain.setValueAtTime(
-          .0001,
-          now +
-          index * .11
-        );
+        gain.gain
+          .exponentialRampToValueAtTime(
+            .15,
+            now +
+            index * .11 +
+            .02
+          );
 
 
-        gain.gain.exponentialRampToValueAtTime(
-          .16,
-          now +
-          index * .11 +
-          .02
-        );
-
-
-        gain.gain.exponentialRampToValueAtTime(
-          .0001,
-          now +
-          index * .11 +
-          .18
-        );
+        gain.gain
+          .exponentialRampToValueAtTime(
+            .0001,
+            now +
+            index * .11 +
+            .18
+          );
 
 
         oscillator.connect(
           gain
         );
+
 
         gain.connect(
           context.destination
@@ -2720,12 +4165,10 @@ function playChime(
       }
     );
 
-  }catch(error){}
+  } catch (error) {}
 
 }
 
-
-/* HEART */
 
 function showIncomingHeart(
   data
@@ -2735,15 +4178,21 @@ function showIncomingHeart(
 
 
   $("heartTitle").textContent =
-    "💗 Новый сигнал";
+    lang === "ru"
+      ? "💗 Новый сигнал"
+      : "💗 New signal";
 
 
   $("heartText").textContent =
     (
       data.fromName ||
-      "Кто-то"
+      "SnapVibe"
     ) +
-    " хочет сохранить связь с тобой";
+    (
+      lang === "ru"
+        ? " хочет сохранить связь с тобой"
+        : " wants to keep the connection"
+    );
 
 
   $("heartChoices").innerHTML =
@@ -2752,14 +4201,14 @@ function showIncomingHeart(
       class="primary"
       id="acceptHeart"
     >
-      💗 Сохранить связь
+      💗 ${t("keepConnection")}
     </button>
 
     <button
       class="secondary"
       id="laterHeart"
     >
-      Не сейчас
+      ${t("cancel")}
     </button>
     `;
 
@@ -2774,7 +4223,7 @@ function showIncomingHeart(
 
       if (
         match
-      ){
+      ) {
 
         send({
 
@@ -2814,11 +4263,15 @@ function mutualHeart(data){
 
 
   $("heartTitle").textContent =
-    "Вы сохранили связь!";
+    lang === "ru"
+      ? "Связь сохранена! 💕"
+      : "Connection saved! 💕";
 
 
   $("heartText").textContent =
-    "Теперь вы друзья, и чат останется доступен после окончания мэтча.";
+    lang === "ru"
+      ? "Теперь вы друзья, и постоянный чат останется доступен."
+      : "You are now friends and your permanent chat stays available.";
 
 
   $("heartChoices").innerHTML =
@@ -2827,7 +4280,7 @@ function mutualHeart(data){
       class="primary"
       id="closeMutual"
     >
-      Продолжить 💗
+      ${t("continue")}
     </button>
     `;
 
@@ -2837,11 +4290,11 @@ function mutualHeart(data){
     .add("show");
 
 
-  for(
+  for (
     let i = 0;
     i < 18;
     i++
-  ){
+  ) {
 
     setTimeout(
       spawnHeart,
@@ -2884,8 +4337,7 @@ function spawnHeart(){
   particle.style.left =
     (
       10 +
-      Math.random() *
-      80
+      Math.random() * 80
     ) +
     "%";
 
@@ -2913,7 +4365,7 @@ function spawnHeart(){
 
 async function startCamera(){
 
-  try{
+  try {
 
     stream =
       await navigator
@@ -2923,9 +4375,6 @@ async function startCamera(){
           video:{
             facingMode:{
               ideal:"user"
-            },
-            width:{
-              ideal:1280
             }
           },
 
@@ -2941,10 +4390,12 @@ async function startCamera(){
     $("fallback").style.display =
       "none";
 
-  }catch(error){
+  } catch (error) {
 
     toast(
-      "Камера недоступна"
+      lang === "ru"
+        ? "Не удалось открыть камеру"
+        : "Camera unavailable"
     );
 
   }
@@ -2961,7 +4412,7 @@ function takePhoto(){
   if (
     !stream ||
     !video.videoWidth
-  ){
+  ) {
 
     return null;
 
@@ -3031,32 +4482,32 @@ function takePhoto(){
 }
 
 
-async function hash(value){
+async function emotionHash(
+  value
+){
 
-  const buffer =
-    await crypto
-      .subtle
-      .digest(
+  const result =
+    await crypto.subtle.digest(
 
-        "SHA-256",
+      "SHA-256",
 
-        new TextEncoder()
-          .encode(
-            "snapvibe:" +
-            value
-          )
+      new TextEncoder()
+        .encode(
+          "snapvibe:" +
+          value
+        )
 
-      );
+    );
 
 
   return [
     ...new Uint8Array(
-      buffer
+      result
     )
   ]
   .map(
-    item =>
-      item
+    value =>
+      value
         .toString(16)
         .padStart(
           2,
@@ -3067,8 +4518,6 @@ async function hash(value){
 
 }
 
-
-/* EMOTIONS */
 
 document
   .querySelectorAll(
@@ -3085,20 +4534,19 @@ document
               ".emotion"
             )
             .forEach(
-              item =>
-                item
-                  .classList
-                  .remove(
-                    "selected"
-                  )
+              item => {
+
+                item.classList.remove(
+                  "selected"
+                );
+
+              }
             );
 
 
-          button
-            .classList
-            .add(
-              "selected"
-            );
+          button.classList.add(
+            "selected"
+          );
 
 
           emotion =
@@ -3110,8 +4558,6 @@ document
   );
 
 
-/* TAKE PHOTO -> PREVIEW */
-
 $("capture").onclick =
   async () => {
 
@@ -3119,12 +4565,12 @@ $("capture").onclick =
       takePhoto();
 
 
-    if (
-      !photo
-    ){
+    if (!photo) {
 
       return toast(
-        "Камера не готова"
+        lang === "ru"
+          ? "Камера ещё не готова"
+          : "Camera is not ready"
       );
 
     }
@@ -3135,7 +4581,7 @@ $("capture").onclick =
 
 
     pendingEmotionHash =
-      await hash(
+      await emotionHash(
         emotion
       );
 
@@ -3174,55 +4620,53 @@ $("usePhoto").onclick =
     if (
       !pendingPhoto ||
       !pendingEmotionHash
-    ){
+    ) {
 
       return;
 
     }
 
 
-    if (
-      send({
+    send({
 
-        type:
-          "capture",
+      type:
+        "capture",
 
-        emotionHash:
-          pendingEmotionHash,
+      emotionHash:
+        pendingEmotionHash,
 
-        photo:
-          pendingPhoto,
+      photo:
+        pendingPhoto,
 
-        searchGender:
-          settings.gender,
+      searchGender:
+        settings.gender,
 
-        ageMin:
-          settings.ageMin,
+      ageMin:
+        settings.ageMin,
 
-        ageMax:
-          settings.ageMax,
+      ageMax:
+        settings.ageMax,
 
-        searchCountry:
-          settings.country
+      searchCountry:
+        settings.country
 
-      })
-    ){
-
-      pendingPhoto =
-        null;
-
-      pendingEmotionHash =
-        null;
+    });
 
 
-      show(
-        "searchView"
-      );
+    pendingPhoto =
+      null;
 
 
-      startSearch();
+    pendingEmotionHash =
+      null;
 
-    }
+
+    show(
+      "searchView"
+    );
+
+
+    startSearch();
 
   };
 
@@ -3244,16 +4688,23 @@ function startSearch(){
     setInterval(
       () => {
 
-        $("searchSeconds")
-          .textContent =
+        const seconds =
           Math.floor(
             (
               Date.now() -
               searchAt
             ) /
             1000
-          ) +
-          " сек";
+          );
+
+
+        $("searchSeconds").textContent =
+          seconds +
+          (
+            lang === "ru"
+              ? " сек"
+              : " s"
+          );
 
       },
       1000
@@ -3333,7 +4784,7 @@ function loadMatch(data){
 
 
   $("matchMeta").textContent =
-    countryName(
+    localizedCountryName(
       match.partnerProfile.country
     );
 
@@ -3345,23 +4796,23 @@ function loadMatch(data){
 
   countTimer =
     setInterval(
-      countdown,
+      updateMatchCountdown,
       1000
     );
 
 
-  countdown();
+  updateMatchCountdown();
 
   updateMatchNav();
 
 }
 
 
-function countdown(){
+function updateMatchCountdown(){
 
   if (
     !match
-  ){
+  ) {
 
     return;
 
@@ -3379,13 +4830,14 @@ function countdown(){
     );
 
 
-  const text =
+  $("countdown").textContent =
     String(
       Math.floor(
         seconds /
         3600
       )
-    ).padStart(
+    )
+    .padStart(
       2,
       "0"
     )
@@ -3400,7 +4852,8 @@ function countdown(){
         ) /
         60
       )
-    ).padStart(
+    )
+    .padStart(
       2,
       "0"
     )
@@ -3410,30 +4863,27 @@ function countdown(){
     String(
       seconds %
       60
-    ).padStart(
+    )
+    .padStart(
       2,
       "0"
     );
 
 
-  $("countdown").textContent =
-    text;
-
-
   if (
     seconds <= 0
-  ){
+  ) {
 
     match =
       null;
 
 
+    updateMatchNav();
+
+
     clearInterval(
       countTimer
     );
-
-
-    updateMatchNav();
 
   }
 
@@ -3445,7 +4895,7 @@ $("openMatchChat").onclick =
 
     if (
       !match
-    ){
+    ) {
 
       return;
 
@@ -3486,7 +4936,7 @@ $("keepVibeChat").onclick =
 
     if (
       match
-    ){
+    ) {
 
       send({
 
@@ -3503,35 +4953,67 @@ $("keepVibeChat").onclick =
   };
 
 
+/* FIXED NEXT MATCH */
+
 $("newMatch").onclick =
   () => {
 
     if (
-      match
-    ){
+      !match
+    ) {
 
-      send({
+      show(
+        "cameraView"
+      );
 
-        type:
-          "end_match",
-
-        matchId:
-          match.id
-
-      });
+      return;
 
     }
+
+
+    const oldMatchId =
+      match.id;
+
+
+    send({
+
+      type:
+        "next_match",
+
+      matchId:
+        oldMatchId
+
+    });
 
 
     match =
       null;
 
 
+    clearInterval(
+      countTimer
+    );
+
+
     updateMatchNav();
+
+
+    activeChat = {
+      id:null,
+      type:null,
+      person:null
+    };
 
 
     show(
       "cameraView"
+    );
+
+
+    toast(
+      lang === "ru"
+        ? "Можно искать следующий мэтч"
+        : "Ready for the next match"
     );
 
   };
@@ -3542,16 +5024,18 @@ $("matchNav").onclick =
 
     if (
       match
-    ){
+    ) {
 
       show(
         "matchView"
       );
 
-    }else{
+    } else {
 
       toast(
-        "Сейчас активного мэтча нет"
+        lang === "ru"
+          ? "Сейчас активного мэтча нет"
+          : "No active match"
       );
 
     }
@@ -3559,7 +5043,7 @@ $("matchNav").onclick =
   };
 
 
-/* AVATAR */
+/* AVATARS */
 
 function setAvatar(
   element,
@@ -3569,20 +5053,18 @@ function setAvatar(
 
   if (
     source
-  ){
+  ) {
 
     element.innerHTML =
       "<img>";
 
 
     element
-      .querySelector(
-        "img"
-      )
+      .querySelector("img")
       .src =
       source;
 
-  }else{
+  } else {
 
     element.textContent =
       (
@@ -3603,7 +5085,7 @@ function openChat(
   name,
   type,
   person,
-  messages
+  list
 ){
 
   activeChat = {
@@ -3629,7 +5111,7 @@ function openChat(
 
 
   renderMessages(
-    messages
+    list
   );
 
 
@@ -3643,6 +5125,17 @@ function openChat(
   show(
     "chatView"
   );
+
+
+  send({
+
+    type:
+      "chat_read",
+
+    chatId:
+      id
+
+  });
 
 }
 
@@ -3659,12 +5152,40 @@ function renderMessages(
     appendMessage
   );
 
+
+  $("messages").scrollTop =
+    $("messages")
+      .scrollHeight;
+
+}
+
+
+function getMessageGender(
+  message
+){
+
+  return (
+    message.senderGender ||
+    (
+      message.senderId ===
+      userId
+        ? profile.gender
+        : activeChat.person?.gender
+    ) ||
+    "other"
+  );
+
 }
 
 
 function appendMessage(
   message
 ){
+
+  const mine =
+    message.senderId ===
+    userId;
+
 
   const row =
     document.createElement(
@@ -3675,17 +5196,15 @@ function appendMessage(
   row.className =
     "msgRow" +
     (
-      message.senderId ===
-      userId
+      mine
         ? " me"
         : ""
     );
 
 
   if (
-    message.senderId !==
-    userId
-  ){
+    !mine
+  ) {
 
     const avatarBox =
       document.createElement(
@@ -3701,7 +5220,8 @@ function appendMessage(
 
       avatarBox,
 
-      message.senderAvatar,
+      message.senderAvatar ||
+      activeChat.person?.avatar,
 
       message.senderName ||
       activeChat.person?.name
@@ -3716,22 +5236,218 @@ function appendMessage(
   }
 
 
+  const wrapper =
+    document.createElement(
+      "div"
+    );
+
+
+  wrapper.className =
+    "bubbleWrap";
+
+
   const bubble =
     document.createElement(
       "div"
     );
 
 
+  const gender =
+    getMessageGender(
+      message
+    );
+
+
   bubble.className =
-    "bubble";
+    "bubble " +
+    (
+      gender === "male"
+        ? "male"
+        : gender === "female"
+          ? "female"
+          : "other"
+    );
 
 
-  bubble.textContent =
-    message.text;
+  if (
+    message.type ===
+    "voice"
+  ) {
+
+    bubble.classList.add(
+      "voiceBubble"
+    );
+
+
+    const line =
+      document.createElement(
+        "div"
+      );
+
+
+    line.className =
+      "voiceLine";
+
+
+    const play =
+      document.createElement(
+        "button"
+      );
+
+
+    play.className =
+      "voicePlay";
+
+
+    play.textContent =
+      "▶";
+
+
+    const progress =
+      document.createElement(
+        "div"
+      );
+
+
+    progress.className =
+      "voiceProgress";
+
+
+    const duration =
+      document.createElement(
+        "span"
+      );
+
+
+    duration.className =
+      "voiceDuration";
+
+
+    duration.textContent =
+      formatDuration(
+        message.duration || 1
+      );
+
+
+    let audio =
+      null;
+
+
+    play.onclick =
+      () => {
+
+        if (!audio) {
+
+          audio =
+            new Audio(
+              message.audio
+            );
+
+
+          audio.onended =
+            () => {
+
+              play.textContent =
+                "▶";
+
+            };
+
+        }
+
+
+        if (
+          audio.paused
+        ) {
+
+          audio.play();
+
+          play.textContent =
+            "⏸";
+
+        } else {
+
+          audio.pause();
+
+          play.textContent =
+            "▶";
+
+        }
+
+      };
+
+
+    line.append(
+      play,
+      progress,
+      duration
+    );
+
+
+    bubble.appendChild(
+      line
+    );
+
+  } else {
+
+    bubble.textContent =
+      message.text || "";
+
+  }
+
+
+  wrapper.appendChild(
+    bubble
+  );
+
+
+  if (
+    mine
+  ) {
+
+    const meta =
+      document.createElement(
+        "div"
+      );
+
+
+    meta.className =
+      "msgMeta";
+
+
+    const ticks =
+      document.createElement(
+        "span"
+      );
+
+
+    ticks.className =
+      "msgTicks";
+
+
+    ticks.dataset.messageId =
+      message.id;
+
+
+    setTicksFromMessage(
+      ticks,
+      message
+    );
+
+
+    meta.appendChild(
+      ticks
+    );
+
+
+    wrapper.appendChild(
+      meta
+    );
+
+  }
 
 
   row.appendChild(
-    bubble
+    wrapper
   );
 
 
@@ -3741,6 +5457,27 @@ function appendMessage(
     );
 
 
+  if (
+    !mine
+  ) {
+
+    send({
+
+      type:
+        "message_delivered",
+
+      chatId:
+        message.chatId ||
+        activeChat.id,
+
+      messageId:
+        message.id
+
+    });
+
+  }
+
+
   $("messages").scrollTop =
     $("messages")
       .scrollHeight;
@@ -3748,44 +5485,175 @@ function appendMessage(
 }
 
 
-function sendMessage(){
+function setTicksFromMessage(
+  element,
+  message
+){
 
-  const input =
-    $("messageInput");
+  const otherId =
+    activeChat.person?.id ||
+    match?.partnerId;
 
 
-  const text =
-    input.value.trim();
+  const read =
+    otherId &&
+    Array.isArray(
+      message.readBy
+    ) &&
+    message.readBy.includes(
+      otherId
+    );
+
+
+  const delivered =
+    otherId &&
+    Array.isArray(
+      message.deliveredTo
+    ) &&
+    message.deliveredTo.includes(
+      otherId
+    );
 
 
   if (
-    text &&
-    activeChat.id
-  ){
+    read
+  ) {
 
-    send({
+    element.textContent =
+      "✓✓";
 
-      type:
-        "chat_message",
+    element.classList.add(
+      "read"
+    );
 
-      chatId:
-        activeChat.id,
+  }
 
-      text
+  else if (
+    delivered
+  ) {
 
-    });
+    element.textContent =
+      "✓✓";
 
+  }
 
-    input.value =
-      "";
+  else {
+
+    element.textContent =
+      "✓";
 
   }
 
 }
 
 
+function updateMessageStatus(
+  messageId,
+  status
+){
+
+  const element =
+    document.querySelector(
+      `.msgTicks[data-message-id="${messageId}"]`
+    );
+
+
+  if (!element) {
+    return;
+  }
+
+
+  if (
+    status ===
+    "read"
+  ) {
+
+    element.textContent =
+      "✓✓";
+
+    element.classList.add(
+      "read"
+    );
+
+  }
+
+  else if (
+    status ===
+    "delivered"
+  ) {
+
+    element.textContent =
+      "✓✓";
+
+  }
+
+}
+
+
+function markCurrentChatRead(){
+
+  if (
+    !activeChat.id
+  ) {
+    return;
+  }
+
+
+  send({
+
+    type:
+      "chat_read",
+
+    chatId:
+      activeChat.id
+
+  });
+
+}
+
+
+function sendTextMessage(){
+
+  const input =
+    $("messageInput");
+
+
+  const text =
+    input.value
+      .trim();
+
+
+  if (
+    !text ||
+    !activeChat.id
+  ) {
+
+    return;
+
+  }
+
+
+  send({
+
+    type:
+      "chat_message",
+
+    chatId:
+      activeChat.id,
+
+    text
+
+  });
+
+
+  input.value =
+    "";
+
+}
+
+
 $("sendMessage").onclick =
-  sendMessage;
+  sendTextMessage;
 
 
 $("messageInput").onkeydown =
@@ -3794,9 +5662,9 @@ $("messageInput").onkeydown =
     if (
       event.key ===
       "Enter"
-    ){
+    ) {
 
-      sendMessage();
+      sendTextMessage();
 
     }
 
@@ -3810,13 +5678,13 @@ $("chatBack").onclick =
       activeChat.type ===
       "match" &&
       match
-    ){
+    ) {
 
       show(
         "matchView"
       );
 
-    }else{
+    } else {
 
       show(
         "chatsView"
@@ -3827,7 +5695,439 @@ $("chatBack").onclick =
   };
 
 
-/* CHATS - ONLY PERMANENT */
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (
+      document.visibilityState ===
+      "visible" &&
+      $("chatView")
+        .classList
+        .contains("active")
+    ) {
+
+      markCurrentChatRead();
+
+    }
+
+  }
+);
+
+
+/* EMOJIS */
+
+const EMOJIS = [
+  "😀","😂","😍","🥰","😘","😊","😎",
+  "🤩","😢","😭","😡","🤔","🙈","🔥",
+  "❤️","💗","💕","👍","👏","🙏","🎉",
+  "😉","😜","🤗","😴","🥳","💯","✨"
+];
+
+
+function buildEmojiPanel(){
+
+  $("emojiPanel").innerHTML =
+    "";
+
+
+  EMOJIS.forEach(
+    emoji => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.textContent =
+        emoji;
+
+
+      button.onclick =
+        () => {
+
+          const input =
+            $("messageInput");
+
+
+          const start =
+            input.selectionStart ??
+            input.value.length;
+
+
+          const end =
+            input.selectionEnd ??
+            input.value.length;
+
+
+          input.value =
+            input.value.slice(
+              0,
+              start
+            ) +
+            emoji +
+            input.value.slice(
+              end
+            );
+
+
+          input.focus();
+
+
+          input.setSelectionRange(
+            start +
+            emoji.length,
+            start +
+            emoji.length
+          );
+
+        };
+
+
+      $("emojiPanel")
+        .appendChild(
+          button
+        );
+
+    }
+  );
+
+}
+
+
+$("emojiBtn").onclick =
+  () => {
+
+    $("emojiPanel")
+      .classList
+      .toggle("show");
+
+  };
+
+
+/* VOICE */
+
+function formatDuration(
+  seconds
+){
+
+  const value =
+    Math.max(
+      0,
+      Math.floor(
+        Number(seconds) || 0
+      )
+    );
+
+
+  return (
+    Math.floor(
+      value / 60
+    ) +
+    ":" +
+    String(
+      value % 60
+    ).padStart(
+      2,
+      "0"
+    )
+  );
+
+}
+
+
+$("voiceBtn").onclick =
+  async () => {
+
+    if (
+      mediaRecorder &&
+      mediaRecorder.state ===
+      "recording"
+    ) {
+
+      return;
+
+    }
+
+
+    try {
+
+      const micStream =
+        await navigator
+          .mediaDevices
+          .getUserMedia({
+            audio:true
+          });
+
+
+      recordedChunks =
+        [];
+
+
+      recordedBlob =
+        null;
+
+
+      mediaRecorder =
+        new MediaRecorder(
+          micStream
+        );
+
+
+      mediaRecorder.ondataavailable =
+        event => {
+
+          if (
+            event.data.size >
+            0
+          ) {
+
+            recordedChunks.push(
+              event.data
+            );
+
+          }
+
+        };
+
+
+      mediaRecorder.onstop =
+        () => {
+
+          recordedBlob =
+            new Blob(
+              recordedChunks,
+              {
+                type:
+                  mediaRecorder.mimeType ||
+                  "audio/webm"
+              }
+            );
+
+
+          micStream
+            .getTracks()
+            .forEach(
+              track =>
+                track.stop()
+            );
+
+        };
+
+
+      recordingStartedAt =
+        Date.now();
+
+
+      recordedDuration =
+        0;
+
+
+      mediaRecorder.start();
+
+
+      $("recordBar")
+        .classList
+        .add("show");
+
+
+      recordingTimer =
+        setInterval(
+          () => {
+
+            recordedDuration =
+              Math.floor(
+                (
+                  Date.now() -
+                  recordingStartedAt
+                ) /
+                1000
+              );
+
+
+            $("recordTime").textContent =
+              formatDuration(
+                recordedDuration
+              );
+
+          },
+          250
+        );
+
+    } catch (error) {
+
+      toast(
+        lang === "ru"
+          ? "Нужно разрешить доступ к микрофону"
+          : "Microphone permission required"
+      );
+
+    }
+
+  };
+
+
+function stopRecorder(){
+
+  clearInterval(
+    recordingTimer
+  );
+
+
+  if (
+    mediaRecorder &&
+    mediaRecorder.state ===
+    "recording"
+  ) {
+
+    mediaRecorder.stop();
+
+  }
+
+
+  $("recordBar")
+    .classList
+    .remove("show");
+
+}
+
+
+$("recordCancel").onclick =
+  () => {
+
+    stopRecorder();
+
+
+    recordedChunks =
+      [];
+
+
+    recordedBlob =
+      null;
+
+  };
+
+
+$("recordSend").onclick =
+  async () => {
+
+    if (
+      !mediaRecorder
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      mediaRecorder.state ===
+      "recording"
+    ) {
+
+      stopRecorder();
+
+
+      await new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            150
+          )
+      );
+
+    }
+
+
+    if (
+      !recordedBlob ||
+      !activeChat.id
+    ) {
+
+      return;
+
+    }
+
+
+    const dataUrl =
+      await blobToDataURL(
+        recordedBlob
+      );
+
+
+    send({
+
+      type:
+        "voice_message",
+
+      chatId:
+        activeChat.id,
+
+      audio:
+        dataUrl,
+
+      duration:
+        Math.max(
+          1,
+          recordedDuration
+        )
+
+    });
+
+
+    recordedBlob =
+      null;
+
+
+    recordedChunks =
+      [];
+
+
+    recordedDuration =
+      0;
+
+
+    $("recordTime").textContent =
+      "0:00";
+
+  };
+
+
+function blobToDataURL(blob){
+
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        () =>
+          resolve(
+            reader.result
+          );
+
+
+      reader.onerror =
+        reject;
+
+
+      reader.readAsDataURL(
+        blob
+      );
+
+    }
+  );
+
+}
+
+
+/* CHAT LIST */
 
 function renderChats(){
 
@@ -3841,25 +6141,31 @@ function renderChats(){
 
   if (
     !friends.length
-  ){
+  ) {
 
     list.innerHTML =
       `
       <div class="chatEmpty">
+
         <div style="font-size:45px">
           💬
         </div>
 
         <h3>
-          Пока чатов нет
+          ${t("chats")}
         </h3>
 
         <p>
-          Если вы оба сохраните связь 💗,
-          постоянный чат появится здесь.
+          ${
+            lang === "ru"
+              ? "Постоянные чаты появятся после взаимного 💗."
+              : "Permanent chats appear after a mutual 💗."
+          }
         </p>
+
       </div>
       `;
+
 
     return;
 
@@ -3915,7 +6221,11 @@ function renderChats(){
         <b></b>
 
         <small>
-          Постоянный чат
+          ${
+            lang === "ru"
+              ? "Открыть чат"
+              : "Open chat"
+          }
         </small>
         `;
 
@@ -3934,7 +6244,8 @@ function renderChats(){
 
 
       card.onclick =
-        () =>
+        () => {
+
           send({
 
             type:
@@ -3944,6 +6255,8 @@ function renderChats(){
               friend.id
 
           });
+
+        };
 
 
       list.appendChild(
@@ -3970,20 +6283,23 @@ function renderFriends(){
 
   if (
     !friends.length
-  ){
+  ) {
 
     box.innerHTML =
       `
-      <p
-        style="
+      <p style="
         text-align:center;
         color:#777;
         padding:50px
-        "
-      >
-        Пока друзей нет
+      ">
+        ${
+          lang === "ru"
+            ? "Пока друзей нет"
+            : "No friends yet"
+        }
       </p>
       `;
+
 
     return;
 
@@ -4035,13 +6351,7 @@ function renderFriends(){
 
 
       main.innerHTML =
-        `
-        <b></b>
-
-        <small>
-          Друг
-        </small>
-        `;
+        "<b></b><small>💗</small>";
 
 
       main
@@ -4062,7 +6372,8 @@ function renderFriends(){
 
 
       button.onclick =
-        () =>
+        () => {
+
           send({
 
             type:
@@ -4072,6 +6383,8 @@ function renderFriends(){
               friend.id
 
           });
+
+        };
 
 
       row.append(
@@ -4095,21 +6408,23 @@ function renderFriends(){
 
 function fillProfile(){
 
-  $("profileNameTitle")
-    .textContent =
+  $("profileNameTitle").textContent =
     profile.name ||
     "SnapVibe";
 
 
-  $("profileMeta")
-    .textContent =
+  $("profileMeta").textContent =
     [
       profile.age
         ? profile.age +
-          " лет"
+          (
+            lang === "ru"
+              ? " лет"
+              : ""
+          )
         : "",
 
-      countryName(
+      localizedCountryName(
         profile.country
       )
     ]
@@ -4166,12 +6481,12 @@ $("saveProfile").onclick =
       );
 
 
-    if (
-      !name
-    ){
+    if (!name) {
 
       return toast(
-        "Введите имя"
+        lang === "ru"
+          ? "Введите имя"
+          : "Enter name"
       );
 
     }
@@ -4180,10 +6495,12 @@ $("saveProfile").onclick =
     if (
       age < 18 ||
       age > 99
-    ){
+    ) {
 
       return toast(
-        "Возраст 18–99"
+        lang === "ru"
+          ? "Возраст 18–99"
+          : "Age 18–99"
       );
 
     }
@@ -4241,7 +6558,9 @@ $("saveProfile").onclick =
 
 
     toast(
-      "Профиль сохранён"
+      lang === "ru"
+        ? "Профиль сохранён"
+        : "Profile saved"
     );
 
   };
@@ -4253,7 +6572,7 @@ function loadAvatar(
 
   if (
     !file
-  ){
+  ) {
 
     return;
 
@@ -4262,13 +6581,13 @@ function loadAvatar(
 
   if (
     file.size >
-    5 *
-    1024 *
-    1024
-  ){
+    5 * 1024 * 1024
+  ) {
 
     return toast(
-      "Фото слишком большое"
+      lang === "ru"
+        ? "Фото слишком большое"
+        : "Photo is too large"
     );
 
   }
@@ -4302,7 +6621,9 @@ function loadAvatar(
 
 
       toast(
-        "Фото обновлено"
+        lang === "ru"
+          ? "Фото обновлено"
+          : "Photo updated"
       );
 
     };
@@ -4315,58 +6636,102 @@ function loadAvatar(
 }
 
 
+/* ADD PHOTO */
+
 $("takeAvatar").onclick =
-  () =>
+  () => {
+
     $("cameraAvatarInput")
       .click();
 
+  };
+
 
 $("chooseAvatar").onclick =
-  () =>
+  () => {
+
     $("galleryAvatarInput")
       .click();
 
+  };
+
 
 $("cameraAvatarInput").onchange =
-  event =>
+  event => {
+
     loadAvatar(
       event.target
         .files?.[0]
     );
+
+  };
 
 
 $("galleryAvatarInput").onchange =
-  event =>
+  event => {
+
     loadAvatar(
       event.target
         .files?.[0]
     );
 
+  };
+
+
+/* CONFIRM PHOTO DELETE */
 
 $("removeAvatar").onclick =
   () => {
 
-    avatar =
-      "";
+    openModal(
+
+      lang === "ru"
+        ? "Удалить фото?"
+        : "Remove photo?",
+
+      `
+      <p>
+        ${
+          lang === "ru"
+            ? "Фотография профиля будет удалена. Продолжить?"
+            : "Your profile photo will be removed. Continue?"
+        }
+      </p>
+      `,
+
+      () => {
+
+        avatar =
+          "";
 
 
-    profile.avatar =
-      "";
+        profile.avatar =
+          "";
 
 
-    localStorage.removeItem(
-      "snapvibe_avatar"
-    );
+        localStorage.removeItem(
+          "snapvibe_avatar"
+        );
 
 
-    registerProfile();
+        registerProfile();
 
 
-    fillProfile();
+        fillProfile();
 
 
-    toast(
-      "Фото удалено"
+        toast(
+          lang === "ru"
+            ? "Фото удалено"
+            : "Photo removed"
+        );
+
+      },
+
+      true,
+
+      true
+
     );
 
   };
@@ -4377,51 +6742,53 @@ $("removeAvatar").onclick =
 function openModal(
   title,
   body,
-  save = null,
-  showSave = true
+  saveCallback = null,
+  showSave = true,
+  dangerSave = false
 ){
 
-  $("modalTitle")
-    .textContent =
+  $("modalTitle").textContent =
     title;
 
 
-  $("modalBody")
-    .innerHTML =
+  $("modalBody").innerHTML =
     body;
 
 
-  $("modalSave")
-    .style.display =
+  $("modalSave").style.display =
     showSave
       ? "block"
       : "none";
 
 
+  $("modalSave")
+    .classList
+    .toggle(
+      "dangerBtn",
+      dangerSave
+    );
+
+
   $("modal")
     .classList
-    .add(
-      "show"
-    );
+    .add("show");
 
 
   $("modalSave").onclick =
     () => {
 
       if (
-        save
-      ){
+        saveCallback
+      ) {
 
-        save();
+        saveCallback();
 
       }
 
 
       $("modal")
         .classList
-        .remove(
-          "show"
-        );
+        .remove("show");
 
     };
 
@@ -4429,53 +6796,53 @@ function openModal(
 
 
 $("modalCancel").onclick =
-  () =>
+  () => {
 
     $("modal")
       .classList
-      .remove(
-        "show"
-      );
+      .remove("show");
+
+  };
 
 
 /* SEARCH SETTINGS */
 
 function renderSettings(){
 
-  $("genderLabel")
-    .textContent =
-    (
-      settings.gender ===
-      "female"
-        ? "Девушек"
+  const genderText =
+    settings.gender ===
+    "female"
+      ? t("female")
+      : settings.gender ===
+        "male"
+        ? t("male")
+        : t("other");
 
-        : settings.gender ===
-          "male"
-          ? "Парней"
-          : "Всех"
-    )
-    +
+
+  $("genderLabel").textContent =
+    genderText +
     " ›";
 
 
-  $("ageLabel")
-    .textContent =
+  $("ageLabel").textContent =
     settings.ageMin +
     " — " +
     settings.ageMax +
     " ›";
 
 
-  $("countryLabel")
-    .textContent =
+  $("countryLabel").textContent =
     (
       settings.country
-        ? countryName(
+        ? localizedCountryName(
             settings.country
           )
-        : "Все страны"
-    )
-    +
+        : (
+            lang === "ru"
+              ? "Все страны"
+              : "All countries"
+          )
+    ) +
     " ›";
 
 
@@ -4502,10 +6869,13 @@ $("searchSettings").onclick =
 
 
 $("settingsBack").onclick =
-  () =>
+  () => {
+
     show(
       "profileView"
     );
+
+  };
 
 
 $("setGender").onclick =
@@ -4513,7 +6883,7 @@ $("setGender").onclick =
 
     openModal(
 
-      "Пол",
+      t("gender"),
 
       `
       <div class="field">
@@ -4521,15 +6891,19 @@ $("setGender").onclick =
         <select id="mGender">
 
           <option value="female">
-            Девушек
+            ${t("female")}
           </option>
 
           <option value="male">
-            Парней
+            ${t("male")}
           </option>
 
           <option value="all">
-            Всех
+            ${
+              lang === "ru"
+                ? "Все"
+                : "All"
+            }
           </option>
 
         </select>
@@ -4540,8 +6914,7 @@ $("setGender").onclick =
       () => {
 
         settings.gender =
-          $("mGender")
-            .value;
+          $("mGender").value;
 
 
         localStorage.setItem(
@@ -4558,10 +6931,12 @@ $("setGender").onclick =
 
 
     setTimeout(
-      () =>
-        $("mGender")
-          .value =
-          settings.gender,
+      () => {
+
+        $("mGender").value =
+          settings.gender;
+
+      },
       0
     );
 
@@ -4573,14 +6948,20 @@ $("setAge").onclick =
 
     openModal(
 
-      "Возраст",
+      t("age"),
 
       `
       <div class="grid2">
 
         <div class="field">
 
-          <label>От</label>
+          <label>
+            ${
+              lang === "ru"
+                ? "От"
+                : "From"
+            }
+          </label>
 
           <input
             id="mMin"
@@ -4594,7 +6975,13 @@ $("setAge").onclick =
 
         <div class="field">
 
-          <label>До</label>
+          <label>
+            ${
+              lang === "ru"
+                ? "До"
+                : "To"
+            }
+          </label>
 
           <input
             id="mMax"
@@ -4625,7 +7012,7 @@ $("setAge").onclick =
 
         if (
           min > max
-        ){
+        ) {
 
           [
             min,
@@ -4678,21 +7065,18 @@ $("setCountry").onclick =
 
     openModal(
 
-      "Страна",
+      t("country"),
 
       `
       <div class="field">
-
         <select id="mCountry"></select>
-
       </div>
       `,
 
       () => {
 
         settings.country =
-          $("mCountry")
-            .value;
+          $("mCountry").value;
 
 
         localStorage.setItem(
@@ -4727,10 +7111,10 @@ $("setCountry").onclick =
   };
 
 
-/* APP SETTINGS */
+/* NOTIFICATIONS */
 
 $("notificationsRow").onclick =
-  () => {
+  async () => {
 
     notificationsEnabled =
       !notificationsEnabled;
@@ -4747,38 +7131,27 @@ $("notificationsRow").onclick =
     renderSettings();
 
 
-    toast(
+    if (
       notificationsEnabled
-        ? "Уведомления включены"
-        : "Уведомления выключены"
-    );
+    ) {
+
+      await subscribePush();
+
+    }
 
   };
 
 
+/* APP SETTINGS */
+
 $("privacyRow").onclick =
   () => {
 
-    openModal(
-
-      "Конфиденциальность",
-
-      `
-      <p>
-        Твои данные профиля используются
-        для работы SnapVibe и поиска мэтчей.
-      </p>
-
-      <p>
-        Фото эмоции доступно только участникам
-        активного мэтча и не должно
-        публиковаться как открытая фотография профиля.
-      </p>
-      `,
-
-      null,
-      false
-
+    openInfo(
+      t("privacy"),
+      lang === "ru"
+        ? "SnapVibe использует данные профиля для мэтчинга и общения. Фото эмоции не является публичной фотографией профиля."
+        : "SnapVibe uses profile data for matching and communication."
     );
 
   };
@@ -4787,24 +7160,11 @@ $("privacyRow").onclick =
 $("blockedRow").onclick =
   () => {
 
-    openModal(
-
-      "Заблокированные",
-
-      `
-      <p>
-        Здесь будут отображаться люди,
-        которых ты заблокировал.
-      </p>
-
-      <p>
-        Сейчас список пуст.
-      </p>
-      `,
-
-      null,
-      false
-
+    openInfo(
+      t("blocked"),
+      lang === "ru"
+        ? "Здесь будут отображаться заблокированные пользователи."
+        : "Blocked users will appear here."
     );
 
   };
@@ -4812,33 +7172,11 @@ $("blockedRow").onclick =
 
 function openSafety(){
 
-  openModal(
-
-    "Безопасность",
-
-    `
-    <p>
-      Не отправляй деньги людям,
-      с которыми познакомился в приложении.
-    </p>
-
-    <p>
-      Если встречаетесь лично,
-      выбирайте публичное место
-      и сообщите близкому человеку,
-      куда вы идёте.
-    </p>
-
-    <p>
-      Если пользователь ведёт себя агрессивно
-      или нарушает правила,
-      прекрати общение.
-    </p>
-    `,
-
-    null,
-    false
-
+  openInfo(
+    t("security"),
+    lang === "ru"
+      ? "Не отправляй деньги незнакомым людям. Для первой встречи выбирай общественное место и сообщай близким, куда идёшь."
+      : "Never send money to strangers. Meet in public places."
   );
 
 }
@@ -4855,26 +7193,11 @@ $("profileSafety").onclick =
 $("rulesRow").onclick =
   () => {
 
-    openModal(
-
-      "Правила сообщества",
-
-      `
-      <p>
-        Уважай других пользователей.
-      </p>
-
-      <p>
-        Запрещены угрозы, травля,
-        мошенничество, спам,
-        публикация чужих личных данных
-        и нежелательный сексуальный контент.
-      </p>
-      `,
-
-      null,
-      false
-
+    openInfo(
+      t("rules"),
+      lang === "ru"
+        ? "Запрещены угрозы, травля, мошенничество, спам и публикация чужих личных данных."
+        : "Threats, harassment, fraud, spam and sharing private data are prohibited."
     );
 
   };
@@ -4883,27 +7206,11 @@ $("rulesRow").onclick =
 $("policyRow").onclick =
   () => {
 
-    openModal(
-
-      "Политика конфиденциальности",
-
-      `
-      <p>
-        Перед публикацией SnapVibe
-        в Google Play здесь будет размещена
-        полноценная политика конфиденциальности.
-      </p>
-
-      <p>
-        Она должна описывать хранение профиля,
-        фотографий, сообщений,
-        блокировок и удаления аккаунта.
-      </p>
-      `,
-
-      null,
-      false
-
+    openInfo(
+      t("policy"),
+      lang === "ru"
+        ? "Перед публикацией приложения здесь будет размещена полная политика конфиденциальности."
+        : "A full privacy policy will be published here before release."
     );
 
   };
@@ -4914,12 +7221,15 @@ $("deleteRow").onclick =
 
     openModal(
 
-      "Удалить аккаунт",
+      t("deleteAccount"),
 
       `
       <p>
-        Удалить локальные данные профиля
-        с этого телефона?
+        ${
+          lang === "ru"
+            ? "Удалить данные профиля с этого устройства?"
+            : "Delete profile data from this device?"
+        }
       </p>
       `,
 
@@ -4938,30 +7248,56 @@ $("deleteRow").onclick =
           "snapvibe_search_country"
         ]
         .forEach(
-          key =>
+          key => {
+
             localStorage.removeItem(
               key
-            )
+            );
+
+          }
         );
 
 
         location.reload();
 
-      }
+      },
+
+      true,
+      true
 
     );
 
   };
 
 
-/* LANGUAGES */
+function openInfo(
+  title,
+  text
+){
+
+  openModal(
+
+    title,
+
+    `<p>${text}</p>`,
+
+    null,
+
+    false
+
+  );
+
+}
+
+
+/* LANGUAGE */
 
 $("languageSettings").onclick =
   () => {
 
     openModal(
 
-      "Язык",
+      t("language"),
 
       `
       <div class="field">
@@ -5000,8 +7336,7 @@ $("languageSettings").onclick =
       () => {
 
         lang =
-          $("mLang")
-            .value;
+          $("mLang").value;
 
 
         profile.language =
@@ -5014,10 +7349,25 @@ $("languageSettings").onclick =
         );
 
 
-        $("languageLabel")
-          .textContent =
-          LANGS[lang] +
-          " ›";
+        applyLanguage();
+
+
+        fillCountrySelect(
+          $("regCountry")
+        );
+
+
+        fillCountrySelect(
+          $("editCountry")
+        );
+
+
+        $("editCountry").value =
+          profile.country ||
+          "EE";
+
+
+        renderSettings();
 
 
         registerProfile();
@@ -5028,10 +7378,12 @@ $("languageSettings").onclick =
 
 
     setTimeout(
-      () =>
-        $("mLang")
-          .value =
-          lang,
+      () => {
+
+        $("mLang").value =
+          lang;
+
+      },
       0
     );
 
@@ -5044,24 +7396,24 @@ $("finishRegister").onclick =
   () => {
 
     const name =
-      $("regName")
-        .value
+      $("regName").value
         .trim();
 
 
     const age =
       Number(
-        $("regAge")
-          .value
+        $("regAge").value
       );
 
 
     if (
       !name
-    ){
+    ) {
 
       return toast(
-        "Введите имя"
+        lang === "ru"
+          ? "Введите имя"
+          : "Enter name"
       );
 
     }
@@ -5070,10 +7422,12 @@ $("finishRegister").onclick =
     if (
       age < 18 ||
       age > 99
-    ){
+    ) {
 
       return toast(
-        "Возраст 18–99"
+        lang === "ru"
+          ? "Возраст 18–99"
+          : "Age 18–99"
       );
 
     }
@@ -5091,13 +7445,11 @@ $("finishRegister").onclick =
 
 
     profile.gender =
-      $("regGender")
-        .value;
+      $("regGender").value;
 
 
     profile.country =
-      $("regCountry")
-        .value;
+      $("regCountry").value;
 
 
     localStorage.setItem(
@@ -5134,6 +7486,1252 @@ $("finishRegister").onclick =
   };
 
 
+/* PUSH NOTIFICATIONS */
+
+async function registerServiceWorker(){
+
+  if (
+    !(
+      "serviceWorker" in
+      navigator
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  try {
+
+    return await navigator
+      .serviceWorker
+      .register(
+        "/sw.js"
+      );
+
+  } catch (error) {
+
+    console.error(
+      "SW error",
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+
+function urlBase64ToUint8Array(
+  base64String
+){
+
+  const padding =
+    "=".repeat(
+      (
+        4 -
+        base64String.length %
+        4
+      ) %
+      4
+    );
+
+
+  const base64 =
+    (
+      base64String +
+      padding
+    )
+    .replace(
+      /-/g,
+      "+"
+    )
+    .replace(
+      /_/g,
+      "/"
+    );
+
+
+  const rawData =
+    atob(
+      base64
+    );
+
+
+  return Uint8Array.from(
+    [
+      ...rawData
+    ]
+    .map(
+      char =>
+        char.charCodeAt(0)
+    )
+  );
+
+}
+
+
+async function subscribePush(){
+
+  if (
+    !notificationsEnabled ||
+    !(
+      "Notification" in
+      window
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    let permission =
+      Notification.permission;
+
+
+    if (
+      permission ===
+      "default"
+    ) {
+
+      permission =
+        await Notification
+          .requestPermission();
+
+    }
+
+
+    if (
+      permission !==
+      "granted"
+    ) {
+
+      return;
+
+    }
+
+
+    const registration =
+      await registerServiceWorker();
+
+
+    if (
+      !registration
+    ) {
+
+      return;
+
+    }
+
+
+    const response =
+      await fetch(
+        "/push-public-key"
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (
+      !result.publicKey
+    ) {
+
+      console.log(
+        "VAPID key not configured"
+      );
+
+      return;
+
+    }
+
+
+    let subscription =
+      await registration
+        .pushManager
+        .getSubscription();
+
+
+    if (
+      !subscription
+    ) {
+
+      subscription =
+        await registration
+          .pushManager
+          .subscribe({
+
+            userVisibleOnly:true,
+
+            applicationServerKey:
+              urlBase64ToUint8Array(
+                result.publicKey
+              )
+
+          });
+
+    }
+
+
+    send({
+
+      type:
+        "push_subscribe",
+
+      subscription
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Push subscribe",
+      error
+    );
+
+  }
+
+}
+
+
+function showLocalNotification(
+  message
+){
+
+  if (
+    !notificationsEnabled ||
+    document.visibilityState ===
+    "visible" ||
+    Notification.permission !==
+    "granted"
+  ) {
+
+    return;
+
+  }
+
+
+  const name =
+    message.senderName ||
+    "SnapVibe";
+
+
+  new Notification(
+    name,
+    {
+      body:
+        message.type ===
+        "voice"
+          ? "🎤 Voice message"
+          : message.text,
+
+      icon:
+        message.senderAvatar ||
+        undefined
+    }
+  );
+
+}
+
+
+/* WEBRTC CALLS */
+
+function createPeerConnection(){
+
+  if (
+    peerConnection
+  ) {
+
+    return peerConnection;
+
+  }
+
+
+  peerConnection =
+    new RTCPeerConnection({
+
+      iceServers:[
+        {
+          urls:
+            "stun:stun.l.google.com:19302"
+        },
+        {
+          urls:
+            "stun:stun1.l.google.com:19302"
+        }
+      ]
+
+    });
+
+
+  peerConnection.onicecandidate =
+    event => {
+
+      if (
+        event.candidate &&
+        currentCall?.targetUserId
+      ) {
+
+        send({
+
+          type:
+            "webrtc_ice",
+
+          callId:
+            currentCall.callId,
+
+          targetUserId:
+            currentCall.targetUserId,
+
+          callType:
+            currentCall.callType,
+
+          candidate:
+            event.candidate
+
+        });
+
+      }
+
+    };
+
+
+  peerConnection.ontrack =
+    event => {
+
+      const remoteStream =
+        event.streams[0];
+
+
+      if (
+        currentCall?.callType ===
+        "video"
+      ) {
+
+        $("remoteVideo").srcObject =
+          remoteStream;
+
+      } else {
+
+        $("remoteAudio").srcObject =
+          remoteStream;
+
+      }
+
+    };
+
+
+  return peerConnection;
+
+}
+
+
+async function getCallMedia(
+  type
+){
+
+  if (
+    callStream
+  ) {
+
+    return callStream;
+
+  }
+
+
+  callStream =
+    await navigator
+      .mediaDevices
+      .getUserMedia({
+
+        audio:true,
+
+        video:
+          type === "video"
+            ? {
+                facingMode:
+                  usingFrontCamera
+                    ? "user"
+                    : "environment"
+              }
+            : false
+
+      });
+
+
+  if (
+    type === "video"
+  ) {
+
+    $("localVideo").srcObject =
+      callStream;
+
+  }
+
+
+  return callStream;
+
+}
+
+
+function activeCallPerson(){
+
+  return (
+    activeChat.person ||
+    match?.partnerProfile ||
+    null
+  );
+
+}
+
+
+async function startCall(
+  type
+){
+
+  const person =
+    activeCallPerson();
+
+
+  const targetUserId =
+    person?.id ||
+    match?.partnerId;
+
+
+  if (
+    !targetUserId
+  ) {
+
+    return toast(
+      lang === "ru"
+        ? "Собеседник не найден"
+        : "User not found"
+    );
+
+  }
+
+
+  try {
+
+    await getCallMedia(
+      type
+    );
+
+
+    currentCall = {
+
+      callId:null,
+
+      callType:
+        type,
+
+      targetUserId,
+
+      incoming:false,
+
+      person
+
+    };
+
+
+    showCallScreen(
+      person,
+      type,
+      false
+    );
+
+
+    send({
+
+      type:
+        "call_invite",
+
+      targetUserId,
+
+      callType:
+        type
+
+    });
+
+  } catch (error) {
+
+    toast(
+      lang === "ru"
+        ? "Нет доступа к микрофону или камере"
+        : "Camera or microphone unavailable"
+    );
+
+  }
+
+}
+
+
+$("audioCallBtn").onclick =
+  () => {
+
+    startCall(
+      "audio"
+    );
+
+  };
+
+
+$("videoCallBtn").onclick =
+  () => {
+
+    startCall(
+      "video"
+    );
+
+  };
+
+
+function showCallScreen(
+  person,
+  type,
+  incoming
+){
+
+  $("callName").textContent =
+    person?.name ||
+    "SnapVibe";
+
+
+  setAvatar(
+
+    $("callAvatar"),
+
+    person?.avatar,
+
+    person?.name
+
+  );
+
+
+  $("callStatus").textContent =
+    incoming
+      ? (
+          lang === "ru"
+            ? "Входящий звонок"
+            : "Incoming call"
+        )
+      : (
+          lang === "ru"
+            ? "Вызов..."
+            : "Calling..."
+        );
+
+
+  $("incomingCallActions")
+    .style.display =
+    incoming
+      ? "flex"
+      : "none";
+
+
+  $("activeCallActions")
+    .style.display =
+    incoming
+      ? "none"
+      : "flex";
+
+
+  $("callOverlay")
+    .classList
+    .add("show");
+
+
+  if (
+    type === "video" &&
+    !incoming
+  ) {
+
+    $("videoStage")
+      .classList
+      .add("show");
+
+  }
+
+}
+
+
+function showIncomingCall(
+  data
+){
+
+  currentCall = {
+
+    callId:
+      data.callId,
+
+    callType:
+      data.callType,
+
+    targetUserId:
+      data.fromUserId,
+
+    incoming:true,
+
+    person:{
+      id:
+        data.fromUserId,
+
+      name:
+        data.fromName,
+
+      avatar:
+        data.fromAvatar
+    }
+
+  };
+
+
+  showCallScreen(
+    currentCall.person,
+    currentCall.callType,
+    true
+  );
+
+}
+
+
+$("acceptCall").onclick =
+  async () => {
+
+    if (
+      !currentCall
+    ) {
+
+      return;
+
+    }
+
+
+    try {
+
+      await getCallMedia(
+        currentCall.callType
+      );
+
+
+      createPeerConnection();
+
+
+      callStream
+        .getTracks()
+        .forEach(
+          track => {
+
+            peerConnection.addTrack(
+              track,
+              callStream
+            );
+
+          }
+        );
+
+
+      send({
+
+        type:
+          "call_accept",
+
+        callId:
+          currentCall.callId,
+
+        targetUserId:
+          currentCall.targetUserId,
+
+        callType:
+          currentCall.callType
+
+      });
+
+
+      $("incomingCallActions")
+        .style.display =
+        "none";
+
+
+      $("activeCallActions")
+        .style.display =
+        "flex";
+
+
+      $("callStatus").textContent =
+        lang === "ru"
+          ? "Соединение..."
+          : "Connecting...";
+
+
+      if (
+        currentCall.callType ===
+        "video"
+      ) {
+
+        $("videoStage")
+          .classList
+          .add("show");
+
+      }
+
+    } catch (error) {
+
+      rejectCurrentCall();
+
+    }
+
+  };
+
+
+async function handleCallAccepted(
+  data
+){
+
+  if (
+    !currentCall
+  ) {
+
+    return;
+
+  }
+
+
+  currentCall.callId =
+    data.callId ||
+    currentCall.callId;
+
+
+  const pc =
+    createPeerConnection();
+
+
+  callStream
+    .getTracks()
+    .forEach(
+      track => {
+
+        const already =
+          pc.getSenders()
+            .some(
+              sender =>
+                sender.track ===
+                track
+            );
+
+
+        if (
+          !already
+        ) {
+
+          pc.addTrack(
+            track,
+            callStream
+          );
+
+        }
+
+      }
+    );
+
+
+  const offer =
+    await pc.createOffer();
+
+
+  await pc.setLocalDescription(
+    offer
+  );
+
+
+  send({
+
+    type:
+      "webrtc_offer",
+
+    callId:
+      currentCall.callId,
+
+    targetUserId:
+      currentCall.targetUserId,
+
+    callType:
+      currentCall.callType,
+
+    sdp:
+      offer
+
+  });
+
+
+  $("callStatus").textContent =
+    lang === "ru"
+      ? "Соединение..."
+      : "Connecting...";
+
+}
+
+
+async function handleWebRTCOffer(
+  data
+){
+
+  if (
+    !currentCall
+  ) {
+
+    currentCall = {
+
+      callId:
+        data.callId,
+
+      callType:
+        data.callType ||
+        "audio",
+
+      targetUserId:
+        data.fromUserId,
+
+      incoming:true,
+
+      person:{
+        id:
+          data.fromUserId,
+
+        name:
+          data.fromName,
+
+        avatar:
+          data.fromAvatar
+      }
+
+    };
+
+  }
+
+
+  const pc =
+    createPeerConnection();
+
+
+  if (
+    !callStream
+  ) {
+
+    await getCallMedia(
+      currentCall.callType
+    );
+
+
+    callStream
+      .getTracks()
+      .forEach(
+        track => {
+
+          pc.addTrack(
+            track,
+            callStream
+          );
+
+        }
+      );
+
+  }
+
+
+  await pc.setRemoteDescription(
+    new RTCSessionDescription(
+      data.sdp
+    )
+  );
+
+
+  const answer =
+    await pc.createAnswer();
+
+
+  await pc.setLocalDescription(
+    answer
+  );
+
+
+  send({
+
+    type:
+      "webrtc_answer",
+
+    callId:
+      currentCall.callId,
+
+    targetUserId:
+      data.fromUserId,
+
+    callType:
+      currentCall.callType,
+
+    sdp:
+      answer
+
+  });
+
+
+  $("callStatus").textContent =
+    lang === "ru"
+      ? "Разговор"
+      : "Connected";
+
+}
+
+
+async function handleWebRTCAnswer(
+  data
+){
+
+  if (
+    !peerConnection
+  ) {
+
+    return;
+
+  }
+
+
+  await peerConnection
+    .setRemoteDescription(
+      new RTCSessionDescription(
+        data.sdp
+      )
+    );
+
+
+  $("callStatus").textContent =
+    lang === "ru"
+      ? "Разговор"
+      : "Connected";
+
+}
+
+
+async function handleWebRTCIce(
+  data
+){
+
+  if (
+    !peerConnection ||
+    !data.candidate
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await peerConnection
+      .addIceCandidate(
+        new RTCIceCandidate(
+          data.candidate
+        )
+      );
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
+
+function rejectCurrentCall(){
+
+  if (
+    currentCall
+  ) {
+
+    send({
+
+      type:
+        "call_reject",
+
+      callId:
+        currentCall.callId,
+
+      targetUserId:
+        currentCall.targetUserId,
+
+      callType:
+        currentCall.callType
+
+    });
+
+  }
+
+
+  cleanupCall();
+
+}
+
+
+$("rejectCall").onclick =
+  rejectCurrentCall;
+
+
+function endCurrentCall(){
+
+  if (
+    currentCall
+  ) {
+
+    send({
+
+      type:
+        "call_end",
+
+      callId:
+        currentCall.callId,
+
+      targetUserId:
+        currentCall.targetUserId,
+
+      callType:
+        currentCall.callType
+
+    });
+
+  }
+
+
+  cleanupCall();
+
+}
+
+
+$("endCall").onclick =
+  endCurrentCall;
+
+
+$("videoEnd").onclick =
+  endCurrentCall;
+
+
+function cleanupCall(){
+
+  if (
+    peerConnection
+  ) {
+
+    peerConnection.close();
+
+    peerConnection =
+      null;
+
+  }
+
+
+  if (
+    callStream
+  ) {
+
+    callStream
+      .getTracks()
+      .forEach(
+        track =>
+          track.stop()
+      );
+
+
+    callStream =
+      null;
+
+  }
+
+
+  $("remoteVideo").srcObject =
+    null;
+
+
+  $("localVideo").srcObject =
+    null;
+
+
+  $("remoteAudio").srcObject =
+    null;
+
+
+  $("callOverlay")
+    .classList
+    .remove("show");
+
+
+  $("videoStage")
+    .classList
+    .remove("show");
+
+
+  currentCall =
+    null;
+
+
+  muted =
+    false;
+
+}
+
+
+function toggleMute(){
+
+  if (
+    !callStream
+  ) {
+
+    return;
+
+  }
+
+
+  muted =
+    !muted;
+
+
+  callStream
+    .getAudioTracks()
+    .forEach(
+      track => {
+
+        track.enabled =
+          !muted;
+
+      }
+    );
+
+
+  $("muteCall").textContent =
+    muted
+      ? "🔇"
+      : "🎙";
+
+
+  $("videoMute").textContent =
+    muted
+      ? "🔇"
+      : "🎙";
+
+}
+
+
+$("muteCall").onclick =
+  toggleMute;
+
+
+$("videoMute").onclick =
+  toggleMute;
+
+
+$("switchCamera").onclick =
+  async () => {
+
+    if (
+      !currentCall ||
+      currentCall.callType !==
+      "video"
+    ) {
+
+      return;
+
+    }
+
+
+    usingFrontCamera =
+      !usingFrontCamera;
+
+
+    try {
+
+      const newStream =
+        await navigator
+          .mediaDevices
+          .getUserMedia({
+
+            video:{
+              facingMode:
+                usingFrontCamera
+                  ? "user"
+                  : "environment"
+            },
+
+            audio:false
+
+          });
+
+
+      const newTrack =
+        newStream
+          .getVideoTracks()[0];
+
+
+      const sender =
+        peerConnection
+          ?.getSenders()
+          .find(
+            item =>
+              item.track?.kind ===
+              "video"
+          );
+
+
+      if (
+        sender
+      ) {
+
+        await sender.replaceTrack(
+          newTrack
+        );
+
+      }
+
+
+      callStream
+        ?.getVideoTracks()
+        .forEach(
+          track =>
+            track.stop()
+        );
+
+
+      callStream
+        .getVideoTracks =
+        undefined;
+
+
+      $("localVideo").srcObject =
+        new MediaStream([
+          newTrack,
+          ...callStream
+            .getAudioTracks()
+        ]);
+
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+    }
+
+  };
+
+
 /* NAVIGATION */
 
 document
@@ -5144,16 +8742,25 @@ document
     button => {
 
       button.onclick =
-        () =>
+        () => {
+
           show(
             button.dataset.view
           );
+
+        };
 
     }
   );
 
 
-/* INITIAL */
+/* INITIALIZATION */
+
+buildEmojiPanel();
+
+
+applyLanguage();
+
 
 fillCountrySelect(
   $("regCountry")
@@ -5175,30 +8782,29 @@ $("editCountry").value =
   "EE";
 
 
-$("languageLabel")
-  .textContent =
-  (
-    LANGS[lang] ||
-    "Русский"
-  ) +
-  " ›";
-
-
 renderSettings();
+
 
 updateMatchNav();
 
 
+registerServiceWorker();
+
+
 setInterval(
-  () =>
+  () => {
+
     send({
       type:"ping"
-    }),
+    });
+
+  },
   25000
 );
 
 
 connect();
+
 
 startCamera();
 
@@ -5208,7 +8814,8 @@ show(
     ? "cameraView"
     : "registerView"
 );
+
 </script>
 
 </body>
-          </html>
+</html>
