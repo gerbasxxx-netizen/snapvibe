@@ -73,8 +73,8 @@ body{font-size:16px}
 .profileTop p{font-size:13px}.stat span{font-size:11px}.menuItem,.settingRow{font-size:15px}.settingSection h3{font-size:13px}
 .nav button{font-size:11px}.nav button b{font-size:22px}
 .profilePic{overflow:hidden;background:#11131b}.profilePic img{width:100%;height:100%;object-fit:cover}
-.profilePhotoActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
-.profilePhotoActions button{min-height:44px;border-radius:12px;border:1px solid var(--line);background:#10131d;color:#fff}
+.profilePhotoActions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
+.profilePhotoActions button{min-height:48px;font-size:12px;padding:6px;border-radius:12px;border:1px solid var(--line);background:#10131d;color:#fff}
 .settingsBack{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:#10131d;color:#fff;font-size:22px;position:absolute;left:14px;top:8px}
 .settingsHeader{position:relative}
 .settingRow.clickable,.menuItem.clickable{cursor:pointer}
@@ -124,10 +124,10 @@ body{font-size:16px}
           <div class="emotion-title">Покажи свою эмоцию</div>
           <div class="emotions">
             <button class="emotion selected" data-emotion="happy"><span class="emoCircle">😊</span><span class="name">Радость</span></button>
-            <button class="emotion" data-emotion="surprised"><span class="emoCircle" style="background:#314fb6">😲</span><span class="name">Сюрприз</span></button>
+            <button class="emotion" data-emotion="angry"><span class="emoCircle" style="background:#a8303c">😠</span><span class="name">Злость</span></button>
+            <button class="emotion" data-emotion="sad"><span class="emoCircle" style="background:#3157b6">😢</span><span class="name">Грусть</span></button>
+            <button class="emotion" data-emotion="fun"><span class="emoCircle" style="background:#8739a0">🤩</span><span class="name">Веселье</span></button>
             <button class="emotion" data-emotion="calm"><span class="emoCircle" style="background:#2f9a64">😌</span><span class="name">Спокойствие</span></button>
-            <button class="emotion" data-emotion="excited"><span class="emoCircle" style="background:#7c3a99">🤩</span><span class="name">Веселье</span></button>
-            <button class="emotion" data-emotion="love"><span class="emoCircle" style="background:#b32c78">💗</span><span class="name">Любовь</span></button>
           </div>
           <button class="shutter" id="capture" aria-label="Сделать фото"></button>
         </div>
@@ -173,15 +173,24 @@ body{font-size:16px}
     <div class="profileTop">
       <div class="profilePic" id="profileAvatar">A</div>
       <h2 id="profileTitle">Alex</h2><p id="profileMeta">24 года, Tallinn</p>
-      <div class="profilePhotoActions">
-        <button id="chooseAvatar">📷 Фото</button>
+      <div class="profilePhotoActions" style="grid-template-columns:1fr 1fr 1fr">
+        <button id="takeAvatar">📷 Сфоткаться</button>
+        <button id="chooseAvatar">🖼 Галерея</button>
         <button id="removeAvatar">✕ Удалить</button>
       </div>
-      <input type="file" id="avatarInput" accept="image/*" capture="user" hidden>
+      <input type="file" id="avatarCameraInput" accept="image/*" capture="user" hidden>
+      <input type="file" id="avatarGalleryInput" accept="image/*" hidden>
     </div>
     <div class="stats"><div class="stat"><b id="statMatches">17</b><span>Мэтчей</span></div><div class="stat"><b id="statFriends">4</b><span>Друзей</span></div><div class="stat"><b id="statKeeps">2</b><span>Keep the Vibe</span></div></div>
+    <div class="field"><label>Имя</label><input id="editName" maxlength="30"></div>
+    <div class="grid2">
+      <div class="field"><label>Возраст</label><input id="editAge" type="number" min="18" max="99"></div>
+      <div class="field"><label>Пол</label><select id="editGender"><option value="male">Мужской</option><option value="female">Женский</option><option value="other">Другой</option></select></div>
+    </div>
+    <div class="field"><label>Страна / Город</label><input id="editCountry" maxlength="40"></div>
+    <button class="primary" id="saveProfileChanges">Сохранить профиль</button>
+
     <div class="menuCard">
-      <div class="menuItem clickable" id="editProfile"><span>✎ Редактировать профиль</span><span>›</span></div>
       <div class="menuItem clickable" id="searchPrefs"><span>⌕ Настройки поиска</span><span>›</span></div>
       <div class="menuItem clickable" id="blockedUsers"><span>⊗ Заблокированные</span><span>›</span></div>
       <div class="menuItem clickable" id="safetyInfo"><span>◇ Безопасность</span><span>›</span></div>
@@ -258,8 +267,16 @@ function appendMessage(m){const d=document.createElement("div");d.className="bub
 function sendMsg(){const i=$("messageInput"),x=i.value.trim();if(x&&activeChat.id){send({type:"chat_message",chatId:activeChat.id,text:x});i.value=""}}
 $("sendMessage").onclick=sendMsg;$("messageInput").onkeydown=e=>{if(e.key==="Enter")sendMsg()};$("chatBack").onclick=()=>show(match&&activeChat.type==="match"?"matchView":"friendsView");
 function renderFriends(){const box=$("friendList");box.innerHTML="";if(!friends.length){box.innerHTML='<div style="text-align:center;color:#7f8799;padding:60px 10px;font-size:12px">Пока друзей нет</div>';return}friends.forEach(f=>{const d=document.createElement("div");d.className="friend";d.innerHTML='<div class="avatar">'+(f.name||"S")[0].toUpperCase()+'</div><div class="friendMain"><b></b><span>Онлайн</span></div>';d.querySelector("b").textContent=f.name||"SnapVibe User";const b=document.createElement("button");b.className="friendChat";b.textContent="💬";b.onclick=()=>send({type:"friend_chat_open",friendId:f.id});d.appendChild(b);box.appendChild(d)})}
-function fillProfile(){$("profileTitle").textContent=profile.name||"SnapVibe User";renderAvatar();$("profileMeta").textContent=[profile.age?profile.age+" года":"",profile.country].filter(Boolean).join(", ");$("statFriends").textContent=friends.length}
-$("editProfile").onclick=()=>$("settingsView")&&show("settingsView");
+function fillProfile(){
+  $("profileTitle").textContent=profile.name||"SnapVibe User";
+  renderAvatar();
+  $("profileMeta").textContent=[profile.age?profile.age+" года":"",profile.country].filter(Boolean).join(", ");
+  $("statFriends").textContent=friends.length;
+  if($("editName")) $("editName").value=profile.name||"";
+  if($("editAge")) $("editAge").value=profile.age||"";
+  if($("editGender")) $("editGender").value=profile.gender||"male";
+  if($("editCountry")) $("editCountry").value=profile.country||"";
+}
 $("finishRegister").onclick=()=>{const n=$("regName").value.trim().slice(0,30),a=Number($("regAge").value);if(!n){toast("Введите имя");return}if(!a||a<18){toast("Возраст 18+");return}profile.name=n;profile.age=a;profile.gender=$("regGender").value;profile.country=$("regCountry").value.trim().slice(0,40);localStorage.setItem("snapvibe_user_name",profile.name);localStorage.setItem("snapvibe_age",profile.age);localStorage.setItem("snapvibe_gender",profile.gender);localStorage.setItem("snapvibe_country",profile.country);send({type:"register_profile",...profile});show("cameraView")};
 
 let avatarData=localStorage.getItem("snapvibe_avatar")||"";
@@ -295,14 +312,17 @@ function openModal(title,body,onSave,showSave=true){
 $("modalCancel").onclick=()=>$("modal").classList.remove("show");
 $("modal").onclick=e=>{if(e.target===$("modal"))$("modal").classList.remove("show")};
 
-$("chooseAvatar").onclick=()=>$("avatarInput").click();
-$("avatarInput").onchange=e=>{
-  const file=e.target.files?.[0];if(!file)return;
+function loadAvatarFile(file){
+  if(!file)return;
   if(file.size>5*1024*1024){toast("Фото слишком большое");return}
   const reader=new FileReader();
   reader.onload=()=>{avatarData=reader.result;localStorage.setItem("snapvibe_avatar",avatarData);renderAvatar();toast("Фото обновлено")};
   reader.readAsDataURL(file);
-};
+}
+$("takeAvatar").onclick=()=>$("avatarCameraInput").click();
+$("chooseAvatar").onclick=()=>$("avatarGalleryInput").click();
+$("avatarCameraInput").onchange=e=>loadAvatarFile(e.target.files?.[0]);
+$("avatarGalleryInput").onchange=e=>loadAvatarFile(e.target.files?.[0]);
 $("removeAvatar").onclick=()=>{avatarData="";localStorage.removeItem("snapvibe_avatar");renderAvatar();toast("Фото удалено")};
 
 $("settingsBack").onclick=()=>show("profileView");
@@ -338,9 +358,28 @@ $("deleteAccount").onclick=()=>openModal("Удалить аккаунт","<p>Э�
 });
 
 renderAvatar();renderSettings();
+
+$("saveProfileChanges").onclick=()=>{
+  const name=$("editName").value.trim().slice(0,30);
+  const age=Number($("editAge").value);
+  if(!name){toast("Введите имя");return}
+  if(!age||age<18||age>99){toast("Возраст от 18 до 99");return}
+  profile.name=name;
+  profile.age=age;
+  profile.gender=$("editGender").value;
+  profile.country=$("editCountry").value.trim().slice(0,40);
+  localStorage.setItem("snapvibe_user_name",profile.name);
+  localStorage.setItem("snapvibe_age",profile.age);
+  localStorage.setItem("snapvibe_gender",profile.gender);
+  localStorage.setItem("snapvibe_country",profile.country);
+  send({type:"register_profile",...profile});
+  fillProfile();
+  toast("Профиль сохранён");
+};
+
 document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>show(b.dataset.view));
 setInterval(()=>send({type:"ping"}),25000);
 connect();camera();show(profile.name?"cameraView":"registerView");
 </script>
 </body>
-  </html>
+          </html>
